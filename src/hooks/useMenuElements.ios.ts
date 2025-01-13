@@ -1,3 +1,4 @@
+/** TODO: later menu-elements */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 import { CommonActions } from '@react-navigation/native';

@@ -41,7 +41,7 @@ import getWalletTransactionsOptions from '../../navigation/helpers/getWalletTran
 import { presentWalletExportReminder } from '../../helpers/presentWalletExportReminder';
 import selectWallet from '../../helpers/select-wallet';
 import assert from 'assert';
-import useMenuElements from '../../hooks/useMenuElements';
+// import useMenuElements from '../../hooks/useMenuElements';
 import { useSettings } from '../../hooks/context/useSettings';
 import { getClipboardContent } from '../../blue_modules/clipboard';
 import HandOffComponent from '../../components/HandOffComponent';
@@ -59,7 +59,7 @@ type RouteProps = RouteProp<DetailViewStackParamList, 'WalletTransactions'>;
 type TransactionListItem = Transaction & { type: 'transaction' | 'header' };
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   const { wallets, saveToDisk, setSelectedWalletID } = useStorage();
-  const { setReloadTransactionsMenuActionFunction } = useMenuElements();
+  // const { setReloadTransactionsMenuActionFunction } = useMenuElements();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
   const [isLoading, setIsLoading] = useState(false);
   const { params, name } = useRoute<RouteProps>();
@@ -462,17 +462,17 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     );
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const task = InteractionManager.runAfterInteractions(() => {
-        setReloadTransactionsMenuActionFunction(() => refreshTransactions);
-      });
-      return () => {
-        task.cancel();
-        setReloadTransactionsMenuActionFunction(() => {});
-      };
-    }, [refreshTransactions, setReloadTransactionsMenuActionFunction]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const task = InteractionManager.runAfterInteractions(() => {
+  //       setReloadTransactionsMenuActionFunction(() => refreshTransactions);
+  //     });
+  //     return () => {
+  //       task.cancel();
+  //       setReloadTransactionsMenuActionFunction(() => {});
+  //     };
+  //   }, [refreshTransactions, setReloadTransactionsMenuActionFunction]),
+  // );
 
   const refreshProps = isDesktop || isElectrumDisabled ? {} : { refreshing: isLoading, onRefresh: refreshTransactions };
 

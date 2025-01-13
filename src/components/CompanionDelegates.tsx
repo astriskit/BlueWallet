@@ -24,11 +24,11 @@ import ActionSheet from '../screen/ActionSheet';
 import { useStorage } from '../hooks/context/useStorage';
 import RNQRGenerator from 'rn-qr-generator';
 import presentAlert from './Alert';
-import useMenuElements from '../hooks/useMenuElements';
+// import useMenuElements from '../hooks/useMenuElements';
 import useWidgetCommunication from '../hooks/useWidgetCommunication';
 import useWatchConnectivity from '../hooks/useWatchConnectivity';
 import useDeviceQuickActions from '../hooks/useDeviceQuickActions';
-import useHandoffListener from '../hooks/useHandoffListener';
+// import useHandoffListener from '../hooks/useHandoffListener';
 
 const ClipboardContentType = Object.freeze({
   BITCOIN: 'BITCOIN',
@@ -42,9 +42,9 @@ const CompanionDelegates = () => {
 
   useWatchConnectivity();
   useWidgetCommunication();
-  useMenuElements();
+  // useMenuElements();
   useDeviceQuickActions();
-  useHandoffListener();
+  // useHandoffListener();
 
   const processPushNotifications = useCallback(async () => {
     await new Promise(resolve => setTimeout(resolve, 200));
