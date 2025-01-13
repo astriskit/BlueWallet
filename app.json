@@ -1,0 +1,17 @@
+{
+  "icon": "./src/img/icon.png",
+  "android": {
+    "package": "com.harry_expo.bluewallet"
+  },
+  "plugins": [
+    [
+      "expo-splash-screen",
+      {
+        "image": "./src/img/icon.png",
+        "imageWidth": 200,
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      }
+    ]
+  ]
+}

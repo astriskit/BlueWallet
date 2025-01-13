@@ -92,3 +92,8 @@ android/.project
 android/.settings/org.eclipse.buildship.core.prefs
 android/app/.classpath
 android/app/.project
+
+#expo
+.expo
+android/*
+ios/*
