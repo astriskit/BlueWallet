@@ -1,4 +1,4 @@
-import './shim.js';
+import '../shim.js';
 
 import React, { useEffect } from 'react';
 import { AppRegistry, LogBox } from 'react-native';
