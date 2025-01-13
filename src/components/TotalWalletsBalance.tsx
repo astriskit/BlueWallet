@@ -6,7 +6,7 @@ import { BitcoinUnit } from '../models/bitcoinUnits';
 import ToolTipMenu from './TooltipMenu';
 import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import { useSettings } from '../hooks/context/useSettings';
-import Clipboard from '@react-native-clipboard/clipboard';
+import * as Clipboard from 'expo-clipboard';
 import { useTheme } from './themes';
 
 export const TotalWalletsBalancePreferredUnit = 'TotalWalletsBalancePreferredUnit';
@@ -70,7 +70,7 @@ const TotalWalletsBalance: React.FC = React.memo(() => {
           await setIsTotalBalanceEnabledStorage(false);
           break;
         case CommonToolTipActions.CopyAmount.id:
-          Clipboard.setString(totalBalanceFormatted.toString());
+          Clipboard.setStringAsync(totalBalanceFormatted.toString());
           break;
         default:
           break;

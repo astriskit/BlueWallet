@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import Clipboard from '@react-native-clipboard/clipboard';
+import * as Clipboard from 'expo-clipboard';
 import { Keyboard, Platform, ScrollView, StyleSheet, TouchableWithoutFeedback, View, TouchableOpacity, Image } from 'react-native';
 import { disallowScreenshot } from 'react-native-screen-capture';
 import { BlueButtonLink, BlueFormLabel, BlueFormMultiInput, BlueSpacing20 } from '../../BlueComponents';
@@ -71,8 +71,8 @@ const ImportWallet = () => {
     async (text: string) => {
       if (clearClipboardMenuState) {
         try {
-          if (await Clipboard.hasString()) {
-            Clipboard.setString('');
+          if (await Clipboard.hasStringAsync()) {
+            Clipboard.setStringAsync('');
           }
         } catch (error) {
           console.error('Failed to clear clipboard:', error);

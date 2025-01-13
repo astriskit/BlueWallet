@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Clipboard from '@react-native-clipboard/clipboard';
+import * as Clipboard from 'expo-clipboard';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import assert from 'assert';
@@ -129,7 +129,7 @@ export default function PaymentCodesList() {
   const _onToolTipPress = async (id: any, pc: string) => {
     switch (String(id)) {
       case String(Actions.copyToClipboard): {
-        Clipboard.setString(pc);
+        Clipboard.setStringAsync(pc);
         break;
       }
       case String(Actions.rename): {

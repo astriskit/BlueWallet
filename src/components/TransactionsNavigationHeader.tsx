@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Clipboard from '@react-native-clipboard/clipboard';
+import * as Clipboard from 'expo-clipboard';
 import { I18nManager, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { LightningCustodianWallet, MultisigHDWallet } from '../class';
@@ -51,7 +51,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   const handleCopyPress = useCallback(() => {
     const value = formatBalance(wallet.getBalance(), unit);
     if (value) {
-      Clipboard.setString(value);
+      Clipboard.setStringAsync(value);
     }
   }, [unit, wallet]);
 

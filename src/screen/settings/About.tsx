@@ -1,5 +1,5 @@
 import React from 'react';
-import Clipboard from '@react-native-clipboard/clipboard';
+import * as Clipboard from 'expo-clipboard';
 import { Alert, Image, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { getApplicationName, getBuildNumber, getBundleId, getUniqueIdSync, getVersion, hasGmsSync } from 'react-native-device-info';
 import { Icon } from '@rneui/themed';
@@ -214,7 +214,7 @@ const About: React.FC = () => {
           onPress={() => {
             const stringToCopy = 'userId:' + getUniqueIdSync();
             A.logError('copied unique id');
-            Clipboard.setString(stringToCopy);
+            Clipboard.setStringAsync(stringToCopy);
           }}
         >
           <Text style={styles.copyToClipboardText}>{loc.transactions.details_copy}</Text>
