@@ -19,7 +19,10 @@
         "NSMicrophoneUsageDescription": "To seek permissions"
       }
     },
-    "platforms": ["android", "ios"],
+    "platforms": [
+      "android",
+      "ios"
+    ],
     "plugins": [
       "expo-router",
       "expo-quick-actions",
@@ -35,7 +38,10 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": ["Camera", "Microphone"]
+          "iosPermissions": [
+            "Camera",
+            "Microphone"
+          ]
         }
       ]
     ],
