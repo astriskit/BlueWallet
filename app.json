@@ -6,14 +6,23 @@
     "newArchEnabled": true,
     "icon": "./src/img/icon.png",
     "android": {
-      "package": "com.harry_expo.bluewallet"
+      "package": "com.harry_expo.bluewallet",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "ios": {
-      "bundleIdentifier": "com.harry-expo.bluewallet"
+      "bundleIdentifier": "com.harry-expo.bluewallet",
+      "infoPlist": {
+        "NSCameraUsageDescription": "To seek permissions",
+        "NSMicrophoneUsageDescription": "To seek permissions"
+      }
     },
+    "platforms": ["android", "ios"],
     "plugins": [
       "expo-router",
-       "expo-quick-actions",
+      "expo-quick-actions",
       [
         "expo-splash-screen",
         {
@@ -21,6 +30,12 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": ["Camera", "Microphone"]
         }
       ]
     ],
