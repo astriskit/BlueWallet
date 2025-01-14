@@ -9,14 +9,13 @@
       "package": "com.harry_expo.bluewallet",
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.POST_NOTIFICATIONS"
       ]
     },
     "ios": {
       "bundleIdentifier": "com.harry-expo.bluewallet",
       "infoPlist": {
-        "NSCameraUsageDescription": "To seek permissions",
-        "NSMicrophoneUsageDescription": "To seek permissions"
+        "NSCameraUsageDescription": "In order to quickly scan the recipient's address, we need your permission to use the camera to scan their QR Code."
       },
       "entitlements": {
         "aps-environment": "development"
@@ -43,7 +42,7 @@
         {
           "iosPermissions": [
             "Camera",
-            "Microphone"
+            "Notifications"
           ]
         }
       ]
