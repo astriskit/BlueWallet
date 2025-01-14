@@ -1,6 +1,8 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 import { ConfigPlugin, withGradleProperties, withPlugins } from 'expo/config-plugins';
 
+// import { withPushNotification } from "@astriskit/rn-push-notification-config";
+// import { withPushNotificationIOS } from "@astriskit/rn-community-push-notification-ios-config";
 
 const withJettifier: ConfigPlugin<boolean> = (_, enable = false) =>
   withGradleProperties(_, config => {
@@ -16,5 +18,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   // @ts-ignore config!
   return withPlugins(config, [
     [withJettifier, true],
+    // withPushNotificationIOS,
+    // [withPushNotification, { color: { name: "colorPrimary" } }],
   ]);
 };

@@ -1,3 +1,4 @@
+import '@/shim.js';
 import 'react-native-gesture-handler'; // should be on top
 
 import { CommonActions } from '@react-navigation/native';

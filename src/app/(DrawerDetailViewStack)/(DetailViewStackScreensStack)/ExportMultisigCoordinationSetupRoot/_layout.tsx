@@ -1,0 +1,3 @@
+import ExportMultisigCoordinationSetupStack from '@/src/navigation/ExportMultisigCoordinationSetupStack';
+
+export default ExportMultisigCoordinationSetupStack;

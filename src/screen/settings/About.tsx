@@ -15,7 +15,7 @@ import loc, { formatStringAddTwoWhiteSpaces } from '../../loc';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { useSettings } from '../../hooks/context/useSettings';
 
-const branch = require('../../current-branch.json');
+const branch = require('@/current-branch.json');
 
 const About: React.FC = () => {
   const { navigate } = useExtendedNavigation();

@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native';
 import { BlueCard, BlueText } from '../../BlueComponents';
 
 const ReleaseNotes: React.FC = () => {
-  const notes = require('../../release-notes');
+  const notes = require('@/release-notes');
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic" automaticallyAdjustContentInsets>

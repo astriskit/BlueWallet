@@ -1,24 +1,22 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
 import navigationStyle from '../components/navigationStyle';
 import { useTheme } from '../components/themes';
 import loc from '../loc';
-import { SignVerifyComponent } from './LazyLoadSignVerifyStack';
-
-const Stack = createNativeStackNavigator();
+// import { SignVerifyComponent } from './LazyLoadSignVerifyStack';
+import { Stack } from 'expo-router';
 
 const SignVerifyStackRoot = () => {
   const theme = useTheme();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShadowVisible: false }}>
+    <Stack screenOptions={{ headerShadowVisible: false }}>
       <Stack.Screen
         name="SignVerify"
-        component={SignVerifyComponent}
+        // component={SignVerifyComponent}
         options={navigationStyle({ headerBackVisible: false, statusBarStyle: 'light', title: loc.addresses.sign_title })(theme)}
       />
-    </Stack.Navigator>
+    </Stack>
   );
 };
 

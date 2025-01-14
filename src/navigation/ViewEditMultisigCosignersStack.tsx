@@ -1,12 +1,10 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
 import navigationStyle from '../components/navigationStyle';
 import { useTheme } from '../components/themes';
 import loc from '../loc';
-import { ViewEditMultisigCosignersComponent } from './LazyLoadViewEditMultisigCosignersStack';
-import { ScanQRCodeComponent } from './LazyLoadScanQRCodeStack';
 import { ScanQRCodeParamList } from './DetailViewStackParamList';
+import { Stack } from 'expo-router';
 
 export type ViewEditMultisigCosignersStackParamList = {
   ViewEditMultisigCosigners: {
@@ -16,16 +14,14 @@ export type ViewEditMultisigCosignersStackParamList = {
   ScanQRCode: ScanQRCodeParamList;
 };
 
-const Stack = createNativeStackNavigator<ViewEditMultisigCosignersStackParamList>();
-
 const ViewEditMultisigCosignersStackRoot = () => {
   const theme = useTheme();
 
   return (
-    <Stack.Navigator screenOptions={{ headerShadowVisible: false }}>
+    <Stack screenOptions={{ headerShadowVisible: false }}>
       <Stack.Screen
         name="ViewEditMultisigCosigners"
-        component={ViewEditMultisigCosignersComponent}
+        // component={ViewEditMultisigCosignersComponent}
         options={navigationStyle({
           headerBackVisible: false,
           title: loc.multisig.manage_keys,
@@ -33,7 +29,7 @@ const ViewEditMultisigCosignersStackRoot = () => {
       />
       <Stack.Screen
         name="ScanQRCode"
-        component={ScanQRCodeComponent}
+        // component={ScanQRCodeComponent}
         options={navigationStyle({
           headerShown: false,
           statusBarHidden: true,
@@ -41,7 +37,7 @@ const ViewEditMultisigCosignersStackRoot = () => {
           headerShadowVisible: false,
         })(theme)}
       />
-    </Stack.Navigator>
+    </Stack>
   );
 };
 

@@ -1,22 +1,31 @@
 {
-  "name": "bluewallet",
-  "newArchEnabled": true,
-  "icon": "./src/img/icon.png",
-  "android": {
-    "package": "com.harry_expo.bluewallet"
-  },
-  "plugins": [
-    [
-      "expo-splash-screen",
-      {
-        "image": "./src/img/icon.png",
-        "imageWidth": 200,
-        "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
-      }
-    ]
-  ],
-  "ios": {
-    "bundleIdentifier": "com.harry-expo.bluewallet"
+  "expo": {
+    "name": "bluewallet",
+    "slug": "bluewallet",
+    "scheme": "bluewallet",
+    "newArchEnabled": true,
+    "icon": "./src/img/icon.png",
+    "android": {
+      "package": "com.harry_expo.bluewallet"
+    },
+    "ios": {
+      "bundleIdentifier": "com.harry-expo.bluewallet"
+    },
+    "plugins": [
+      "expo-router",
+       "expo-quick-actions",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./src/img/icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
