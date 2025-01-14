@@ -96,7 +96,8 @@ export const AddressInputScanButton = ({
             }
 
             if (hasImage) {
-              getImage = await Clipboard.getImageAsync();
+              const img = await Clipboard.getImageAsync({ format: 'png' });
+              getImage = img?.data ?? '';
             }
 
             if (getImage) {

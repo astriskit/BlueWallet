@@ -32,7 +32,7 @@ export const getClipboardContent = async (): Promise<string | undefined> => {
     if (!isAllowed) return undefined;
 
     const hasString = await Clipboard.hasStringAsync();
-    return hasString ? await Clipboard.getStringAsyncAsync() : undefined;
+    return hasString ? await Clipboard.getStringAsync() : undefined;
   } catch (error) {
     console.error('Error accessing clipboard:', error);
     return undefined;
