@@ -1,6 +1,7 @@
 {
   "name": "bluewallet",
-  "version": "7.1.0",
+  "main": "./src/index.js",
+  "version": "7.0.7",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -100,7 +101,7 @@
     "aezeed": "0.0.5",
     "assert": "2.1.0",
     "base-x": "4.0.0",
-    "bc-bech32": "file:blue_modules/bc-bech32",
+    "bc-bech32": "file:src/blue_modules/bc-bech32",
     "bech32": "2.0.0",
     "bignumber.js": "9.1.2",
     "bip21": "2.0.3",
