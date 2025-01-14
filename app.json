@@ -17,6 +17,9 @@
       "infoPlist": {
         "NSCameraUsageDescription": "To seek permissions",
         "NSMicrophoneUsageDescription": "To seek permissions"
+      },
+      "entitlements": {
+        "aps-environment": "development"
       }
     },
     "platforms": [
@@ -47,6 +50,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5902ca6c-31e8-4737-a286-e93dba1150c2"
+      }
     }
   }
 }
