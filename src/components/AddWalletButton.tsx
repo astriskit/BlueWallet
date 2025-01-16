@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, GestureResponderEvent } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Icon } from '@rneui/themed';
 import { useTheme } from './themes';
 import ToolTipMenu from './TooltipMenu';
@@ -7,10 +7,6 @@ import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import loc from '../loc';
 import { router } from '../NavigationService';
 import { useExtendedNavigation } from '../hooks/useExtendedNavigation';
-
-type AddWalletButtonProps = {
-  onPress?: (event: GestureResponderEvent) => void;
-};
 
 const styles = StyleSheet.create({
   ball: {
@@ -22,7 +18,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const AddWalletButton: React.FC<AddWalletButtonProps> = () => {
+const AddWalletButton: React.FC = () => {
   const { colors } = useTheme();
 
   const { navigate } = useExtendedNavigation();
@@ -44,19 +40,24 @@ const AddWalletButton: React.FC<AddWalletButtonProps> = () => {
   const actions = useMemo(() => [CommonToolTipActions.ImportWallet], []);
 
   return (
-    <ToolTipMenu accessibilityRole="button" accessibilityLabel={loc.wallets.add_title} onPressMenuItem={onPressMenuItem} actions={actions}>
-      <TouchableOpacity
-        style={[
-          styles.ball,
-          {
-            backgroundColor: colors.buttonBackgroundColor,
-          },
-        ]}
-        onPress={navigateToAddWallet}
+    <TouchableOpacity
+      style={[
+        styles.ball,
+        {
+          backgroundColor: colors.buttonBackgroundColor,
+        },
+      ]}
+      onPress={navigateToAddWallet}
+    >
+      <ToolTipMenu
+        accessibilityRole="button"
+        accessibilityLabel={loc.wallets.add_title}
+        onPressMenuItem={onPressMenuItem}
+        actions={actions}
       >
         <Icon name="add" size={22} type="ionicons" color={colors.foregroundColor} />
-      </TouchableOpacity>
-    </ToolTipMenu>
+      </ToolTipMenu>
+    </TouchableOpacity>
   );
 };
 

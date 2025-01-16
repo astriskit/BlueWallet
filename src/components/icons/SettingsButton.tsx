@@ -29,17 +29,17 @@ const SettingsButton = () => {
 
   const actions = useMemo(() => [CommonToolTipActions.ManageWallet], []);
   return (
-    <ToolTipMenu onPressMenuItem={onPressMenuItem} actions={actions}>
-      <TouchableOpacity
-        accessibilityRole="button"
-        accessibilityLabel={loc.settings.default_title}
-        testID="SettingsButton"
-        style={[style.buttonStyle, { backgroundColor: colors.lightButton }]}
-        onPress={onPress}
-      >
+    <TouchableOpacity
+      accessibilityRole="button"
+      accessibilityLabel={loc.settings.default_title}
+      testID="SettingsButton"
+      style={[style.buttonStyle, { backgroundColor: colors.lightButton }]}
+      onPress={onPress}
+    >
+      <ToolTipMenu onPressMenuItem={onPressMenuItem} actions={actions}>
         <Icon size={22} name="more-horiz" type="material" color={colors.foregroundColor} />
-      </TouchableOpacity>
-    </ToolTipMenu>
+      </ToolTipMenu>
+    </TouchableOpacity>
   );
 };
 
