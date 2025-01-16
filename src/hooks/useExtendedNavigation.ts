@@ -7,12 +7,7 @@ import { requestCameraAuthorization } from '../helpers/scan-qr';
 import { useCallback, useMemo } from 'react';
 
 // List of screens that require biometrics
-const requiresBiometrics = [
-  'WalletExportRoot',
-  'WalletXpubRoot',
-  'ViewEditMultisigCosignersRoot',
-  'ExportMultisigCoordinationSetupRoot',
-];
+const requiresBiometrics = ['WalletExportRoot', 'WalletXpubRoot', 'ViewEditMultisigCosignersRoot', 'ExportMultisigCoordinationSetupRoot'];
 
 // List of screens that require wallet export to be saved
 const requiresWalletExportIsSaved = ['ReceiveDetailsRoot', 'WalletAddresses'];
@@ -23,8 +18,9 @@ export const useExtendedNavigation = <T extends NavigationProp<ParamListBase>>()
   const { wallets, saveToDisk } = useStorage();
   const { isBiometricUseEnabled } = useBiometrics();
 
-  const enhancedNavigate: NavigationProp<ParamListBase>['navigate'] = useCallback(
-    (screenOrOptions: any, params?: any, options?: { merge?: boolean }) => {
+  // Note: missing type
+  const enhancedNavigate = useCallback(
+    async (screenOrOptions: any, params?: any, options?: { merge?: boolean }) => {
       let screenName: string;
       if (typeof screenOrOptions === 'string') {
         screenName = screenOrOptions;
@@ -38,27 +34,18 @@ export const useExtendedNavigation = <T extends NavigationProp<ParamListBase>>()
       const isRequiresBiometrics = requiresBiometrics.includes(screenName);
       const isRequiresWalletExportIsSaved = requiresWalletExportIsSaved.includes(screenName);
 
-    const proceedWithNavigation = () => {
-      // TODO: add a map of the file-structure and find an apt option to navigate to!
-      console.log('Proceeding with navigation to', screenName);
-      if (navRef.current?.isReady()) {
-        if (typeof screenOrOptions === 'string') {
-          // console.log(originalNavigation.getState(), 'state');
-          originalNavigation.dispatch(CommonActions.navigate({ name: screenOrOptions, params, merge: options?.merge }));
-        } else {
-          originalNavigation.dispatch(CommonActions.navigate({ ...screenOrOptions, params, merge: options?.merge }));
+      const proceedWithNavigation = () => {
+        console.log('Proceeding with navigation to', screenName);
+        if (navRef.current?.isReady()) {
+          if (typeof screenOrOptions === 'string') {
+            originalNavigation.dispatch(CommonActions.navigate({ name: screenOrOptions, params, merge: options?.merge }));
+          } else {
+            originalNavigation.dispatch(CommonActions.navigate({ ...screenOrOptions, params, merge: options?.merge }));
+          }
         }
-      }
-    };
+      };
 
       (async () => {
-        // NEW: If the current (active) screen is 'ScanQRCode', bypass all checks.
-        const currentRouteName = navigationRef.current?.getCurrentRoute()?.name;
-        if (currentRouteName === 'ScanQRCode') {
-          proceedWithNavigation();
-          return;
-        }
-
         if (isRequiresBiometrics) {
           const isBiometricsEnabled = await isBiometricUseEnabled();
           if (isBiometricsEnabled) {
@@ -68,9 +55,10 @@ export const useExtendedNavigation = <T extends NavigationProp<ParamListBase>>()
               return;
             } else {
               console.error('Biometric authentication failed');
-              // Do not proceed if authentication fails.
-              return;
+              // Decide if navigation should proceed or not after failed authentication
+              return; // Prevent proceeding with the original navigation if bio fails
             }
+            return; // Do not proceed with the original navigation if reminder was shown.
           }
         }
         if (isRequiresWalletExportIsSaved) {
@@ -90,32 +78,33 @@ export const useExtendedNavigation = <T extends NavigationProp<ParamListBase>>()
             try {
               await presentWalletExportReminder();
               wallet.setUserHasSavedExport(true);
-              await saveToDisk();
+              await saveToDisk(); // Assuming saveToDisk() returns a Promise.
               proceedWithNavigation();
             } catch (error) {
-              // If there was an error (or the user cancelled), navigate to the wallet export screen.
-              originalNavigation.navigate('WalletExportRoot', {
-                screen: 'WalletExport',
-                params: { walletID },
-              });
+              if (error) {
+                originalNavigation.navigate('WalletExportRoot', {
+                  screen: 'WalletExport',
+                  params: { walletID },
+                });
+              }
             }
-            return; // Do not proceed with the original navigation if reminder was shown.
+
+            return; // Prevent proceeding with the original navigation if the reminder is shown
           }
         }
 
-        // If the target screen is ScanQRCode, request camera authorization.
         if (screenName === 'ScanQRCode') {
           await requestCameraAuthorization();
         }
         proceedWithNavigation();
       })();
     },
-    [originalNavigation, isBiometricUseEnabled, wallets, saveToDisk],
+    [navRef, originalNavigation, isBiometricUseEnabled, wallets, saveToDisk],
   );
 
   const navigateToWalletsList = useCallback(() => {
     enhancedNavigate('WalletsList');
-  }, [enhancedNavigate]);;
+  }, [enhancedNavigate]);
 
   return useMemo(
     () => ({

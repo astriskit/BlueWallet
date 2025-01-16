@@ -7,7 +7,6 @@ import { isDesktop } from '../blue_modules/environment';
 import HeaderRightButton from '../components/HeaderRightButton';
 import navigationStyle, { CloseButtonPosition } from '../components/navigationStyle';
 import { useTheme } from '../components/themes';
-import { useExtendedNavigation } from '../hooks/useExtendedNavigation';
 import loc from '../loc';
 import { NavigationDefaultOptions, NavigationFormModalOptions, StatusBarLightOptions } from './helpers/options';
 import SettingsButton from '../components/icons/SettingsButton';
@@ -18,25 +17,20 @@ import AddWalletButton from '../components/AddWalletButton';
 
 const DetailViewStackScreensStack = () => {
   const theme = useTheme();
-  const navigation = useExtendedNavigation();
   const { wallets } = useStorage();
   const { isTotalBalanceEnabled } = useSettings();
 
   const DetailButton = useMemo(() => <HeaderRightButton testID="DetailButton" disabled title={loc.send.create_details} />, []);
 
-  const navigateToAddWallet = useCallback(() => {
-    navigation.navigate('AddWalletRoot');
-  }, [navigation]);
-
-  const RightBarButtons = useMemo(
+  const RightBarButtons = useCallback(
     () => (
       <>
-        <AddWalletButton onPress={navigateToAddWallet} />
+        <AddWalletButton />
         <View style={styles.width24} />
         <SettingsButton />
       </>
     ),
-    [navigateToAddWallet],
+    [],
   );
 
   const useWalletListScreenOptions = useMemo<NativeStackNavigationOptions>(() => {
@@ -51,7 +45,7 @@ const DetailViewStackScreensStack = () => {
       headerStyle: {
         backgroundColor: theme.colors.customHeader,
       },
-      headerRight: () => RightBarButtons,
+      headerRight: RightBarButtons,
     };
   }, [RightBarButtons, isTotalBalanceEnabled, theme.colors.customHeader, theme.colors.navigationBarColor, wallets.length]);
 
