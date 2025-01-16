@@ -10,8 +10,8 @@ import {
   LayoutAnimation,
   FlatList,
   ActivityIndicator,
+  View,
 } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { useTheme } from '../../components/themes';
@@ -502,7 +502,7 @@ const ManageWallets: React.FC = () => {
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" color={colors.brandingColor} />}>
-      <GestureHandlerRootView style={[{ backgroundColor: colors.background }, styles.root]}>
+      <View style={[{ backgroundColor: colors.background }, styles.root]}>
         <>
           {renderHeader}
           <DragList
@@ -518,7 +518,7 @@ const ManageWallets: React.FC = () => {
             ref={listRef}
           />
         </>
-      </GestureHandlerRootView>
+      </View>
     </Suspense>
   );
 };
