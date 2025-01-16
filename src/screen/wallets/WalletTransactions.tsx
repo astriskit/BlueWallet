@@ -17,6 +17,7 @@ import {
   View,
 } from 'react-native';
 import { Icon } from '@rneui/themed';
+import { useLocalSearchParams } from 'expo-router';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { isDesktop } from '../../blue_modules/environment';
 import * as fs from '../../blue_modules/fs';
@@ -34,7 +35,6 @@ import { Chain } from '../../models/bitcoinUnits';
 import ActionSheet from '../ActionSheet';
 import { useStorage } from '../../hooks/context/useStorage';
 import WatchOnlyWarning from '../../components/WatchOnlyWarning';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { Transaction, TWallet } from '../../class/wallets/types';
 import getWalletTransactionsOptions from '../../navigation/helpers/getWalletTransactionsOptions';
@@ -54,10 +54,14 @@ const buttonFontSize =
     ? 22
     : PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26);
 
-type WalletTransactionsProps = NativeStackScreenProps<DetailViewStackParamList, 'WalletTransactions'>;
+type WalletTransactionsParams = DetailViewStackParamList['WalletTransactions'];
 type RouteProps = RouteProp<DetailViewStackParamList, 'WalletTransactions'>;
+type WalletTransactionsProps = { route: any }; // FIX_ME type
 type TransactionListItem = Transaction & { type: 'transaction' | 'header' };
+
 const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
+  // @ts-ignore WalletTransactionsParams.isLoading is typed boolean;
+  const routeParams = useLocalSearchParams<WalletTransactionsParams>();
   const { wallets, saveToDisk, setSelectedWalletID } = useStorage();
   // const { setReloadTransactionsMenuActionFunction } = useMenuElements();
   const { isBiometricUseCapableAndEnabled } = useBiometrics();
@@ -83,8 +87,8 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
-      setOptions(getWalletTransactionsOptions({ route }));
-    }, [route, setOptions]),
+      setOptions(getWalletTransactionsOptions(routeParams));
+    }, [routeParams, setOptions]),
   );
 
   const onBarCodeRead = useCallback(
@@ -107,12 +111,12 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
   );
 
   useEffect(() => {
-    const data = route.params?.onBarScanned;
+    const data = routeParams?.onBarScanned;
     if (data) {
       onBarCodeRead({ data });
       navigation.setParams({ onBarScanned: undefined });
     }
-  }, [navigation, onBarCodeRead, route.params]);
+  }, [navigation, onBarCodeRead, routeParams]);
 
   const sortedTransactions = useMemo(() => {
     if (!wallet) return [];

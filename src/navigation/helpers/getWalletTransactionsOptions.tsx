@@ -5,12 +5,11 @@ import WalletGradient from '../../class/wallet-gradient';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../DetailViewStackParamList';
 import { router } from '../../NavigationService';
-import { RouteProp } from '@react-navigation/native';
 
-export type WalletTransactionsRouteProps = RouteProp<DetailViewStackParamList, 'WalletTransactions'>;
+export type WalletTransactionsRouteParams = DetailViewStackParamList['WalletTransactions']
 
-const getWalletTransactionsOptions = ({ route }: { route: WalletTransactionsRouteProps }): NativeStackNavigationOptions => {
-  const { isLoading, walletID, walletType } = route.params;
+const getWalletTransactionsOptions = (params: WalletTransactionsRouteParams): NativeStackNavigationOptions => {
+  const { isLoading = false, walletID = undefined, walletType = undefined } = params;
 
   const onPress = () => {
     router.navigate({
@@ -27,7 +26,7 @@ const getWalletTransactionsOptions = ({ route }: { route: WalletTransactionsRout
     </TouchableOpacity>
   );
 
-  const backgroundColor = WalletGradient.headerColorFor(walletType);
+  const backgroundColor = walletType && WalletGradient.headerColorFor(walletType);
 
   return {
     title: '',

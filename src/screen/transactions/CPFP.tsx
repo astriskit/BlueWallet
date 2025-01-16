@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { ActivityIndicator, Linking, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import PropTypes from 'prop-types';
 import { Text } from '@rneui/themed';
+import { DetailViewStackParamList } from '@/src/navigation/DetailViewStackParamList';
+
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueSpacing, BlueSpacing20, BlueText } from '../../BlueComponents';
@@ -16,6 +17,7 @@ import { StorageContext } from '../../components/Context/StorageProvider';
 import { popToTop } from '../../NavigationService';
 import ReplaceFeeSuggestions from '../../components/ReplaceFeeSuggestions';
 import { majorTomToGroundControl } from '../../blue_modules/notifications';
+import { NavType, RouteType, withNavProps } from './withNavProps';
 
 const styles = StyleSheet.create({
   root: {
@@ -56,9 +58,30 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class CPFP extends Component {
+type CPFPProps = {
+  route: RouteType<DetailViewStackParamList, 'CPFP'>;
+  navigation: NavType<DetailViewStackParamList, 'CPFP'>;
+};
+type CPFPState = {
+  isLoading: boolean;
+  stage: number;
+  txid?: number | string;
+  wallet?: string | any;
+  txhex?: string;
+  isElectrumDisabled: boolean;
+  newTxid?: string;
+  nonReplaceable?: boolean;
+  newFeeRate?: number;
+  feeRate?: number;
+  tx?: any;
+};
+
+class CPFP extends Component<CPFPProps, CPFPState> {
   static contextType = StorageContext;
-  constructor(props) {
+  // @ts-ignore TODO: type
+  context!: React.ContextType<typeof StorageContext>;
+
+  constructor(props: CPFPProps) {
     super(props);
     let txid;
     let wallet;
@@ -99,14 +122,14 @@ export default class CPFP extends Component {
     this.context.txMetadata[this.state.newTxid] = { memo: 'Child pays for parent (CPFP)' };
     majorTomToGroundControl([], [], [this.state.newTxid]);
     this.context.sleep(4000).then(() => this.context.fetchAndSaveWalletTransactions(this.state.wallet.getID()));
-    this.props.navigation.navigate('Success', { onDonePressed: () => popToTop(), amount: undefined });
+    this.props.navigation.navigate('Success', { onDonePressed: () => popToTop(), amount: undefined }); // TODO: check
   }
 
   async componentDidMount() {
     console.log('transactions/CPFP - componentDidMount');
     this.setState({
       isLoading: true,
-      newFeeRate: '',
+      newFeeRate: NaN,
       nonReplaceable: false,
     });
     try {
@@ -134,7 +157,7 @@ export default class CPFP extends Component {
 
   async createTransaction() {
     const newFeeRate = parseInt(this.state.newFeeRate, 10);
-    if (newFeeRate > this.state.feeRate) {
+    if (newFeeRate > this.state.feeRate!) {
       /** @type {HDSegwitBech32Transaction} */
       const tx = this.state.tx;
       this.setState({ isLoading: true });
@@ -149,7 +172,7 @@ export default class CPFP extends Component {
     }
   }
 
-  renderStage1(text) {
+  renderStage1(text: string) {
     return (
       <SafeArea style={styles.root}>
         <BlueSpacing />
@@ -159,7 +182,7 @@ export default class CPFP extends Component {
           <ReplaceFeeSuggestions onFeeSelected={fee => this.setState({ newFeeRate: fee })} transactionMinimum={this.state.feeRate} />
           <BlueSpacing />
           <Button
-            disabled={this.state.newFeeRate <= this.state.feeRate}
+            disabled={this.state.newFeeRate! <= this.state.feeRate!}
             onPress={() => this.createTransaction()}
             title={loc.transactions.cpfp_create}
           />
@@ -175,7 +198,11 @@ export default class CPFP extends Component {
           <BlueText style={styles.hex}>{loc.send.create_this_is_hex}</BlueText>
           <TextInput style={styles.hexInput} height={112} multiline editable value={this.state.txhex} />
 
-          <TouchableOpacity accessibilityRole="button" style={styles.action} onPress={() => Clipboard.setStringAsync(this.state.txhex)}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.action}
+            onPress={() => Clipboard.setStringAsync(this.state?.txhex ?? '')}
+          >
             <Text style={styles.actionText}>{loc.send.create_copy}</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -233,15 +260,4 @@ export default class CPFP extends Component {
   }
 }
 
-CPFP.propTypes = {
-  navigation: PropTypes.shape({
-    popToTop: PropTypes.func,
-    navigate: PropTypes.func,
-  }),
-  route: PropTypes.shape({
-    params: PropTypes.shape({
-      txid: PropTypes.string,
-      wallet: PropTypes.object,
-    }),
-  }),
-};
+export default withNavProps(CPFP, { name: 'withNavPropsCPFP' });

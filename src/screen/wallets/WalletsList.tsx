@@ -165,9 +165,12 @@ const WalletsList: React.FC = () => {
         task.cancel();
         // setReloadTransactionsMenuActionFunction(() => {});
       };
-    }, [onRefresh, 
-      // setReloadTransactionsMenuActionFunction, 
-      verifyBalance, setSelectedWalletID]),
+    }, [
+      onRefresh,
+      // setReloadTransactionsMenuActionFunction,
+      verifyBalance,
+      setSelectedWalletID,
+    ]),
   );
 
   useEffect(() => {
@@ -192,12 +195,12 @@ const WalletsList: React.FC = () => {
   );
 
   useEffect(() => {
-    const data = route.params?.onBarScanned;
+    const data = route?.params?.onBarScanned;
     if (data) {
       onBarScanned(data);
       navigation.setParams({ onBarScanned: undefined });
     }
-  }, [navigation, onBarScanned, route.params?.onBarScanned]);
+  }, [navigation, onBarScanned, route?.params?.onBarScanned]);
 
   useEffect(() => {
     refreshTransactions(false, true);

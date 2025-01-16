@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { CommonActions, RouteProp, useRoute } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import { Keyboard, Platform, ScrollView, StyleSheet, TouchableWithoutFeedback, View, TouchableOpacity, Image } from 'react-native';
 import { disallowScreenshot } from 'react-native-screen-capture';
@@ -106,12 +106,15 @@ const ImportWallet = () => {
   );
 
   const importScan = useCallback(async () => {
-    navigation.navigate('ScanQRCode', {
-      showFileImportButton: true,
-    });
+    navigation.dispatch(
+      CommonActions.navigate('ScanQRCode', {
+        showFileImportButton: true,
+      }),
+    );
   }, [navigation]);
 
   useEffect(() => {
+    // TODO: refactor types
     const data = route.params?.onBarScanned;
     if (data) {
       onBarScanned(data);

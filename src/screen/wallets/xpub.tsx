@@ -16,13 +16,15 @@ import { HandOffActivityType } from '../../components/types';
 import { useSettings } from '../../hooks/context/useSettings';
 import { isDesktop } from '../../blue_modules/environment';
 
-type WalletXpubRouteProp = RouteProp<{ params: { walletID: string; xpub: string } }, 'params'>;
 export type RootStackParamList = {
   WalletXpub: {
     walletID: string;
     xpub: string;
   };
 };
+
+type WalletXpubRouteProp = RouteProp<RootStackParamList, 'WalletXpub'>;
+type WalletXpubNavProp = NavigationProp<RootStackParamList, 'WalletXpub'>;
 
 const WalletXpub: React.FC = () => {
   const { wallets } = useStorage();
@@ -32,7 +34,7 @@ const WalletXpub: React.FC = () => {
   const { isPrivacyBlurEnabled } = useSettings();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [xPubText, setXPubText] = useState<string | undefined>(undefined);
-  const navigation = useNavigation<NavigationProp<RootStackParamList, 'WalletXpub'>>();
+  const navigation = useNavigation<WalletXpubNavProp>();
   const stylesHook = useDynamicStyles(); // This now includes the theme implicitly
   const [qrCodeSize, setQRCodeSize] = useState<number>(90);
   const lastWalletIdRef = useRef<string | undefined>();
