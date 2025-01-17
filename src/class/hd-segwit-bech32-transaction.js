@@ -4,6 +4,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as BlueElectrum from '../blue_modules/BlueElectrum';
 import { HDSegwitBech32Wallet } from './wallets/hd-segwit-bech32-wallet';
 import { SegwitBech32Wallet } from './wallets/segwit-bech32-wallet';
+import { scriptPubKeyToAddress } from './wallets/utils/segwit-bech32-wallet';
 
 /**
  * Represents transaction of a BIP84 wallet.
@@ -255,7 +256,7 @@ export class HDSegwitBech32Transaction {
 
     // if theres at least one output we dont own - we can cancel this transaction!
     for (const outp of this._txDecoded.outs) {
-      if (!this._wallet.weOwnAddress(SegwitBech32Wallet.scriptPubKeyToAddress(outp.script))) return true;
+      if (!this._wallet.weOwnAddress(scriptPubKeyToAddress(outp.script))) return true;
     }
 
     return false;

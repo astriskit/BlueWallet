@@ -13,7 +13,7 @@ import Button from '../../components/Button';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import prompt from '../../helpers/prompt';
-import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import { useBiometrics } from '../../hooks/useBiometrics';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
 import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
 import { useStorage } from '../../hooks/context/useStorage';
@@ -22,6 +22,7 @@ import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } fr
 import { LightningCustodianWallet } from '../../class/wallets/lightning-custodian-wallet';
 import { TWallet } from '../../class/wallets/types';
 import { pop } from '../../NavigationService';
+import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 
 type RouteParams = {
   walletID: string;

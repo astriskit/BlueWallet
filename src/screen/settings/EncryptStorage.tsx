@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
+
 import ListItem, { TouchableOpacityWrapper } from '../../components/ListItem';
 import { useTheme } from '../../components/themes';
-import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import { useBiometrics } from '../../hooks/useBiometrics';
 import loc from '../../loc';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { useStorage } from '../../hooks/context/useStorage';

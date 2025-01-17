@@ -15,6 +15,7 @@ import { GROUP_IO_BLUEWALLET } from '../../blue_modules/currency';
 import { clearLNDHub, getLNDHub, setLNDHub } from '../../helpers/lndHub';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import { BlueApp } from '@/src/class/blue-app';
 
 const styles = StyleSheet.create({
   uri: {
@@ -59,7 +60,7 @@ const LightningSettings: React.FC = () => {
     const fetchURI = async () => {
       try {
         // Try fetching from DefaultPreference first as DefaultPreference uses truly native storage
-        const value = await getLNDHub();
+        const value = await getLNDHub(BlueApp.LNDHUB);
         setURI(value ?? undefined);
       } catch (error) {
         console.log(error);
@@ -108,9 +109,9 @@ const LightningSettings: React.FC = () => {
         const normalizedURI = new URL(URI.replace(/([^:]\/)\/+/g, '$1')).toString();
         await LightningCustodianWallet.isValidNodeAddress(normalizedURI);
 
-        await setLNDHub(normalizedURI);
+        await setLNDHub(normalizedURI, BlueApp.LNDHUB);
       } else {
-        await clearLNDHub();
+        await clearLNDHub(BlueApp.LNDHUB);
       }
 
       presentAlert({ message: loc.settings.lightning_saved, type: AlertType.Toast });

@@ -28,7 +28,7 @@ import { FButton, FContainer } from '../../components/FloatButtons';
 import { useTheme } from '../../components/themes';
 import { TransactionListItem } from '../../components/TransactionListItem';
 import TransactionsNavigationHeader, { actionKeys } from '../../components/TransactionsNavigationHeader';
-import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import { useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
 import { Chain } from '../../models/bitcoinUnits';
@@ -48,6 +48,7 @@ import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
 import LinearGradient from 'react-native-linear-gradient';
 import WalletGradient from '../../class/wallet-gradient';
+import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22

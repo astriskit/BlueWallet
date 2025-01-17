@@ -4,10 +4,11 @@ import triggerHapticFeedback, { HapticFeedbackTypes } from '../blue_modules/hapt
 import { BlueTextCentered } from '../BlueComponents';
 import Button from '../components/Button';
 import SafeArea from '../components/SafeArea';
-import { BiometricType, unlockWithBiometrics, useBiometrics } from '../hooks/useBiometrics';
+import { BiometricType, useBiometrics } from '../hooks/useBiometrics';
 import loc from '../loc';
 import { useStorage } from '../hooks/context/useStorage';
 import { Redirect } from 'expo-router';
+import { unlockWithBiometrics } from '../hooks/utils/biometrics';
 
 enum AuthType {
   Encrypted,

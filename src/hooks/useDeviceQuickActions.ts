@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DeviceEventEmitter, Linking, Platform } from 'react-native';
 import QuickActions, { ShortcutItem } from 'react-native-quick-actions';
 import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
@@ -9,25 +8,7 @@ import { formatBalance } from '../loc';
 import { router, RouterParam } from '../NavigationService';
 import { useSettings } from '../hooks/context/useSettings';
 import { useStorage } from '../hooks/context/useStorage';
-
-const DeviceQuickActionsStorageKey = 'DeviceQuickActionsEnabled';
-
-export async function setEnabled(enabled: boolean = true): Promise<void> {
-  await AsyncStorage.setItem(DeviceQuickActionsStorageKey, JSON.stringify(enabled));
-}
-
-export async function getEnabled(): Promise<boolean> {
-  try {
-    const isEnabled = await AsyncStorage.getItem(DeviceQuickActionsStorageKey);
-    if (isEnabled === null) {
-      await setEnabled(true);
-      return true;
-    }
-    return !!JSON.parse(isEnabled);
-  } catch {
-    return true;
-  }
-}
+import { getEnabled } from './utils/device-quick-actions';
 
 const useDeviceQuickActions = () => {
   const { wallets, walletsInitialized, isStorageEncrypted, addWallet, saveToDisk, setSharedCosigner } = useStorage();

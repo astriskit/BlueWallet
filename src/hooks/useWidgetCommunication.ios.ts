@@ -5,45 +5,10 @@ import { useSettings } from '../hooks/context/useSettings';
 import { useStorage } from '../hooks/context/useStorage';
 import { GROUP_IO_BLUEWALLET } from '../blue_modules/currency';
 import debounce from '../blue_modules/debounce';
-
-enum WidgetCommunicationKeys {
-  AllWalletsSatoshiBalance = 'WidgetCommunicationAllWalletsSatoshiBalance',
-  AllWalletsLatestTransactionTime = 'WidgetCommunicationAllWalletsLatestTransactionTime',
-  DisplayBalanceAllowed = 'WidgetCommunicationDisplayBalanceAllowed',
-  LatestTransactionIsUnconfirmed = 'WidgetCommunicationLatestTransactionIsUnconfirmed',
-}
+import { WidgetCommunicationKeys } from './utils/WidgetCommunicationKeys';
+import { isBalanceDisplayAllowed } from './utils/isBalanceDisplayAllowed';
 
 DefaultPreference.setName(GROUP_IO_BLUEWALLET);
-
-export const isBalanceDisplayAllowed = async (): Promise<boolean> => {
-  try {
-    const displayBalance = await DefaultPreference.get(WidgetCommunicationKeys.DisplayBalanceAllowed);
-    if (displayBalance === '1') {
-      return true;
-    } else if (displayBalance === '0') {
-      return false;
-    } else {
-      // Preference not set, initialize it to '1' (allowed) and return true
-      await DefaultPreference.set(WidgetCommunicationKeys.DisplayBalanceAllowed, '1');
-      return true;
-    }
-  } catch (error) {
-    console.error('Failed to get DisplayBalanceAllowed:', error);
-    return true;
-  }
-};
-
-export const setBalanceDisplayAllowed = async (allowed: boolean): Promise<void> => {
-  try {
-    if (allowed) {
-      await DefaultPreference.set(WidgetCommunicationKeys.DisplayBalanceAllowed, '1');
-    } else {
-      await DefaultPreference.set(WidgetCommunicationKeys.DisplayBalanceAllowed, '0');
-    }
-  } catch (error) {
-    console.error('Failed to set DisplayBalanceAllowed:', error);
-  }
-};
 
 export const calculateBalanceAndTransactionTime = async (
   wallets: TWallet[],

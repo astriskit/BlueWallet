@@ -1,10 +1,11 @@
 import { CommonActions, NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import { useNavigationContainerRef } from '../NavigationService';
 import { presentWalletExportReminder } from '../helpers/presentWalletExportReminder';
-import { unlockWithBiometrics, useBiometrics } from './useBiometrics';
+import { useBiometrics } from './useBiometrics';
 import { useStorage } from './context/useStorage';
 import { requestCameraAuthorization } from '../helpers/scan-qr';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
+import { unlockWithBiometrics } from './utils/biometrics';
 
 // List of screens that require biometrics
 const requiresBiometrics = ['WalletExportRoot', 'WalletXpubRoot', 'ViewEditMultisigCosignersRoot', 'ExportMultisigCoordinationSetupRoot'];

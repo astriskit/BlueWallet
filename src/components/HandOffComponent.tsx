@@ -6,10 +6,4 @@ const HandOffComponent: React.FC<HandOffComponentProps> = props => {
   return null;
 };
 
-export const setIsHandOffUseEnabled = async (value: boolean) => {};
-
-export const getIsHandOffUseEnabled = async (): Promise<boolean> => {
-  return false;
-};
-
 export default HandOffComponent;

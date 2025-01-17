@@ -33,7 +33,7 @@ import ListItem from '../../components/ListItem';
 import { SecondButton } from '../../components/SecondButton';
 import { useTheme } from '../../components/themes';
 import prompt from '../../helpers/prompt';
-import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import { useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalanceWithoutSuffix } from '../../loc';
 import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
@@ -46,6 +46,7 @@ import { unsubscribe } from '../../blue_modules/notifications';
 import HeaderMenuButton from '../../components/HeaderMenuButton';
 import { Action } from '../../components/types';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
+import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 
 type RouteProps = RouteProp<DetailViewStackParamList, 'WalletDetails'>;
 const WalletDetails: React.FC = () => {

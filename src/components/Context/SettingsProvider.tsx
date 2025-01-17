@@ -1,5 +1,10 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import DefaultPreference from 'react-native-default-preference';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isBalanceDisplayAllowed } from '@/src/hooks/utils/isBalanceDisplayAllowed';
+import { setBalanceDisplayAllowed } from '@/src/hooks/utils/setBalanceDisplayAllowed';
+
 import { isReadClipboardAllowed, setReadClipboardAllowed } from '../../blue_modules/clipboard';
 import { getPreferredCurrency, GROUP_IO_BLUEWALLET, initCurrencyDaemon, setPreferredCurrency } from '../../blue_modules/currency';
 import { clearUseURv1, isURv1Enabled, setUseURv1 } from '../../blue_modules/ur';
@@ -9,15 +14,13 @@ import { FiatUnit, TFiatUnit } from '../../models/fiatUnit';
 import {
   getEnabled as getIsDeviceQuickActionsEnabled,
   setEnabled as setIsDeviceQuickActionsEnabled,
-} from '../../hooks/useDeviceQuickActions';
-import { getIsHandOffUseEnabled, setIsHandOffUseEnabled } from '../HandOffComponent';
+} from '../../hooks/utils/device-quick-actions';
+import { getIsHandOffUseEnabled, setIsHandOffUseEnabled } from '../utils/hands-off';
 import { useStorage } from '../../hooks/context/useStorage';
 import { BitcoinUnit } from '../../models/bitcoinUnits';
-import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../TotalWalletsBalance';
+import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../utils/constants';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
-import { isBalanceDisplayAllowed, setBalanceDisplayAllowed } from '../../hooks/useWidgetCommunication';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const getDoNotTrackStorage = async (): Promise<boolean> => {
   try {

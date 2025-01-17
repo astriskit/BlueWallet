@@ -11,7 +11,8 @@ import {
   Bytes,
 } from '@keystonehq/bc-ur-registry/dist';
 import { decodeUR as origDecodeUr, encodeUR as origEncodeUR, extractSingleWorkload as origExtractSingleWorkload } from '../bc-ur/dist';
-import { MultisigCosigner, MultisigHDWallet } from '../../class';
+import { MultisigCosigner } from '../../class/multisig-cosigner';
+import { DEFAULT_PATH_LEGACY, DEFAULT_PATH_NATIVE_SEGWIT, DEFAULT_PATH_WRAPPED_SEGWIT } from '../../class/wallets/utils/multisig-hd-wallet';
 import { Psbt } from 'bitcoinjs-lib';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -183,9 +184,9 @@ function decodeUR(arg) {
     script === ScriptExpressions.WITNESS_SCRIPT_HASH.getExpression() ||
     // fallback to paths (unreliable).
     // dont know how to add ms p2sh (legacy) or p2sh-p2wsh (wrapped segwit) atm
-    derivationPath === MultisigHDWallet.PATH_LEGACY ||
-    derivationPath === MultisigHDWallet.PATH_WRAPPED_SEGWIT ||
-    derivationPath === MultisigHDWallet.PATH_NATIVE_SEGWIT;
+    derivationPath === DEFAULT_PATH_LEGACY ||
+    derivationPath === DEFAULT_PATH_WRAPPED_SEGWIT ||
+    derivationPath === DEFAULT_PATH_NATIVE_SEGWIT;
   const version = Buffer.from(isMultisig ? '02aa7ed3' : '04b24746', 'hex');
   const parentFingerprint = hdKey.getParentFingerprint();
   const depth = hdKey.getOrigin().getDepth();
@@ -238,9 +239,9 @@ class BlueURDecoder extends URDecoder {
           script === ScriptExpressions.WITNESS_SCRIPT_HASH.getExpression() ||
           // fallback to paths (unreliable).
           // dont know how to add ms p2sh (legacy) or p2sh-p2wsh (wrapped segwit) atm
-          derivationPath === MultisigHDWallet.PATH_LEGACY ||
-          derivationPath === MultisigHDWallet.PATH_WRAPPED_SEGWIT ||
-          derivationPath === MultisigHDWallet.PATH_NATIVE_SEGWIT;
+          derivationPath === DEFAULT_PATH_LEGACY ||
+          derivationPath === DEFAULT_PATH_WRAPPED_SEGWIT ||
+          derivationPath === DEFAULT_PATH_NATIVE_SEGWIT;
         const version = Buffer.from(isMultisig ? '02aa7ed3' : '04b24746', 'hex');
         const parentFingerprint = hdKey.getParentFingerprint();
         const depth = hdKey.getOrigin().getDepth();

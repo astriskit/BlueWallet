@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 import { BlueApp as BlueAppClass } from '../class/';
 import prompt from '../helpers/prompt';
-import { showKeychainWipeAlert } from '../hooks/useBiometrics';
+import { showKeychainWipeAlert } from '../hooks/utils/biometrics';
 import loc from '../loc';
 
 const BlueApp = BlueAppClass.getInstance();

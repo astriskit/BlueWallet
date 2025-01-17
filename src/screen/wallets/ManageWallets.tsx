@@ -22,12 +22,13 @@ import useDebounce from '../../hooks/useDebounce';
 import { TTXMetadata } from '../../class';
 import { ExtendedTransaction, LightningTransaction, Transaction, TWallet } from '../../class/wallets/types';
 import useBounceAnimation from '../../hooks/useBounceAnimation';
-import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import { useBiometrics } from '../../hooks/useBiometrics';
 import presentAlert from '../../components/Alert';
 import prompt from '../../helpers/prompt';
 import HeaderRightButton from '../../components/HeaderRightButton';
 import { useSettings } from '../../hooks/context/useSettings';
 import DragList, { DragListRenderItemInfo } from 'react-native-draglist';
+import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 
 const ManageWalletsListItem = lazy(() => import('../../components/ManageWalletsListItem'));
 

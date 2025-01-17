@@ -39,7 +39,7 @@ import QRCodeComponent from '../../components/QRCodeComponent';
 import SquareEnumeratedWords, { SquareEnumeratedWordsContentAlign } from '../../components/SquareEnumeratedWords';
 import { useTheme } from '../../components/themes';
 import prompt from '../../helpers/prompt';
-import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import { useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { disallowScreenshot } from 'react-native-screen-capture';
 import loc from '../../loc';
@@ -52,6 +52,7 @@ import { ViewEditMultisigCosignersStackParamList } from '../../navigation/ViewEd
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { router } from '../../NavigationService';
 import SafeArea from '../../components/SafeArea';
+import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 
 type RouteParams = RouteProp<ViewEditMultisigCosignersStackParamList, 'ViewEditMultisigCosigners'>;
 type NavigationProp = NativeStackNavigationProp<ViewEditMultisigCosignersStackParamList, 'ViewEditMultisigCosigners'>;

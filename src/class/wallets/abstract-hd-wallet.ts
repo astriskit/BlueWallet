@@ -1,8 +1,9 @@
 import { BIP32Interface } from 'bip32';
 import * as bip39 from 'bip39';
 
+import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTransactionsByAddress';
+
 import * as bip39custom from '../../blue_modules/bip39';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { LegacyWallet } from './legacy-wallet';
 import { Transaction } from './types';
 
@@ -156,7 +157,7 @@ export class AbstractHDWallet extends LegacyWallet {
       this.external_addresses_cache[this.next_free_address_index + c] = address; // updating cache just for any case
       let txs = [];
       try {
-        txs = await BlueElectrum.getTransactionsByAddress(address);
+        txs = await getTransactionsByAddress(address);
       } catch (Err: any) {
         console.warn('BlueElectrum.getTransactionsByAddress()', Err.message);
       }
@@ -194,7 +195,7 @@ export class AbstractHDWallet extends LegacyWallet {
       this.internal_addresses_cache[this.next_free_change_address_index + c] = address; // updating cache just for any case
       let txs = [];
       try {
-        txs = await BlueElectrum.getTransactionsByAddress(address);
+        txs = await getTransactionsByAddress(address);
       } catch (Err: any) {
         console.warn('BlueElectrum.getTransactionsByAddress()', Err.message);
       }
@@ -271,14 +272,14 @@ export class AbstractHDWallet extends LegacyWallet {
     for (const indexStr of Object.keys(this.internal_addresses_cache)) {
       const index = parseInt(indexStr, 10);
       if (this._getInternalAddressByIndex(index) === address) {
-        return (this._address_to_wif_cache[address] = <string>this._getInternalWIFByIndex(index));
+        return (this._address_to_wif_cache[address] = this._getInternalWIFByIndex(index) as string);
       }
     }
 
     for (const indexStr of Object.keys(this.external_addresses_cache)) {
       const index = parseInt(indexStr, 10);
       if (this._getExternalAddressByIndex(index) === address) {
-        return (this._address_to_wif_cache[address] = <string>this._getExternalWIFByIndex(index));
+        return (this._address_to_wif_cache[address] = this._getExternalWIFByIndex(index) as string);
       }
     }
 
@@ -286,14 +287,14 @@ export class AbstractHDWallet extends LegacyWallet {
     for (let c = 0; c <= this.next_free_change_address_index + this.gap_limit; c++) {
       const possibleAddress = this._getInternalAddressByIndex(c);
       if (possibleAddress === address) {
-        return (this._address_to_wif_cache[address] = <string>this._getInternalWIFByIndex(c));
+        return (this._address_to_wif_cache[address] = this._getInternalWIFByIndex(c) as string);
       }
     }
 
     for (let c = 0; c <= this.next_free_address_index + this.gap_limit; c++) {
       const possibleAddress = this._getExternalAddressByIndex(c);
       if (possibleAddress === address) {
-        return (this._address_to_wif_cache[address] = <string>this._getExternalWIFByIndex(c));
+        return (this._address_to_wif_cache[address] = this._getExternalWIFByIndex(c) as string);
       }
     }
 

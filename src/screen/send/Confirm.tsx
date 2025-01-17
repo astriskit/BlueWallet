@@ -15,7 +15,7 @@ import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/h
 import SafeArea from '../../components/SafeArea';
 import { satoshiToBTC, satoshiToLocalCurrency } from '../../blue_modules/currency';
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
-import { unlockWithBiometrics, useBiometrics } from '../../hooks/useBiometrics';
+import { useBiometrics } from '../../hooks/useBiometrics';
 import { TWallet, CreateTransactionTarget } from '../../class/wallets/types';
 import PayjoinTransaction from '../../class/payjoin-transaction';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -26,6 +26,7 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { HDSegwitBech32Wallet } from '../../class';
 import { useSettings } from '../../hooks/context/useSettings';
 import { majorTomToGroundControl } from '../../blue_modules/notifications';
+import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 
 enum ActionType {
   SET_LOADING = 'SET_LOADING',

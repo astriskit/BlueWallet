@@ -13,6 +13,7 @@ import ecc from '../../blue_modules/noble_ecc';
 import { decodeUR } from '../../blue_modules/ur';
 import { AbstractHDElectrumWallet } from './abstract-hd-electrum-wallet';
 import { CreateTransactionResult, CreateTransactionUtxo } from './types';
+import { DEFAULT_PATH_LEGACY, DEFAULT_PATH_NATIVE_SEGWIT, DEFAULT_PATH_WRAPPED_SEGWIT } from './utils/multisig-hd-wallet';
 
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -68,9 +69,9 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
   static FORMAT_P2SH_P2WSH_ALT = 'p2wsh-p2sh';
   static FORMAT_P2SH = 'p2sh';
 
-  static PATH_NATIVE_SEGWIT = "m/48'/0'/0'/2'";
-  static PATH_WRAPPED_SEGWIT = "m/48'/0'/0'/1'";
-  static PATH_LEGACY = "m/45'";
+  static PATH_NATIVE_SEGWIT = DEFAULT_PATH_NATIVE_SEGWIT;
+  static PATH_WRAPPED_SEGWIT = DEFAULT_PATH_WRAPPED_SEGWIT;
+  static PATH_LEGACY = DEFAULT_PATH_LEGACY;
 
   private _m: number = 0; //  minimum required signatures so spend (m out of n)
   private _cosigners: string[] = []; // array of xpubs or mnemonic seeds

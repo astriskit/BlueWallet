@@ -166,7 +166,7 @@ const WalletsList: React.FC = () => {
         // setReloadTransactionsMenuActionFunction(() => {});
       };
     }, [
-      onRefresh,
+      // onRefresh,
       // setReloadTransactionsMenuActionFunction,
       verifyBalance,
       setSelectedWalletID,

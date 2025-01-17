@@ -9,9 +9,6 @@ import { useSettings } from '../hooks/context/useSettings';
 import * as Clipboard from 'expo-clipboard';
 import { useTheme } from './themes';
 
-export const TotalWalletsBalancePreferredUnit = 'TotalWalletsBalancePreferredUnit';
-export const TotalWalletsBalanceKey = 'TotalWalletsBalance';
-
 const TotalWalletsBalance: React.FC = React.memo(() => {
   const { wallets } = useStorage();
   const {
