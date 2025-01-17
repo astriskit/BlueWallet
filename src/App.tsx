@@ -1,6 +1,7 @@
 import React from 'react';
 import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { LargeScreenProvider } from './components/Context/LargeScreenProvider';
 import { SettingsProvider } from './components/Context/SettingsProvider';
 import { BlueDarkTheme, BlueDefaultTheme } from './components/themes';
@@ -17,7 +18,10 @@ const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <SafeAreaProvider>
           <StorageProvider>
             <SettingsProvider>
-              <MasterView>{children}</MasterView>
+              <MasterView>
+                <StatusBar style="auto" />
+                {children}
+              </MasterView>
             </SettingsProvider>
           </StorageProvider>
         </SafeAreaProvider>
