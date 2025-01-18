@@ -12,7 +12,13 @@ const SafeArea = (props: ViewProps) => {
     return StyleSheet.compose({ flex: 1, backgroundColor: colors.background }, style);
   }, [colors.background, style]);
 
-  return <SafeAreaView style={componentStyle} {...otherProps} />;
+  return (
+    <SafeAreaView
+      // @ts-ignore match type later
+      style={componentStyle}
+      {...otherProps}
+    />
+  );
 };
 
 export default SafeArea;

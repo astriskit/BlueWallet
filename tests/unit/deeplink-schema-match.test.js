@@ -1,8 +1,8 @@
 import assert from 'assert';
 
-import DeeplinkSchemaMatch from '../../class/deeplink-schema-match';
+import DeeplinkSchemaMatch from '../../src/class/deeplink-schema-match';
 
-jest.mock('../../blue_modules/BlueElectrum', () => {
+jest.mock('../../src/blue_modules/BlueElectrum', () => {
   return {
     connectMain: jest.fn(),
   };

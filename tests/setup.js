@@ -1,6 +1,6 @@
 /* global jest */
 
-import mockClipboard from '@react-native-clipboard/clipboard/jest/clipboard-mock.js';
+import mockClipboard from 'expo-clipboard/mocks/ExpoClipboard';
 
 const consoleWarnOrig = console.warn;
 console.warn = (...args) => {
@@ -248,7 +248,7 @@ jest.mock('react-native-haptic-feedback', () => {
   };
 });
 
-jest.mock('../blue_modules/analytics', () => {
+jest.mock('../src/blue_modules/analytics', () => {
   const ret = jest.fn();
   ret.ENUM = { CREATED_WALLET: '' };
   return ret;

@@ -18,14 +18,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const AddWalletButton: React.FC = () => {
+const AddWalletButton: React.FC<{ onPress?(): void }> = ({ onPress }) => {
   const { colors } = useTheme();
 
   const { navigate } = useExtendedNavigation();
 
   const navigateToAddWallet = useCallback(() => {
-    navigate('AddWalletRoot');
-  }, [navigate]);
+    if (!onPress) {
+      navigate('AddWalletRoot');
+      return;
+    }
+    onPress();
+  }, [navigate, onPress]);
 
   const onPressMenuItem = useCallback((action: string) => {
     switch (action) {

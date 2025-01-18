@@ -36,7 +36,8 @@ const getWalletTransactionsOptions = (params: WalletTransactionsRouteParams): Na
     },
     headerShadowVisible: false,
     headerTintColor: '#FFFFFF',
-    headerBackTitleVisible: true,
+    // headerBackTitleVisible: true,
+    headerBackVisible: true, // moved from headerBackTitleVisible
     headerRight: () => RightButton,
   };
 };

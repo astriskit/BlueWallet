@@ -80,7 +80,7 @@ const QRCodeComponent: React.FC<QRCodeComponentProps> = ({
     if (id === actionKeys.Share) {
       handleShareQRCode();
     } else if (id === actionKeys.Copy) {
-      qrCode.current.toDataURL(Clipboard.setImage);
+      qrCode.current.toDataURL(Clipboard.setImageAsync);
     }
   }, []);
 

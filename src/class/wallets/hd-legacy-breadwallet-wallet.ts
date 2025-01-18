@@ -2,9 +2,9 @@ import BIP32Factory, { BIP32Interface } from 'bip32';
 import * as bitcoinjs from 'bitcoinjs-lib';
 import { Psbt } from 'bitcoinjs-lib';
 import { CoinSelectReturnInput } from 'coinselect';
+import { ElectrumHistory } from '@/src/blue_modules/blue-electrum/types';
 
 import * as BlueElectrum from '../../blue_modules/BlueElectrum';
-import { ElectrumHistory } from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
 import { AbstractHDElectrumWallet } from './abstract-hd-electrum-wallet';
 import { HDLegacyP2PKHWallet } from './hd-legacy-p2pkh-wallet';

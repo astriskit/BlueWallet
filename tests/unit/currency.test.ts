@@ -6,8 +6,8 @@ import {
   BTCToLocalCurrency,
   satoshiToBTC,
   satoshiToLocalCurrency,
-} from '../../blue_modules/currency';
-import { FiatUnit } from '../../models/fiatUnit';
+} from '../../src/blue_modules/currency';
+import { FiatUnit } from '../../src/models/fiatUnit';
 
 describe('currency', () => {
   it('formats everything correctly', async () => {

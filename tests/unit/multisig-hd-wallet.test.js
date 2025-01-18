@@ -1,10 +1,10 @@
 import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 
-import Base43 from '../../blue_modules/base43';
-import { BlueURDecoder, decodeUR, encodeUR } from '../../blue_modules/ur';
-import { MultisigHDWallet } from '../../class/';
-import { MultisigCosigner } from '../../class/multisig-cosigner';
+import Base43 from '../../src/blue_modules/base43';
+import { BlueURDecoder, decodeUR, encodeUR } from '../../src/blue_modules/ur';
+import { MultisigHDWallet } from '../../src/class/';
+import { MultisigCosigner } from '../../src/class/multisig-cosigner';
 
 const fp1cobo = 'D37EAD88';
 const Zpub1 = 'Zpub74ijpfhERJNjhCKXRspTdLJV5eoEmSRZdHqDvp9kVtdVEyiXk7pXxRbfZzQvsDFpfDHEHVtVpx4Dz9DGUWGn2Xk5zG5u45QTMsYS2vjohNQ';

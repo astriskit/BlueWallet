@@ -1,7 +1,7 @@
 import assert from 'assert';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
-import { HDSegwitBech32Wallet } from '../../class';
+import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
+import { HDSegwitBech32Wallet } from '../../src/class';
 
 jest.setTimeout(90 * 1000);
 

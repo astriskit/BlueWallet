@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import Lnurl from '../../class/lnurl';
+import Lnurl from '../../src/class/lnurl';
 
 describe('LNURL', function () {
   it('can findlnurl', () => {

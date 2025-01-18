@@ -1,7 +1,7 @@
 import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 
-import { HDLegacyP2PKHWallet } from '../../class';
+import { HDLegacyP2PKHWallet } from '../../src/class';
 
 describe('Legacy HD (BIP44)', () => {
   it('works', async () => {

@@ -1,7 +1,7 @@
 import assert from 'assert';
 import fs from 'fs';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
 import {
   HDAezeedWallet,
   HDLegacyBreadwalletWallet,
@@ -16,9 +16,9 @@ import {
   SLIP39SegwitBech32Wallet,
   SLIP39SegwitP2SHWallet,
   WatchOnlyWallet,
-} from '../../class';
-import startImport from '../../class/wallet-import';
-import { TWallet } from '../../class/wallets/types';
+} from '../../src/class';
+import startImport from '../../src/class/wallet-import';
+import { TWallet } from '../../src/class/wallets/types';
 
 jest.setTimeout(90 * 1000);
 

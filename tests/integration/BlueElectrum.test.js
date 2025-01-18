@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
 
 jest.setTimeout(150 * 1000);
 

@@ -10,7 +10,7 @@ import { SuccessView } from '../send/success';
 import { popToTop } from '../../NavigationService';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
-import { useExtendedNavigation } from '../../hooks/useExtendedNavigation.ts';
+import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type LnurlPaySuccessRouteProp = RouteProp<DetailViewStackParamList, 'LnurlPaySuccess'>;

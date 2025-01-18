@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { Psbt } from 'bitcoinjs-lib';
 
-import { BlueURDecoder, clearUseURv1, decodeUR, encodeUR, extractSingleWorkload, setUseURv1 } from '../../blue_modules/ur';
-import { WatchOnlyWallet } from '../../class';
+import { BlueURDecoder, clearUseURv1, decodeUR, encodeUR, extractSingleWorkload, setUseURv1 } from '../../src/blue_modules/ur';
+import { WatchOnlyWallet } from '../../src/class';
 
 describe('Watch only wallet', () => {
   it('can validate address', async () => {

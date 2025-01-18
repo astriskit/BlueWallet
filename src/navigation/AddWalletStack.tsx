@@ -14,6 +14,7 @@ export type AddWalletStackParamList = {
     label?: string;
     triggerImport?: boolean;
     scannedData?: string;
+    onBarScanned?: any;
   };
   ImportWalletDiscovery: {
     importText: string;

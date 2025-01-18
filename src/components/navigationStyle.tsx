@@ -115,7 +115,8 @@ const navigationStyle = (
           fontWeight: '600',
           color: theme.colors.foregroundColor,
         },
-        headerBackTitleVisible: false,
+        // headerBackTitleVisible: false,
+        headerBackVisible: false, // moved from headerBackTitleVisible
         headerTintColor: theme.colors.foregroundColor,
         headerRight,
         headerLeft,

@@ -20,7 +20,7 @@ export const DoneAndDismissKeyboardInputAccessory: React.FC<DoneAndDismissKeyboa
   });
 
   const onPasteTapped = async () => {
-    const clipboard = await Clipboard.getStringAsyncAsync();
+    const clipboard = await Clipboard.getStringAsync();
     props.onPasteTapped(clipboard);
   };
 

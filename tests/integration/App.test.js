@@ -2,9 +2,9 @@ import assert from 'assert';
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
-import { Header } from '../../components/Header';
-import SelfTest from '../../screen/settings/SelfTest';
-import Settings from '../../screen/settings/Settings';
+import { Header } from '../../src/components/Header';
+import SelfTest from '../../src/screen/settings/SelfTest';
+import Settings from '../../src/screen/settings/Settings';
 
 jest.mock('../../blue_modules/BlueElectrum', () => {
   return {

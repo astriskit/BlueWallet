@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { HDLegacyBreadwalletWallet } from '../../class';
+import { HDLegacyBreadwalletWallet } from '../../src/class';
 
 describe('HDLegacyBreadwalletWallet', () => {
   it('Legacy HD Breadwallet works', async () => {

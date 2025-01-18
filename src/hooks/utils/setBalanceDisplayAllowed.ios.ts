@@ -1,5 +1,5 @@
 import DefaultPreference from 'react-native-default-preference';
-import { WidgetCommunicationKeys } from './WidgetCommunicationKeys';
+import { WidgetCommunicationKeys } from './WidgetCommunicationKeys.ios';
 
 export const setBalanceDisplayAllowed = async (allowed: boolean): Promise<void> => {
   try {

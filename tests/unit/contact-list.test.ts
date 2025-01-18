@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { ContactList } from '../../class/contact-list';
+import { ContactList } from '../../src/class/contact-list';
 
 describe('ContactList', () => {
   it('isAddressValid()', () => {

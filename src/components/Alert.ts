@@ -23,7 +23,7 @@ const presentAlert = (() => {
   };
 
   const showAlert = (title: string | undefined, message: string, buttons: AlertButton[], options: AlertOptions) => {
-    if (Platform.OS === 'ios' && navigationRef.isReady()) {
+    if (Platform.OS === 'ios' && navigationRef()?.isReady()) {
       RNAlert.alert(title ?? message, title && message ? message : undefined, buttons, options);
     } else {
       RNAlert.alert(title ?? '', message, buttons, options);

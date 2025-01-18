@@ -3,9 +3,9 @@ import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 import { ECPairFactory } from 'ecpair';
 
-import ecc from '../../blue_modules/noble_ecc';
-import { HDSegwitBech32Wallet, WatchOnlyWallet } from '../../class';
-import { CreateTransactionUtxo } from '../../class/wallets/types';
+import ecc from '../../src/blue_modules/noble_ecc';
+import { HDSegwitBech32Wallet, WatchOnlyWallet } from '../../src/class';
+import { CreateTransactionUtxo } from '../../src/class/wallets/types';
 
 const ECPair = ECPairFactory(ecc);
 

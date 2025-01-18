@@ -113,16 +113,20 @@ class CPFP extends Component<CPFPProps, CPFPState> {
       } catch (error) {
         triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
         this.setState({ isLoading: false });
+        // @ts-ignore todo-later: type
         presentAlert({ message: error.message, type: AlertType.Toast });
       }
     });
   };
 
   onSuccessBroadcast() {
-    this.context.txMetadata[this.state.newTxid] = { memo: 'Child pays for parent (CPFP)' };
-    majorTomToGroundControl([], [], [this.state.newTxid]);
-    this.context.sleep(4000).then(() => this.context.fetchAndSaveWalletTransactions(this.state.wallet.getID()));
-    this.props.navigation.navigate('Success', { onDonePressed: () => popToTop(), amount: undefined }); // TODO: check
+    if (this.state.newTxid) {
+      this.context.txMetadata[this.state.newTxid] = { memo: 'Child pays for parent (CPFP)' };
+      majorTomToGroundControl([], [], [this.state.newTxid]);
+      this.context.sleep(4000).then(() => this.context.fetchAndSaveWalletTransactions(this.state.wallet.getID()));
+      // @ts-ignore Ignoring for now, check later!
+      this.props.navigation.navigate('Success', { onDonePressed: () => popToTop(), amount: undefined });
+    }
   }
 
   async componentDidMount() {
@@ -145,7 +149,7 @@ class CPFP extends Component<CPFPProps, CPFPState> {
       return this.setState({ nonReplaceable: true, isLoading: false });
     }
 
-    const tx = new HDSegwitBech32Transaction(null, this.state.txid, this.state.wallet);
+    const tx = new HDSegwitBech32Transaction(null, this.state.txid?.toString() ?? '', this.state.wallet);
     if ((await tx.isToUsTransaction()) && (await tx.getRemoteConfirmationsNum()) === 0) {
       const info = await tx.getInfo();
       return this.setState({ nonReplaceable: false, feeRate: info.feeRate + 1, isLoading: false, tx });
@@ -156,8 +160,9 @@ class CPFP extends Component<CPFPProps, CPFPState> {
   }
 
   async createTransaction() {
-    const newFeeRate = parseInt(this.state.newFeeRate, 10);
-    if (newFeeRate > this.state.feeRate!) {
+    if (!this.state.newFeeRate || !this.state.feeRate) return; // guard: empty newFeeRate or feeRate
+    const newFeeRate = parseInt(this.state?.newFeeRate?.toString(), 10);
+    if (newFeeRate > this.state.feeRate) {
       /** @type {HDSegwitBech32Transaction} */
       const tx = this.state.tx;
       this.setState({ isLoading: true });
@@ -167,6 +172,7 @@ class CPFP extends Component<CPFPProps, CPFPState> {
         this.setState({ isLoading: false });
       } catch (_) {
         this.setState({ isLoading: false });
+        // @ts-ignore add type later
         presentAlert({ message: loc.errors.error + ': ' + _.message });
       }
     }
@@ -196,7 +202,14 @@ class CPFP extends Component<CPFPProps, CPFPState> {
       <View style={styles.root}>
         <BlueCard style={styles.center}>
           <BlueText style={styles.hex}>{loc.send.create_this_is_hex}</BlueText>
-          <TextInput style={styles.hexInput} height={112} multiline editable value={this.state.txhex} />
+          <TextInput
+            // @ts-ignore moved height prop to style
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={[styles.hexInput, { height: 112 }]}
+            multiline
+            editable
+            value={this.state.txhex}
+          />
 
           <TouchableOpacity
             accessibilityRole="button"
@@ -212,7 +225,12 @@ class CPFP extends Component<CPFPProps, CPFPState> {
           >
             <Text style={styles.actionText}>{loc.send.create_verify}</Text>
           </TouchableOpacity>
-          <Button disabled={this.context.isElectrumDisabled} onPress={this.broadcast} title={loc.send.confirm_sendNow} />
+          <Button
+            // disabled={this.context.isElectrumDisabled} // note: used from state
+            disabled={this.state.isElectrumDisabled}
+            onPress={this.broadcast}
+            title={loc.send.confirm_sendNow}
+          />
         </BlueCard>
       </View>
     );

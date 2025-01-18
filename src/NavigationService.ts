@@ -1,4 +1,15 @@
-import { router } from 'expo-router';
+import { router, useNavigationContainerRef } from 'expo-router';
+
+let navRef: ReturnType<typeof useNavigationContainerRef>['current'];
+
+const setNavigationRef = (ref: typeof navRef) => {
+  navRef = ref;
+};
+const navigationRef = () => {
+  return navRef;
+};
+
+export { navigationRef, setNavigationRef };
 
 export function navigateToWalletsList() {
   router.navigate({ pathname: '/WalletsList' });

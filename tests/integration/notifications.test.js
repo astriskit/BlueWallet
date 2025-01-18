@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { isGroundControlUriValid } from '../../blue_modules/notifications';
+import { isGroundControlUriValid } from '../../src/blue_modules/notifications';
 
 // Notifications.default = new Notifications();
 

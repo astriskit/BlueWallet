@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const mainLocFile = './loc/en.json';
+const mainLocFile = './src/loc/en.json';
 const dirsToInterate = ['components', 'screen', 'blue_modules', 'class', 'hooks', 'helpers', 'navigation', 'typings'];
 const addFiles = ['BlueComponents.js', 'App.tsx', 'navigation/index.tsx'];
 const allowedLocPrefixes = ['loc.lnurl_auth', 'loc.units'];
@@ -26,13 +26,13 @@ const getAllFiles = function (dirPath, arrayOfFiles) {
 
 const allDirFiles = [];
 for (const dir of dirsToInterate) {
-  allDirFiles.push(...getAllFiles(dir));
+  allDirFiles.push(...getAllFiles('src/' + dir));
 }
 
 for (const filename of addFiles) {
-  allDirFiles.push(path.resolve(filename));
+  allDirFiles.push(path.resolve('src/' + filename));
 }
-allDirFiles.push(path.resolve('App.tsx'));
+allDirFiles.push(path.resolve('src/App.tsx'));
 
 // got all source files
 

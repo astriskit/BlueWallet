@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import * as c from '../../blue_modules/encryption';
+import * as c from '../../src/blue_modules/encryption';
 
 describe('unit - encryption', function () {
   it('encrypts and decrypts', function () {

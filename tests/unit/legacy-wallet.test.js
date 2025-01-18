@@ -1,7 +1,7 @@
 import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 
-import { LegacyWallet } from '../../class';
+import { LegacyWallet } from '../../src/class';
 
 describe('Legacy wallet', () => {
   it('can validate addresses', () => {

@@ -5,7 +5,7 @@ import { useSettings } from '../hooks/context/useSettings';
 import { useStorage } from '../hooks/context/useStorage';
 import { GROUP_IO_BLUEWALLET } from '../blue_modules/currency';
 import debounce from '../blue_modules/debounce';
-import { WidgetCommunicationKeys } from './utils/WidgetCommunicationKeys';
+import { WidgetCommunicationKeys } from './utils/WidgetCommunicationKeys.ios';
 import { isBalanceDisplayAllowed } from './utils/isBalanceDisplayAllowed';
 
 DefaultPreference.setName(GROUP_IO_BLUEWALLET);

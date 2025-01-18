@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { HDAezeedWallet, WatchOnlyWallet } from '../../class';
+import { HDAezeedWallet, WatchOnlyWallet } from '../../src/class';
 
 describe('HDAezeedWallet', () => {
   it('can import mnemonics and generate addresses and WIFs', async function () {

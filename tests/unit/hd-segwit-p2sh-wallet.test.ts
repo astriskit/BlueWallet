@@ -1,6 +1,10 @@
 import assert from 'assert';
 
-import { HDLegacyP2PKHWallet, HDSegwitP2SHWallet, LegacyWallet, SegwitBech32Wallet, SegwitP2SHWallet } from '../../class';
+import { scriptPubKeyToAddress as segwitBech32ScriptPubKeyToAddress } from '../../src/class/wallets/utils/segwit-bech32-wallet';
+import { scriptPubKeyToAddress as legacyWalletScriptPubKeyToAddress } from '../../src/class/wallets/utils/legacy-wallet';
+import { scriptPubKeyToAddress as segwitP2SHWalletScriptPubKeyToAddress } from '../../src/class/wallets/utils/segwit-p2sh-wallet';
+
+import { HDLegacyP2PKHWallet, HDSegwitP2SHWallet, SegwitBech32Wallet, SegwitP2SHWallet } from '../../src/class';
 
 describe('P2SH Segwit HD (BIP49)', () => {
   it('can create a wallet', async () => {
@@ -43,11 +47,11 @@ describe('P2SH Segwit HD (BIP49)', () => {
     address = SegwitP2SHWallet.witnessToAddress('trololo');
     assert.strictEqual(address, false);
 
-    address = SegwitP2SHWallet.scriptPubKeyToAddress('a914e286d58e53f9247a4710e51232cce0686f16873c87');
+    address = segwitP2SHWalletScriptPubKeyToAddress('a914e286d58e53f9247a4710e51232cce0686f16873c87');
     assert.strictEqual(address, '3NLnALo49CFEF4tCRhCvz45ySSfz3UktZC');
-    address = SegwitP2SHWallet.scriptPubKeyToAddress('');
+    address = segwitP2SHWalletScriptPubKeyToAddress('');
     assert.strictEqual(address, false);
-    address = SegwitP2SHWallet.scriptPubKeyToAddress('trololo');
+    address = segwitP2SHWalletScriptPubKeyToAddress('trololo');
     assert.strictEqual(address, false);
 
     address = SegwitBech32Wallet.witnessToAddress('035c618df829af694cb99e664ce1b34f80ad2c3b49bcd0d9c0b1836c66b2d25fd8');
@@ -57,18 +61,18 @@ describe('P2SH Segwit HD (BIP49)', () => {
     address = SegwitBech32Wallet.witnessToAddress('trololo');
     assert.strictEqual(address, false);
 
-    address = SegwitBech32Wallet.scriptPubKeyToAddress('00144d757460da5fcaf84cc22f3847faaa1078e84f6a');
+    address = segwitBech32ScriptPubKeyToAddress('00144d757460da5fcaf84cc22f3847faaa1078e84f6a');
     assert.strictEqual(address, 'bc1qf46hgcx6tl90snxz9uuy0742zpuwsnm27ysdh7');
-    address = SegwitBech32Wallet.scriptPubKeyToAddress('');
+    address = segwitBech32ScriptPubKeyToAddress('');
     assert.strictEqual(address, false);
-    address = SegwitBech32Wallet.scriptPubKeyToAddress('trololo');
+    address = segwitBech32ScriptPubKeyToAddress('trololo');
     assert.strictEqual(address, false);
 
-    address = LegacyWallet.scriptPubKeyToAddress('76a914d0b77eb1502c81c4093da9aa6eccfdf560cdd6b288ac');
+    address = legacyWalletScriptPubKeyToAddress('76a914d0b77eb1502c81c4093da9aa6eccfdf560cdd6b288ac');
     assert.strictEqual(address, '1L2bNMGRQQLT2AVUek4K9L7sn3SSMioMgE');
-    address = LegacyWallet.scriptPubKeyToAddress('');
+    address = legacyWalletScriptPubKeyToAddress('');
     assert.strictEqual(address, false);
-    address = LegacyWallet.scriptPubKeyToAddress('trololo');
+    address = legacyWalletScriptPubKeyToAddress('trololo');
     assert.strictEqual(address, false);
   });
 

@@ -1,13 +1,13 @@
 import assert from 'assert';
-import { TABS, filterByAddressType, getAddress, sortByAddressIndex, totalBalance } from '../../screen/wallets/WalletAddresses';
+import { TABS, filterByAddressType, getAddress, sortByAddressIndex, totalBalance } from '../../src/screen/wallets/WalletAddresses';
 
-jest.mock('../../blue_modules/currency', () => {
+jest.mock('../../src/blue_modules/currency', () => {
   return {
     initCurrencyDaemon: jest.fn(),
   };
 });
 
-jest.mock('../../blue_modules/BlueElectrum', () => {
+jest.mock('../../src/blue_modules/BlueElectrum', () => {
   return {
     connectMain: jest.fn(),
   };
