@@ -665,7 +665,7 @@ const WalletsAddMultisigStep2 = () => {
         ref={provideMnemonicsModalRef}
         backgroundColor={colors.modal}
         isGrabberVisible={false}
-        showCloseButton={true}
+        showCloseButton
         sizes={[Platform.OS === 'ios' ? 'auto' : '80%']}
         onDismiss={() => {
           Keyboard.dismiss();

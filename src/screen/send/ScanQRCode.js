@@ -301,7 +301,7 @@ const ScanQRCode = () => {
           onReadCode={handleReadCode}
           showFrame={false}
           showFilePickerButton={showFileImportButton}
-          showImagePickerButton={true}
+          showImagePickerButton
           onFilePickerButtonPress={showFilePicker}
           onImagePickerButtonPress={onShowImagePickerButtonPress}
           onCancelButtonPress={dismiss}

@@ -141,7 +141,7 @@ const DrawerList: React.FC<DrawerListProps> = memo(({ navigation }) => {
     <DrawerContentScrollView
       contentContainerStyle={stylesHook.root}
       contentInsetAdjustmentBehavior="automatic"
-      automaticallyAdjustContentInsets={true}
+      automaticallyAdjustContentInsets
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
     >

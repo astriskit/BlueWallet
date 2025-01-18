@@ -18,7 +18,7 @@ export default (
   }
 
   return new Promise((resolve, reject) => {
-    const buttons: Array<PromptButton> = isCancelable
+    const buttons: PromptButton[] = isCancelable
       ? [
           {
             text: loc._.cancel,

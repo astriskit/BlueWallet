@@ -9,10 +9,7 @@ import { BitcoinUnit } from '../models/bitcoinUnits';
 
 const SendDetailsStack = () => {
   const theme = useTheme();
-  const DetailsButton = useMemo(
-    () => <HeaderRightButton testID="TransactionDetailsButton" disabled={true} title={loc.send.create_details} />,
-    [],
-  );
+  const DetailsButton = useMemo(() => <HeaderRightButton testID="TransactionDetailsButton" disabled title={loc.send.create_details} />, []);
 
   return (
     <Stack initialRouteName="SendDetails" screenOptions={{ headerShadowVisible: false }}>

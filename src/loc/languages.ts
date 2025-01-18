@@ -1,4 +1,4 @@
-export const AvailableLanguages: Readonly<TLanguage[]> = Object.freeze([
+export const AvailableLanguages: readonly TLanguage[] = Object.freeze([
   { label: 'English', value: 'en' },
   { label: 'Afrikaans (AFR)', value: 'zar_afr' },
   { label: 'العربية (AR)', value: 'ar', isRTL: true },

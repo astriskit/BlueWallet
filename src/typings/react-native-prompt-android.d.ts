@@ -52,6 +52,6 @@ interface PromptOptions {
 declare function prompt(
   title?: string,
   message?: string,
-  callbackOrButtons?: ((value: string) => void) | Array<PromptButton>,
+  callbackOrButtons?: ((value: string) => void) | PromptButton[],
   options?: PromptOptions,
 ): void;

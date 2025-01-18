@@ -6,7 +6,7 @@ import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../DetailViewStackParamList';
 import { router } from '../../NavigationService';
 
-export type WalletTransactionsRouteParams = DetailViewStackParamList['WalletTransactions']
+export type WalletTransactionsRouteParams = DetailViewStackParamList['WalletTransactions'];
 
 const getWalletTransactionsOptions = (params: WalletTransactionsRouteParams): NativeStackNavigationOptions => {
   const { isLoading = false, walletID = undefined, walletType = undefined } = params;

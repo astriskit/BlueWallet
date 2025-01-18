@@ -215,12 +215,7 @@ export default function PaymentCodesList() {
     }
 
     return (
-      <ToolTipMenu
-        actions={toolTipActions}
-        onPressMenuItem={(item: any) => onToolTipPress(item, pc)}
-        isButton={true}
-        isMenuPrimaryAction={true}
-      >
+      <ToolTipMenu actions={toolTipActions} onPressMenuItem={(item: any) => onToolTipPress(item, pc)} isButton isMenuPrimaryAction>
         <View style={styles.contactRowContainer}>
           <View style={[styles.circle, { backgroundColor: '#' + color }]} />
           <View style={styles.contactRowBody}>
