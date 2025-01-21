@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TWallet } from '../class/wallets/types';
+import { TWallet } from '../class/wallets/types/TWallet';
 import { useStorage } from './context/useStorage';
 
 const useOnAppLaunch = () => {

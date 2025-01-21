@@ -5,7 +5,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+
+import { ping } from '@/src/blue_modules/blue-electrum/ping';
+import { waitTillConnected } from '@/src/blue_modules/blue-electrum/waitTillConnected';
+
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueSpacing20, BlueText } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
@@ -135,8 +138,8 @@ const PsbtWithHardwareWallet = () => {
       }
     }
     try {
-      await BlueElectrum.ping();
-      await BlueElectrum.waitTillConnected();
+      await ping();
+      await waitTillConnected();
       const result = await wallet.broadcastTx(txHex);
       if (result) {
         setIsLoading(false);

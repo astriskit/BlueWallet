@@ -5,7 +5,7 @@ import { ECPairFactory } from 'ecpair';
 
 import ecc from '../../src/blue_modules/noble_ecc';
 import { HDSegwitBech32Wallet, WatchOnlyWallet } from '../../src/class';
-import { CreateTransactionUtxo } from '../../src/class/wallets/types';
+import { CreateTransactionUtxo } from '../../src/class/wallets/types/CreateTransactionUtxo';
 
 const ECPair = ECPairFactory(ecc);
 

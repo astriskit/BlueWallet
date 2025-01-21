@@ -48,6 +48,7 @@
     "prettier": "^3.2.5",
     "react-test-renderer": "18.3.1",
     "ts-jest": "^29.1.1",
+    "jest-expo": "^52.0.3",
     "typescript": "^5.1.6"
   },
   "engines": {

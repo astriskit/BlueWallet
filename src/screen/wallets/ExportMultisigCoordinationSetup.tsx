@@ -2,7 +2,7 @@ import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navig
 import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 import { ActivityIndicator, InteractionManager, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BlueSpacing20, BlueText } from '../../BlueComponents';
-import { TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
 import SaveFileButton from '../../components/SaveFileButton';
 import { SquareButton } from '../../components/SquareButton';

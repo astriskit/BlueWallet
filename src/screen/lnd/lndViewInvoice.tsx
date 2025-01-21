@@ -17,7 +17,7 @@ import LNDCreateInvoice from './lndCreateInvoice';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import BigNumber from 'bignumber.js';
-import { LightningTransaction } from '../../class/wallets/types';
+import { LightningTransaction } from '../../class/wallets/types/LightningTransaction';
 import dayjs from 'dayjs';
 
 type LNDViewInvoiceRouteParams = {

@@ -22,7 +22,11 @@ import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTr
 import ecc from '../../blue_modules/noble_ecc';
 import { randomBytes } from '../rng';
 import { AbstractHDWallet } from './abstract-hd-wallet';
-import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, Transaction, Utxo } from './types';
+import { CreateTransactionResult } from './types/CreateTransactionResult';
+import { CreateTransactionTarget } from './types/CreateTransactionTarget';
+import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
+import { Transaction } from './types/Transaction';
+import { Utxo } from './types/Utxo';
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
 
 const ECPair = ECPairFactory(ecc);

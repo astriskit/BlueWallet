@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as bitcoin from 'bitcoinjs-lib';
+import Realm from 'realm';
 
 import { _getRealm } from './_getRealm';
 import { disableBatching, mainClient } from './client';

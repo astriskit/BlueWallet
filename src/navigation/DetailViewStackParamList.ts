@@ -1,6 +1,8 @@
-import { LightningTransaction, Transaction, TWallet } from '../class/wallets/types';
-import { ElectrumServerItem } from '../screen/settings/ElectrumSettings';
-import { SendDetailsParams } from './SendDetailsStackParamList';
+import { LightningTransaction } from '../class/wallets/types/LightningTransaction';
+import { TWallet } from '../class/wallets/types/TWallet';
+import { Transaction } from '../class/wallets/types/Transaction';
+import { ElectrumServerItem } from '../screen/settings/types/ElectrumServerItem';
+import { SendDetailsParams } from './SendDetailsParams';
 
 export type ScanQRCodeParamList = {
   cameraStatusGranted?: boolean;

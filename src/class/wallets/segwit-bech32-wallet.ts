@@ -4,7 +4,9 @@ import { ECPairFactory } from 'ecpair';
 
 import ecc from '../../blue_modules/noble_ecc';
 import { LegacyWallet } from './legacy-wallet';
-import { CreateTransactionResult, CreateTransactionUtxo } from './types';
+import { CreateTransactionResult } from './types/CreateTransactionResult';
+import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
+import { scriptPubKeyToAddress } from './utils/segwit-bech32-wallet';
 
 const ECPair = ECPairFactory(ecc);
 
@@ -49,6 +51,16 @@ export class SegwitBech32Wallet extends LegacyWallet {
     } catch (_) {
       return false;
     }
+  }
+
+  /**
+   * Converts script pub key to bech32 address if it can. Returns FALSE if it cant.
+   *
+   * @param scriptPubKey
+   * @returns {boolean|string} Either bech32 address or false
+   */
+  static scriptPubKeyToAddress(scriptPubKey: string): string | false {
+    return scriptPubKeyToAddress(scriptPubKey);
   }
 
   createTransaction(

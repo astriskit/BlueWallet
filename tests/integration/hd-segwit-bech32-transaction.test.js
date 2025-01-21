@@ -1,20 +1,24 @@
 import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 
-import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
-import { HDSegwitBech32Transaction, HDSegwitBech32Wallet, SegwitBech32Wallet, SegwitP2SHWallet } from '../../src/class';
+import { forceDisconnect } from '../../src/blue_modules/blue-electrum/forceDisconnect';
+import { connectMain } from '../../src/blue_modules/blue-electrum/connectMain';
+
+import { HDSegwitBech32Transaction, HDSegwitBech32Wallet, SegwitBech32Wallet } from '../../src/class';
+import { scriptPubKeyToAddress as segwitBech32WalletScriptPubKeyToAddress } from '../../src/class/wallets/utils/segwit-bech32-wallet';
+import { scriptPubKeyToAddress as segwitP2SHWalletScriptPubKeyToAddress } from '../../src/class/wallets/utils/segwit-p2sh-wallet';
 
 jest.setTimeout(150 * 1000);
 
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate
-  BlueElectrum.forceDisconnect();
+  forceDisconnect();
 });
 
 beforeAll(async () => {
   // awaiting for Electrum to be connected. For RN Electrum would naturally connect
   // while app starts up, but for tests we need to wait for it
-  await BlueElectrum.connectMain();
+  await connectMain();
 });
 
 let _cachedHdWallet = false;
@@ -146,10 +150,10 @@ describe('HDSegwitBech32Transaction', () => {
     const createdTx = bitcoin.Transaction.fromHex(tx.toHex());
     assert.strictEqual(createdTx.ins.length, 2);
     assert.strictEqual(createdTx.outs.length, 2);
-    const addr0 = SegwitP2SHWallet.scriptPubKeyToAddress(createdTx.outs[0].script);
+    const addr0 = segwitP2SHWalletScriptPubKeyToAddress(createdTx.outs[0].script);
     assert.ok(!hd.weOwnAddress(addr0));
     assert.strictEqual(addr0, '3NLnALo49CFEF4tCRhCvz45ySSfz3UktZC'); // dest address
-    const addr1 = SegwitBech32Wallet.scriptPubKeyToAddress(createdTx.outs[1].script);
+    const addr1 = segwitBech32WalletScriptPubKeyToAddress(createdTx.outs[1].script);
     assert.ok(hd.weOwnAddress(addr1));
 
     const actualFeerate = (108150 + 200000 - (createdTx.outs[0].value + createdTx.outs[1].value)) / tx.virtualSize();

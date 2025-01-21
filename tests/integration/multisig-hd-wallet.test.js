@@ -1,20 +1,21 @@
 import assert from 'assert';
 
-import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
 import { MultisigHDWallet } from '../../src/class/';
+import { forceDisconnect } from '../../src/blue_modules/blue-electrum/forceDisconnect';
+import { connectMain } from '../../src/blue_modules/blue-electrum/connectMain';
 
 jest.setTimeout(300 * 1000);
 
 afterAll(() => {
   // after all tests we close socket so the test suite can actually terminate
-  BlueElectrum.forceDisconnect();
+  forceDisconnect();
 });
 
 beforeAll(async () => {
   // awaiting for Electrum to be connected. For RN Electrum would naturally connect
   // while app starts up, but for tests we need to wait for it
   try {
-    await BlueElectrum.connectMain();
+    await connectMain();
   } catch (Err) {
     console.log('failed to connect to Electrum:', Err);
     process.exit(2);

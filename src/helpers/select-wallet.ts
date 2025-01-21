@@ -10,7 +10,7 @@
  *
  * @returns {Promise<TWallet>}
  */
-import { TWallet } from '../class/wallets/types';
+import { TWallet } from '../class/wallets/types/TWallet';
 
 export default function (
   navigateFunc: (scr: string | any, params?: any) => void,

@@ -3,11 +3,11 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ActivityIndicator, BackHandler, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from '@rneui/themed';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueLoading, BlueSpacing10, BlueSpacing20, BlueText } from '../../BlueComponents';
 import { HDSegwitBech32Transaction, HDSegwitBech32Wallet } from '../../class';
-import { Transaction, TWallet } from '../../class/wallets/types';
+import { Transaction } from '../../class/wallets/types/Transaction';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import Button from '../../components/Button';
 import HandOffComponent from '../../components/HandOffComponent';
 import TransactionIncomingIcon from '../../components/icons/TransactionIncomingIcon';
@@ -23,6 +23,9 @@ import HeaderRightButton from '../../components/HeaderRightButton';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { useSettings } from '../../hooks/context/useSettings';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
+import { multiGetTransactionByTxid } from '@/src/blue_modules/blue-electrum/multiGetTransactionByTxid';
+import { estimateFees } from '@/src/blue_modules/blue-electrum/estimateFees';
+import { getMempoolTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getMempoolTransactionsByAddress';
 
 enum ButtonStatus {
   Possible,
@@ -219,7 +222,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
         setIntervalMs(31000); // upon first execution we increase poll interval;
 
         console.debug('checking tx', hash, 'for confirmations...');
-        const transactions = await BlueElectrum.multiGetTransactionByTxid([hash], true, 10);
+        const transactions = await multiGetTransactionByTxid([hash], true, 10);
         const txFromElectrum = transactions[hash];
         if (!txFromElectrum) {
           console.error(`Transaction from Electrum with hash ${hash} not found.`);
@@ -235,7 +238,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
         }
 
         if (!txFromElectrum.confirmations && txFromElectrum.vsize) {
-          const txsM = await BlueElectrum.getMempoolTransactionsByAddress(address);
+          const txsM = await getMempoolTransactionsByAddress(address);
           let txFromMempool;
           // searching for a correct tx in case this address has several pending txs:
           for (const tempTxM of txsM) {
@@ -252,7 +255,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
           console.debug('txFromMempool=', txFromMempool);
 
           const satPerVbyte = txFromMempool.fee && txFromElectrum.vsize ? Math.round(txFromMempool.fee / txFromElectrum.vsize) : 0;
-          const fees = await BlueElectrum.estimateFees();
+          const fees = await estimateFees();
           console.debug('fees=', fees, 'satPerVbyte=', satPerVbyte);
           if (satPerVbyte >= fees.fast) {
             setEta(loc.formatString(loc.transactions.eta_10m));
@@ -518,7 +521,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
       // Fetch transaction details using txid
       const fetchTransaction = async () => {
         try {
-          const transactions = await BlueElectrum.multiGetTransactionByTxid([txid], true, 10);
+          const transactions = await multiGetTransactionByTxid([txid], true, 10);
           const fetchedTx = transactions[txid];
           if (fetchedTx) {
             setTX(fetchedTx);

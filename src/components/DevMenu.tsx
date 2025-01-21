@@ -4,7 +4,7 @@ import { useStorage } from '../hooks/context/useStorage';
 import { HDSegwitBech32Wallet } from '../class';
 import * as Clipboard from 'expo-clipboard';
 import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
-import { TWallet } from '../class/wallets/types';
+import { TWallet } from '../class/wallets/types/TWallet';
 
 const getRandomLabelFromSecret = (secret: string): string => {
   const words = secret.split(' ');

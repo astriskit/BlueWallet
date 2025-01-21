@@ -6,7 +6,7 @@ import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
 import { useStorage } from '../../hooks/context/useStorage';
-import { TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import { WalletCarouselItem } from '../../components/WalletsCarousel';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';

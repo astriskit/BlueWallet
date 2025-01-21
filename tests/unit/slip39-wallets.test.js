@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { SLIP39LegacyP2PKHWallet, SLIP39SegwitBech32Wallet, SLIP39SegwitP2SHWallet } from '../../src/class';
+import { SLIP39SegwitBech32Wallet, SLIP39LegacyP2PKHWallet, SLIP39SegwitP2SHWallet } from '../../src/class/wallets/slip39-wallets';
 
 global.crypto = require('crypto');
 

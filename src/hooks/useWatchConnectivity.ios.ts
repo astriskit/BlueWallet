@@ -14,7 +14,8 @@ import { FiatUnit } from '../models/fiatUnit';
 import { useSettings } from '../hooks/context/useSettings';
 import { useStorage } from '../hooks/context/useStorage';
 import { isNotificationsEnabled, majorTomToGroundControl } from '../blue_modules/notifications';
-import { LightningTransaction, Transaction } from '../class/wallets/types';
+import { LightningTransaction } from '../class/wallets/types/LightningTransaction';
+import { Transaction } from '../class/wallets/types/Transaction';
 
 interface Message {
   request?: string;

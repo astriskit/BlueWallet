@@ -4,9 +4,10 @@ import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 import { ECPairFactory } from 'ecpair';
 
-import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
 import ecc from '../../src/blue_modules/noble_ecc';
 import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet } from '../../src/class';
+import { forceDisconnect } from '@/src/blue_modules/blue-electrum/forceDisconnect';
+import { connectMain } from '@/src/blue_modules/blue-electrum/connectMain';
 
 const ECPair = ECPairFactory(ecc);
 
@@ -14,13 +15,13 @@ jest.setTimeout(90 * 1000);
 
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate
-  BlueElectrum.forceDisconnect();
+  forceDisconnect();
 });
 
 beforeAll(async () => {
   // awaiting for Electrum to be connected. For RN Electrum would naturally connect
   // while app starts up, but for tests we need to wait for it
-  await BlueElectrum.connectMain();
+  await connectMain();
 });
 
 describe('Bech32 Segwit HD (BIP84) with BIP47', () => {

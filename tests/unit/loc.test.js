@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import { _setExchangeRate, _setPreferredFiatCurrency, _setSkipUpdateExchangeRate } from '../../src/blue_modules/currency';
-import { _leaveNumbersAndDots, formatBalance, formatBalancePlain, formatBalanceWithoutSuffix } from '../../loc';
+import { _leaveNumbersAndDots, formatBalance, formatBalancePlain, formatBalanceWithoutSuffix } from '../../src/loc';
 import { BitcoinUnit } from '../../src/models/bitcoinUnits';
 import { FiatUnit } from '../../src/models/fiatUnit';
 

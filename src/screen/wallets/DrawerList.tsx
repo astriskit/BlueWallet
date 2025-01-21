@@ -4,7 +4,7 @@ import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef } from
 import { InteractionManager, LayoutAnimation, StyleSheet, View, ViewStyle } from 'react-native';
 
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import { Header } from '../../components/Header';
 import { useTheme } from '../../components/themes';
 import WalletsCarousel from '../../components/WalletsCarousel';

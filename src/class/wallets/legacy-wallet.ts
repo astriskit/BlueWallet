@@ -16,10 +16,16 @@ import { broadcastV2 } from '@/src/blue_modules/blue-electrum/broadcastV2';
 import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTransactionsByAddress';
 
 import ecc from '../../blue_modules/noble_ecc';
-import { HDSegwitBech32Wallet } from './..'; // NOTE!: fixing require-cycle of here crashes the app
+// import { HDSegwitBech32Wallet } from './hd-segwit-bech32-wallet'; // NOTE!: fixing require-cycle of here crashes the app
+import { HDSegwitBech32Wallet } from '../'; // NOTE!: fixing require-cycle of here crashes the app
 import { randomBytes } from '../rng';
 import { AbstractWallet } from './abstract-wallet';
-import { CreateTransactionResult, CreateTransactionTarget, CreateTransactionUtxo, Transaction, Utxo } from './types';
+import { CreateTransactionResult } from './types/CreateTransactionResult';
+import { CreateTransactionTarget } from './types/CreateTransactionTarget';
+import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
+import { Transaction } from './types/Transaction';
+import { Utxo } from './types/Utxo';
+import { scriptPubKeyToAddress } from './utils/legacy-wallet';
 const ECPair: ECPairAPI = ECPairFactory(ecc);
 bitcoin.initEccLib(ecc);
 
@@ -508,6 +514,16 @@ export class LegacyWallet extends AbstractWallet {
     } catch (e) {
       return false;
     }
+  }
+
+  /**
+   * Converts script pub key to legacy address if it can. Returns FALSE if it cant.
+   *
+   * @param scriptPubKey
+   * @returns {boolean|string} Either p2pkh address or false
+   */
+  static scriptPubKeyToAddress(scriptPubKey: string): string | false {
+    return scriptPubKeyToAddress(scriptPubKey);
   }
 
   weOwnAddress(address: string): boolean {

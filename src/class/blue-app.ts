@@ -22,9 +22,11 @@ import { MultisigHDWallet } from './wallets/multisig-hd-wallet';
 import { SegwitBech32Wallet } from './wallets/segwit-bech32-wallet';
 import { SegwitP2SHWallet } from './wallets/segwit-p2sh-wallet';
 import { SLIP39LegacyP2PKHWallet, SLIP39SegwitBech32Wallet, SLIP39SegwitP2SHWallet } from './wallets/slip39-wallets';
-import { ExtendedTransaction, Transaction, TWallet } from './wallets/types';
 import { WatchOnlyWallet } from './wallets/watch-only-wallet';
 import { getLNDHub } from '../helpers/lndHub';
+import { TWallet } from './wallets/types/TWallet';
+import { Transaction } from './wallets/types/Transaction';
+import { ExtendedTransaction } from './wallets/types/ExtendedTransaction';
 
 let usedBucketNum: boolean | number = false;
 let savingInProgress = 0; // its both a flag and a counter of attempts to write to disk

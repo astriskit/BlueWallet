@@ -6,7 +6,7 @@ import debounce from '../../blue_modules/debounce';
 import { BlueFormLabel, BlueSpacing20, BlueTextCentered } from '../../BlueComponents';
 import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet } from '../../class';
 import { validateBip32 } from '../../class/wallet-import';
-import { TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import Button from '../../components/Button';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';

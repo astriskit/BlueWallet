@@ -3,7 +3,6 @@ import { useRoute, RouteProp } from '@react-navigation/native';
 import * as bitcoin from 'bitcoinjs-lib';
 import { ActivityIndicator, Keyboard, Linking, StyleSheet, TextInput, View } from 'react-native';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import {
   BlueBigCheckmark,
@@ -25,6 +24,8 @@ import { useSettings } from '../../hooks/context/useSettings';
 import { majorTomToGroundControl } from '../../blue_modules/notifications';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ping } from '@/src/blue_modules/blue-electrum/ping';
+import { waitTillConnected } from '@/src/blue_modules/blue-electrum/waitTillConnected';
 
 const BROADCAST_RESULT = Object.freeze({
   none: 'Input transaction hex',
@@ -80,8 +81,8 @@ const Broadcast: React.FC = () => {
     Keyboard.dismiss();
     setBroadcastResult(BROADCAST_RESULT.pending);
     try {
-      await BlueElectrum.ping();
-      await BlueElectrum.waitTillConnected();
+      await ping();
+      await waitTillConnected();
       const walletObj = new HDSegwitBech32Wallet();
       if (txHex) {
         const result = await walletObj.broadcastTx(txHex);

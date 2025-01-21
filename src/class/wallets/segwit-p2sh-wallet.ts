@@ -4,7 +4,9 @@ import { ECPairFactory } from 'ecpair';
 
 import ecc from '../../blue_modules/noble_ecc';
 import { LegacyWallet } from './legacy-wallet';
-import { CreateTransactionResult, CreateTransactionUtxo } from './types';
+import { CreateTransactionResult } from './types/CreateTransactionResult';
+import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
+import { scriptPubKeyToAddress } from './utils/segwit-p2sh-wallet';
 
 const ECPair = ECPairFactory(ecc);
 
@@ -37,6 +39,16 @@ export class SegwitP2SHWallet extends LegacyWallet {
     } catch (_) {
       return false;
     }
+  }
+
+  /**
+   * Converts script pub key to p2sh address if it can. Returns FALSE if it cant.
+   *
+   * @param scriptPubKey
+   * @returns {boolean|string} Either p2sh address or false
+   */
+  static scriptPubKeyToAddress(scriptPubKey: string): string | false {
+    return scriptPubKeyToAddress(scriptPubKey);
   }
 
   getAddress(): string | false {

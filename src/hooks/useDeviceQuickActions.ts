@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DeviceEventEmitter, Linking, Platform } from 'react-native';
 import QuickActions, { ShortcutItem } from 'react-native-quick-actions';
 import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
-import { TWallet } from '../class/wallets/types';
+import { TWallet } from '../class/wallets/types/TWallet';
 import useOnAppLaunch from '../hooks/useOnAppLaunch';
 import { formatBalance } from '../loc';
 import { router, RouterParam } from '../NavigationService';

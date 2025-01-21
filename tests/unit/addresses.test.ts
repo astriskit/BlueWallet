@@ -1,5 +1,10 @@
 import assert from 'assert';
 import { TABS, filterByAddressType, getAddress, sortByAddressIndex, totalBalance } from '../../src/screen/wallets/WalletAddresses';
+// import { disallowScreenshot } from 'react-native-screen-capture';
+
+jest.mock('react-native-screen-capture', () => {
+  return { disallowScreenshot: jest.fn() };
+});
 
 jest.mock('../../src/blue_modules/currency', () => {
   return {

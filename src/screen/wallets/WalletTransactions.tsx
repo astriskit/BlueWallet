@@ -18,7 +18,6 @@ import {
 } from 'react-native';
 import { Icon } from '@rneui/themed';
 import { useLocalSearchParams } from 'expo-router';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { isDesktop } from '../../blue_modules/environment';
 import * as fs from '../../blue_modules/fs';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
@@ -36,7 +35,8 @@ import ActionSheet from '../ActionSheet';
 import { useStorage } from '../../hooks/context/useStorage';
 import WatchOnlyWarning from '../../components/WatchOnlyWarning';
 import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamList';
-import { Transaction, TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
+import { Transaction } from '../../class/wallets/types/Transaction';
 import getWalletTransactionsOptions from '../../navigation/helpers/getWalletTransactionsOptions';
 import { presentWalletExportReminder } from '../../helpers/presentWalletExportReminder';
 import selectWallet from '../../helpers/select-wallet';
@@ -49,6 +49,7 @@ import { HandOffActivityType } from '../../components/types';
 import LinearGradient from 'react-native-linear-gradient';
 import WalletGradient from '../../class/wallet-gradient';
 import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
+import { waitTillConnected } from '@/src/blue_modules/blue-electrum/waitTillConnected';
 
 const buttonFontSize =
   PixelRatio.roundToNearestPixel(Dimensions.get('window').width / 26) > 22
@@ -140,7 +141,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     setIsLoading(true);
     let smthChanged = false;
     try {
-      await BlueElectrum.waitTillConnected();
+      await waitTillConnected();
       if (wallet.allowBIP47() && wallet.isBIP47Enabled() && 'fetchBIP47SenderPaymentCodes' in wallet) {
         await wallet.fetchBIP47SenderPaymentCodes();
       }

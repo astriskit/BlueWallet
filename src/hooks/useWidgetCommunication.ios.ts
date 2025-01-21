@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import DefaultPreference from 'react-native-default-preference';
-import { Transaction, TWallet } from '../class/wallets/types';
+import { Transaction } from '../class/wallets/types/Transaction';
+import { TWallet } from '../class/wallets/types/TWallet';
 import { useSettings } from '../hooks/context/useSettings';
 import { useStorage } from '../hooks/context/useStorage';
 import { GROUP_IO_BLUEWALLET } from '../blue_modules/currency';

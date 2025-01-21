@@ -7,7 +7,7 @@ import { HDLegacyP2PKHWallet } from './hd-legacy-p2pkh-wallet';
 import { HDSegwitBech32Wallet } from './hd-segwit-bech32-wallet';
 import { HDSegwitP2SHWallet } from './hd-segwit-p2sh-wallet';
 import { LegacyWallet } from './legacy-wallet';
-import { THDWalletForWatchOnly } from './types';
+import { THDWalletForWatchOnly } from './types/THDWalletForWatchOnly';
 
 const bip32 = BIP32Factory(ecc);
 

@@ -2,7 +2,8 @@ import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 
 import Base43 from '../../src/blue_modules/base43';
-import { BlueURDecoder, decodeUR, encodeUR } from '../../src/blue_modules/ur';
+import { BlueURDecoder, encodeUR } from '../../src/blue_modules/ur';
+import { decodeUR } from '../../src/blue_modules/ur/decode';
 import { MultisigHDWallet } from '../../src/class/';
 import { MultisigCosigner } from '../../src/class/multisig-cosigner';
 

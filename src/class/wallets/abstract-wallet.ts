@@ -3,7 +3,10 @@ import createHash from 'create-hash';
 import wif from 'wif';
 
 import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
-import { CreateTransactionResult, CreateTransactionUtxo, Transaction, Utxo } from './types';
+import { CreateTransactionResult } from './types/CreateTransactionResult';
+import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
+import { Transaction } from './types/Transaction';
+import { Utxo } from './types/Utxo';
 
 type WalletWithPassphrase = AbstractWallet & { getPassphrase: () => string };
 type UtxoMetadata = {

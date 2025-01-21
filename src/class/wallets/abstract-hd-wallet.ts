@@ -5,7 +5,7 @@ import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTr
 
 import * as bip39custom from '../../blue_modules/bip39';
 import { LegacyWallet } from './legacy-wallet';
-import { Transaction } from './types';
+import { Transaction } from './types/Transaction';
 
 type AbstractHDWalletStatics = {
   derivationPath?: string;

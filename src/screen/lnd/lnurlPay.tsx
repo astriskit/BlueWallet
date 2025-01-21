@@ -20,7 +20,7 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
 import { LightningCustodianWallet } from '../../class/wallets/lightning-custodian-wallet';
-import { TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import { pop } from '../../NavigationService';
 import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 

@@ -20,7 +20,8 @@ import * as RNLocalize from 'react-native-localize';
 
 import debounce from '../../blue_modules/debounce';
 import { BlueSpacing10, BlueSpacing20 } from '../../BlueComponents';
-import { TWallet, Utxo } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
+import { Utxo } from '../../class/wallets/types/Utxo';
 import BottomModal, { BottomModalHandle } from '../../components/BottomModal';
 import Button from '../../components/Button';
 import { FButton, FContainer } from '../../components/FloatButtons';

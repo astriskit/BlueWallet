@@ -6,8 +6,8 @@ import { Chain } from '../models/bitcoinUnits';
 import { WatchOnlyWallet } from './';
 import Azteco from './azteco';
 import Lnurl from './lnurl';
-import type { TWallet } from './wallets/types';
 import { RouterParam, Router } from '../NavigationService';
+import { TWallet } from './wallets/types/TWallet';
 
 type TCompletionHandlerParams = [string, object] | RouterParam;
 type TContext = {
@@ -175,7 +175,7 @@ class DeeplinkSchemaMatch {
       completionHandler({
         pathname: '/AddWalletRoot/ImportWallet',
         params: {
-          triggerImport: 'true', // TODO: check-later "true" vs true
+          triggerImport: true,
           label: event.url,
         },
       });
@@ -185,20 +185,20 @@ class DeeplinkSchemaMatch {
         if (urlObject.protocol === 'bluewallet:' || urlObject.protocol === 'lapp:' || urlObject.protocol === 'blue:') {
           switch (urlObject.host) {
             case 'setelectrumserver':
-              completionHandler([
-                'ElectrumSettings',
-                {
-                  server: DeeplinkSchemaMatch.getServerFromSetElectrumServerAction(event.url),
+              completionHandler({
+                pathname: '/ElectrumSettings',
+                params: {
+                  server: DeeplinkSchemaMatch.getServerFromSetElectrumServerAction(event.url) || '',
                 },
-              ]);
+              });
               break;
             case 'setlndhuburl':
-              completionHandler([
-                'LightningSettings',
-                {
-                  url: DeeplinkSchemaMatch.getUrlFromSetLndhubUrlAction(event.url),
+              completionHandler({
+                pathname: '/LightningSettings',
+                params: {
+                  url: DeeplinkSchemaMatch.getUrlFromSetLndhubUrlAction(event.url) || '',
                 },
-              ]);
+              });
               break;
           }
         }

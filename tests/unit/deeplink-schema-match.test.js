@@ -204,7 +204,7 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
         expected: [
           'ElectrumSettings',
           {
-            server: 'electrum1.bluewallet.io:443:s',
+            params: { server: 'electrum1.bluewallet.io:443:s' },
           },
         ],
       },
@@ -215,7 +215,7 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
         expected: [
           'LightningSettings',
           {
-            url: 'https://lndhub.herokuapp.com',
+            params: { url: 'https://lndhub.herokuapp.com' },
           },
         ],
       },
@@ -322,7 +322,16 @@ describe.each(['', '//'])('unit - DeepLinkSchemaMatch', function (suffix) {
           },
         ],
       },
-    ];
+    ].map(ev => {
+      const parent = ev.expected[0];
+      const child = ev.expected[1]?.screen;
+      const params = ev.expected[1]?.params;
+      ev.expected = {
+        ...(params ? { params } : {}),
+        pathname: `/${parent}${child ? `/${child}` : ''}`,
+      };
+      return ev;
+    });
 
     const asyncNavigationRouteFor = async function (event) {
       return new Promise(function (resolve) {

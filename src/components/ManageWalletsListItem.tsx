@@ -1,13 +1,15 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { StyleSheet, ViewStyle, TouchableOpacity, ActivityIndicator, Platform, Animated } from 'react-native';
 import { Icon, ListItem } from '@rneui/base';
-import { ExtendedTransaction, LightningTransaction, TWallet } from '../class/wallets/types';
 import { WalletCarouselItem } from './WalletsCarousel';
 import { TransactionListItem } from './TransactionListItem';
 import { useTheme } from './themes';
 import { BitcoinUnit } from '../models/bitcoinUnits';
 import loc from '../loc';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../blue_modules/hapticFeedback';
+import { TWallet } from '../class/wallets/types/TWallet';
+import { ExtendedTransaction } from '../class/wallets/types/ExtendedTransaction';
+import { LightningTransaction } from '../class/wallets/types/LightningTransaction';
 
 enum ItemType {
   WalletSection = 'wallet',

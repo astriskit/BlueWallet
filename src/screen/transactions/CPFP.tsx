@@ -4,7 +4,6 @@ import * as Clipboard from 'expo-clipboard';
 import { Text } from '@rneui/themed';
 import { DetailViewStackParamList } from '@/src/navigation/DetailViewStackParamList';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueSpacing, BlueSpacing20, BlueText } from '../../BlueComponents';
 import { HDSegwitBech32Transaction, HDSegwitBech32Wallet } from '../../class';
@@ -18,6 +17,8 @@ import { popToTop } from '../../NavigationService';
 import ReplaceFeeSuggestions from '../../components/ReplaceFeeSuggestions';
 import { majorTomToGroundControl } from '../../blue_modules/notifications';
 import { NavType, RouteType, withNavProps } from './withNavProps';
+import { ping } from '@/src/blue_modules/blue-electrum/ping';
+import { waitTillConnected } from '@/src/blue_modules/blue-electrum/waitTillConnected';
 
 const styles = StyleSheet.create({
   root: {
@@ -100,8 +101,8 @@ class CPFP extends Component<CPFPProps, CPFPState> {
   broadcast = () => {
     this.setState({ isLoading: true }, async () => {
       try {
-        await BlueElectrum.ping();
-        await BlueElectrum.waitTillConnected();
+        await ping();
+        await waitTillConnected();
         const result = await this.state.wallet.broadcastTx(this.state.txhex);
         if (result) {
           this.onSuccessBroadcast();

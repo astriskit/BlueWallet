@@ -14,7 +14,11 @@ import {
 } from 'react-native';
 import Share from 'react-native-share';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import { getMempoolTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getMempoolTransactionsByAddress';
+import { multiGetTransactionByTxid } from '@/src/blue_modules/blue-electrum/multiGetTransactionByTxid';
+import { estimateFees } from '@/src/blue_modules/blue-electrum/estimateFees';
+import { getBalanceByAddress } from '@/src/blue_modules/blue-electrum/getBalanceByAddress';
+
 import { fiatToBTC, satoshiToBTC } from '../../blue_modules/currency';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueCard, BlueLoading, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
@@ -203,11 +207,12 @@ const ReceiveDetails = () => {
   );
 
   useEffect(() => {
-    wallet?.allowBIP47() &&
+    if (wallet?.allowBIP47()) {
       setOptions({
         headerLeft: () => HeaderLeft,
         headerRight: () => HeaderRight,
       });
+    }
   }, [HeaderLeft, HeaderRight, colors.foregroundColor, setOptions, wallet]);
 
   // re-fetching address balance periodically
@@ -221,7 +226,7 @@ const ReceiveDetails = () => {
         if (!addressToUse) return;
 
         console.debug('checking address', addressToUse, 'for balance...');
-        const balance = await BlueElectrum.getBalanceByAddress(addressToUse);
+        const balance = await getBalanceByAddress(addressToUse);
         console.debug('...got', balance);
 
         if (balance.unconfirmed > 0) {
@@ -232,13 +237,13 @@ const ReceiveDetails = () => {
             triggerHapticFeedback(HapticFeedbackTypes.ImpactHeavy);
           }
 
-          const txs = await BlueElectrum.getMempoolTransactionsByAddress(addressToUse);
+          const txs = await getMempoolTransactionsByAddress(addressToUse);
           const tx = txs.pop();
           if (tx) {
-            const rez = await BlueElectrum.multiGetTransactionByTxid([tx.tx_hash], true, 10);
+            const rez = await multiGetTransactionByTxid([tx.tx_hash], true, 10);
             if (rez && rez[tx.tx_hash] && rez[tx.tx_hash].vsize) {
               const satPerVbyte = Math.round(tx.fee / rez[tx.tx_hash].vsize);
-              const fees = await BlueElectrum.estimateFees();
+              const fees = await estimateFees();
               if (satPerVbyte >= fees.fast) {
                 setEta(loc.formatString(loc.transactions.eta_10m));
               } else if (satPerVbyte >= fees.medium) {

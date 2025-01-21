@@ -1,5 +1,5 @@
 import DefaultPreference from 'react-native-default-preference';
-import { ElectrumServerItem } from '@/src/screen/settings/ElectrumSettings';
+import { ElectrumServerItem } from '@/src/screen/settings/types/ElectrumServerItem';
 
 import { GROUP_IO_BLUEWALLET } from '../currency';
 import { ELECTRUM_HOST, ELECTRUM_TCP_PORT, ELECTRUM_SSL_PORT } from './constants';

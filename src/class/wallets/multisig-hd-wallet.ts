@@ -8,12 +8,13 @@ import createHash from 'create-hash';
 import { ECPairFactory } from 'ecpair';
 import * as mn from 'electrum-mnemonic';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import ecc from '../../blue_modules/noble_ecc';
-import { decodeUR } from '../../blue_modules/ur';
+import { decodeUR } from '../../blue_modules/ur/decode';
 import { AbstractHDElectrumWallet } from './abstract-hd-electrum-wallet';
-import { CreateTransactionResult, CreateTransactionUtxo } from './types';
+import { CreateTransactionResult } from './types/CreateTransactionResult';
+import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
 import { DEFAULT_PATH_LEGACY, DEFAULT_PATH_NATIVE_SEGWIT, DEFAULT_PATH_WRAPPED_SEGWIT } from './utils/multisig-hd-wallet';
+import { multiGetTransactionByTxid } from '@/src/blue_modules/blue-electrum/multiGetTransactionByTxid';
 
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -1076,7 +1077,7 @@ export class MultisigHDWallet extends AbstractHDElectrumWallet {
   async fetchUtxo() {
     await super.fetchUtxo();
     // now we need to fetch txhash for each input as required by PSBT
-    const txhexes = await BlueElectrum.multiGetTransactionByTxid(
+    const txhexes = await multiGetTransactionByTxid(
       this.getUtxo(true).map(x => x.txid),
       false,
     );

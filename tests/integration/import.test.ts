@@ -1,7 +1,6 @@
 import assert from 'assert';
 import fs from 'fs';
 
-import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
 import {
   HDAezeedWallet,
   HDLegacyBreadwalletWallet,
@@ -18,19 +17,21 @@ import {
   WatchOnlyWallet,
 } from '../../src/class';
 import startImport from '../../src/class/wallet-import';
-import { TWallet } from '../../src/class/wallets/types';
+import { TWallet } from '../../src/class/wallets/types/TWallet';
+import { forceDisconnect } from '@/src/blue_modules/blue-electrum/forceDisconnect';
+import { connectMain } from '@/src/blue_modules/blue-electrum/connectMain';
 
 jest.setTimeout(90 * 1000);
 
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate
-  BlueElectrum.forceDisconnect();
+  forceDisconnect();
 });
 
 beforeAll(async () => {
   // awaiting for Electrum to be connected. For RN Electrum would naturally connect
   // while app starts up, but for tests we need to wait for it
-  await BlueElectrum.connectMain();
+  await connectMain();
 });
 
 type THistoryItem = { action: 'progress'; data: string } | { action: 'wallet'; data: TWallet } | { action: 'password'; data: string };

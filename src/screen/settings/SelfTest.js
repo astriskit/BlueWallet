@@ -7,7 +7,11 @@ import { Linking, ScrollView, StyleSheet, View } from 'react-native';
 import BlueCrypto from 'react-native-blue-crypto';
 import wif from 'wif';
 
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import { ping } from '@/src/blue_modules/blue-electrum/ping';
+import { waitTillConnected } from '@/src/blue_modules/blue-electrum/waitTillConnected';
+import { getBalanceByAddress } from '@/src/blue_modules/blue-electrum/getBalanceByAddress';
+import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTransactionsByAddress';
+
 import * as encryption from '../../blue_modules/encryption';
 import * as fs from '../../blue_modules/fs';
 import ecc from '../../blue_modules/noble_ecc';
@@ -78,14 +82,14 @@ export default class SelfTest extends Component {
       //
 
       if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-        await BlueElectrum.ping();
-        await BlueElectrum.waitTillConnected();
+        await ping();
+        await waitTillConnected();
         const addr4elect = '3GCvDBAktgQQtsbN6x5DYiQCMmgZ9Yk8BK';
-        const electrumBalance = await BlueElectrum.getBalanceByAddress(addr4elect);
+        const electrumBalance = await getBalanceByAddress(addr4elect);
         if (electrumBalance.confirmed !== 51432)
           throw new Error('BlueElectrum getBalanceByAddress failure, got ' + JSON.stringify(electrumBalance));
 
-        const electrumTxs = await BlueElectrum.getTransactionsByAddress(addr4elect);
+        const electrumTxs = await getTransactionsByAddress(addr4elect);
         if (electrumTxs.length !== 1) throw new Error('BlueElectrum getTransactionsByAddress failure, got ' + JSON.stringify(electrumTxs));
       } else {
         // skipping RN-specific test'

@@ -2,13 +2,13 @@ import React, { createContext, useCallback, useEffect, useMemo, useRef, useState
 import { InteractionManager } from 'react-native';
 import A from '../../blue_modules/analytics';
 import { BlueApp as BlueAppClass, LegacyWallet, TCounterpartyMetadata, TTXMetadata, WatchOnlyWallet } from '../../class';
-import type { TWallet } from '../../class/wallets/types';
 import presentAlert from '../../components/Alert';
 import loc from '../../loc';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { startAndDecrypt } from '../../blue_modules/start-and-decrypt';
 import { majorTomToGroundControl } from '../../blue_modules/notifications';
+import { waitTillConnected } from '@/src/blue_modules/blue-electrum/waitTillConnected';
+import { TWallet } from '@/src/class/wallets/types/TWallet';
 
 const BlueApp = BlueAppClass.getInstance();
 
@@ -134,7 +134,7 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
         InteractionManager.runAfterInteractions(async () => {
           let noErr = true;
           try {
-            await BlueElectrum.waitTillConnected();
+            await waitTillConnected();
             if (showUpdateStatusIndicator) {
               setWalletTransactionUpdateStatus(WalletTransactionsStatus.ALL);
             }
@@ -187,7 +187,7 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
           }
           _lastTimeTriedToRefetchWallet[walletID] = Date.now();
 
-          await BlueElectrum.waitTillConnected();
+          await waitTillConnected();
           setWalletTransactionUpdateStatus(walletID);
           const balanceStart = Date.now();
           await BlueApp.fetchWalletBalances(index);

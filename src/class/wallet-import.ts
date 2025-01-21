@@ -22,7 +22,7 @@ import {
 } from '.';
 import bip39WalletFormats from './bip39_wallet_formats.json'; // https://github.com/spesmilo/electrum/blob/master/electrum/bip39_wallet_formats.json
 import bip39WalletFormatsBlueWallet from './bip39_wallet_formats_bluewallet.json';
-import type { TWallet } from './wallets/types';
+import { TWallet } from './wallets/types/TWallet';
 
 // https://github.com/bitcoinjs/bip32/blob/master/ts-src/bip32.ts#L43
 export const validateBip32 = (path: string) => path.match(/^(m\/)?(\d+'?\/)*\d+'?$/) !== null;

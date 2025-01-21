@@ -1,19 +1,23 @@
 import assert from 'assert';
 
-import * as BlueElectrum from '../../src/blue_modules/BlueElectrum';
+import { forceDisconnect } from '../../src/blue_modules/blue-electrum/forceDisconnect';
+import { connectMain } from '../../src/blue_modules/blue-electrum/connectMain';
+import { setBatchingDisabled } from '../../src/blue_modules/blue-electrum/setBatchingDisabled';
+import { setBatchingEnabled } from '../../src/blue_modules/blue-electrum/setBatchingEnabled';
+
 import { HDSegwitBech32Wallet } from '../../src/class';
 
 jest.setTimeout(90 * 1000);
 
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate
-  BlueElectrum.forceDisconnect();
+  forceDisconnect();
 });
 
 beforeAll(async () => {
   // awaiting for Electrum to be connected. For RN Electrum would naturally connect
   // while app starts up, but for tests we need to wait for it
-  await BlueElectrum.connectMain();
+  await connectMain();
 });
 
 describe('Bech32 Segwit HD (BIP84)', () => {
@@ -22,7 +26,7 @@ describe('Bech32 Segwit HD (BIP84)', () => {
       console.error('process.env.HD_MNEMONIC not set, skipped');
       return;
     }
-    if (disableBatching) BlueElectrum.setBatchingDisabled();
+    if (disableBatching) setBatchingDisabled();
 
     let hd = new HDSegwitBech32Wallet();
     hd.setSecret(process.env.HD_MNEMONIC);
@@ -93,7 +97,7 @@ describe('Bech32 Segwit HD (BIP84)', () => {
     assert.strictEqual(hd.next_free_address_index, 2);
     assert.strictEqual(hd.getNextFreeAddressIndex(), 2);
     assert.strictEqual(hd.next_free_change_address_index, 2);
-    if (disableBatching) BlueElectrum.setBatchingEnabled();
+    if (disableBatching) setBatchingEnabled();
   });
 
   // skpped because its a very specific testcase, and slow

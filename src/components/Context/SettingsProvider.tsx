@@ -20,7 +20,9 @@ import { useStorage } from '../../hooks/context/useStorage';
 import { BitcoinUnit } from '../../models/bitcoinUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../utils/constants';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
+import { isDisabled } from '@/src/blue_modules/blue-electrum/isDisabled';
+import { forceDisconnect } from '@/src/blue_modules/blue-electrum/forceDisconnect';
+import { connectMain } from '@/src/blue_modules/blue-electrum/connectMain';
 
 const getDoNotTrackStorage = async (): Promise<boolean> => {
   try {
@@ -166,7 +168,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
       }
 
       const promises: Promise<void>[] = [
-        BlueElectrum.isDisabled().then(disabled => {
+        isDisabled().then(disabled => {
           setIsElectrumDisabled(disabled);
         }),
         getIsHandOffUseEnabled().then(handOff => {
@@ -228,7 +230,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
 
   useEffect(() => {
     if (walletsInitialized) {
-      isElectrumDisabled ? BlueElectrum.forceDisconnect() : BlueElectrum.connectMain();
+      if (isElectrumDisabled) {
+        forceDisconnect();
+      } else {
+        connectMain();
+      }
     }
   }, [isElectrumDisabled, walletsInitialized]);
 

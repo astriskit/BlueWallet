@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Clipboard from 'expo-clipboard';
 import { Linking, View, ViewStyle } from 'react-native';
 import Lnurl from '../class/lnurl';
-import { LightningTransaction, Transaction } from '../class/wallets/types';
 import TransactionExpiredIcon from '../components/icons/TransactionExpiredIcon';
 import TransactionIncomingIcon from '../components/icons/TransactionIncomingIcon';
 import TransactionOffchainIcon from '../components/icons/TransactionOffchainIcon';
@@ -24,6 +23,8 @@ import { useStorage } from '../hooks/context/useStorage';
 import ToolTipMenu from './TooltipMenu';
 import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import { pop } from '../NavigationService';
+import { LightningTransaction } from '../class/wallets/types/LightningTransaction';
+import { Transaction } from '../class/wallets/types/Transaction';
 
 interface TransactionListItemProps {
   itemPriceUnit?: BitcoinUnit;

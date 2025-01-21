@@ -24,7 +24,8 @@ import { BlurredBalanceView } from './BlurredBalanceView';
 import { useTheme } from './themes';
 import { useStorage } from '../hooks/context/useStorage';
 import { WalletTransactionsStatus } from './Context/StorageProvider';
-import { Transaction, TWallet } from '../class/wallets/types';
+import { TWallet } from '../class/wallets/types/TWallet';
+import { Transaction } from '../class/wallets/types/Transaction';
 
 interface NewWalletPanelProps {
   onPress: () => void;

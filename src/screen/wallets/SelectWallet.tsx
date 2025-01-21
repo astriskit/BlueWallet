@@ -10,7 +10,7 @@ import { Chain } from '../../models/bitcoinUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import WalletsCarousel from '../../components/WalletsCarousel';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
-import { TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import { CloseButtonPosition } from '../../components/navigationStyle';
 import { pop } from '../../NavigationService';
 

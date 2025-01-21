@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useReducer } from 'react';
 import { ScrollView, TouchableWithoutFeedback, View } from 'react-native';
-import { TWallet } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
 import ListItem from '../../components/ListItem';
 import useOnAppLaunch from '../../hooks/useOnAppLaunch';
 import loc from '../../loc';

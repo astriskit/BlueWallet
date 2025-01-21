@@ -4,7 +4,6 @@ import { I18nManager, Image, StyleSheet, Text, TouchableOpacity, View } from 're
 import LinearGradient from 'react-native-linear-gradient';
 import { LightningCustodianWallet, MultisigHDWallet } from '../class';
 import WalletGradient from '../class/wallet-gradient';
-import { TWallet } from '../class/wallets/types';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../loc';
 import { BitcoinUnit } from '../models/bitcoinUnits';
 import { FiatUnit } from '../models/fiatUnit';
@@ -12,6 +11,7 @@ import { BlurredBalanceView } from './BlurredBalanceView';
 import { useSettings } from '../hooks/context/useSettings';
 import ToolTipMenu from './TooltipMenu';
 import useAnimateOnChange from '../hooks/useAnimateOnChange';
+import { TWallet } from '../class/wallets/types/TWallet';
 
 interface TransactionsNavigationHeaderProps {
   wallet: TWallet;

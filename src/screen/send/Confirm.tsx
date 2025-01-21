@@ -14,9 +14,9 @@ import Button from '../../components/Button';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import SafeArea from '../../components/SafeArea';
 import { satoshiToBTC, satoshiToLocalCurrency } from '../../blue_modules/currency';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import { useBiometrics } from '../../hooks/useBiometrics';
-import { TWallet, CreateTransactionTarget } from '../../class/wallets/types';
+import { TWallet } from '../../class/wallets/types/TWallet';
+import { CreateTransactionTarget } from '../../class/wallets/types/CreateTransactionTarget';
 import PayjoinTransaction from '../../class/payjoin-transaction';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
@@ -27,6 +27,8 @@ import { HDSegwitBech32Wallet } from '../../class';
 import { useSettings } from '../../hooks/context/useSettings';
 import { majorTomToGroundControl } from '../../blue_modules/notifications';
 import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
+import { ping } from '@/src/blue_modules/blue-electrum/ping';
+import { waitTillConnected } from '@/src/blue_modules/blue-electrum/waitTillConnected';
 
 enum ActionType {
   SET_LOADING = 'SET_LOADING',
@@ -246,8 +248,8 @@ const Confirm: React.FC = () => {
   };
 
   const broadcastTransaction = async (transaction: string) => {
-    await BlueElectrum.ping();
-    await BlueElectrum.waitTillConnected();
+    await ping();
+    await waitTillConnected();
 
     const result = await wallet.broadcastTx(transaction);
     if (!result) {

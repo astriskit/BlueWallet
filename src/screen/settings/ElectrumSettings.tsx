@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Alert, Keyboard, LayoutAnimation, Platform, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
-import * as BlueElectrum from '../../blue_modules/BlueElectrum';
 import triggerHapticFeedback, { HapticFeedbackTypes, triggerSelectionHapticFeedback } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueSpacing10, BlueSpacing20, BlueText } from '../../BlueComponents';
 import DeeplinkSchemaMatch from '../../class/deeplink-schema-match';
@@ -26,15 +25,16 @@ import { Action } from '../../components/types';
 import ListItem, { PressableWrapper } from '../../components/ListItem';
 import HeaderMenuButton from '../../components/HeaderMenuButton';
 import { useSettings } from '../../hooks/context/useSettings';
-import { suggestedServers, hardcodedPeers, presentResetToDefaultsAlert } from '../../blue_modules/BlueElectrum';
+import { getPreferredServer } from '@/src/blue_modules/blue-electrum/getPreferredServer';
+import { ELECTRUM_HOST, ELECTRUM_SERVER_HISTORY, ELECTRUM_SSL_PORT, ELECTRUM_TCP_PORT } from '@/src/blue_modules/blue-electrum/constants';
+import { hardcodedPeers, suggestedServers } from '@/src/blue_modules/blue-electrum/suggestedServers';
+import { presentResetToDefaultsAlert } from '@/src/blue_modules/blue-electrum/presentResetToDefaultsAlert';
+import { serverFeatures } from '@/src/blue_modules/blue-electrum/serverFeatures';
+import { setDisabled } from '@/src/blue_modules/blue-electrum/setDisabled';
+import { getConfig } from '@/src/blue_modules/blue-electrum/getConfig';
+import { ElectrumServerItem } from './types/ElectrumServerItem';
 
 type RouteProps = RouteProp<DetailViewStackParamList, 'ElectrumSettings'>;
-
-export interface ElectrumServerItem {
-  host: string;
-  tcp?: number;
-  ssl?: number;
-}
 
 const SET_PREFERRED_PREFIX = 'set_preferred_';
 
@@ -85,11 +85,11 @@ const ElectrumSettings: React.FC = () => {
 
   const fetchData = useCallback(async () => {
     console.log('Fetching data...');
-    const preferredServer = await BlueElectrum.getPreferredServer();
+    const preferredServer = await getPreferredServer();
     const savedHost = preferredServer?.host;
     const savedPort = preferredServer?.tcp;
     const savedSslPort = preferredServer?.ssl;
-    const serverHistoryStr = (await DefaultPreference.get(BlueElectrum.ELECTRUM_SERVER_HISTORY)) as string;
+    const serverHistoryStr = (await DefaultPreference.get(ELECTRUM_SERVER_HISTORY)) as string;
 
     console.log('Preferred server:', preferredServer);
     console.log('Server history string:', serverHistoryStr);
@@ -122,9 +122,9 @@ const ElectrumSettings: React.FC = () => {
     setSslPort(savedSslPort ? Number(savedSslPort) : undefined);
     setServerHistory(filteredServerHistory);
 
-    setConfig(await BlueElectrum.getConfig());
+    setConfig(await getConfig());
     configIntervalRef.current = setInterval(async () => {
-      setConfig(await BlueElectrum.getConfig());
+      setConfig(await getConfig());
     }, 500);
 
     setIsLoading(false);
@@ -174,9 +174,9 @@ const ElectrumSettings: React.FC = () => {
 
         if (serverHost && (serverPort || serverSslPort)) {
           await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
-          await DefaultPreference.set(BlueElectrum.ELECTRUM_HOST, serverHost);
-          await DefaultPreference.set(BlueElectrum.ELECTRUM_TCP_PORT, serverPort);
-          await DefaultPreference.set(BlueElectrum.ELECTRUM_SSL_PORT, serverSslPort);
+          await DefaultPreference.set(ELECTRUM_HOST, serverHost);
+          await DefaultPreference.set(ELECTRUM_TCP_PORT, serverPort);
+          await DefaultPreference.set(ELECTRUM_SSL_PORT, serverSslPort);
 
           const serverExistsInHistory = Array.from(serverHistory).some(
             s => s.host === serverHost && s.tcp === Number(serverPort) && s.ssl === Number(serverSslPort),
@@ -185,7 +185,7 @@ const ElectrumSettings: React.FC = () => {
           if (!serverExistsInHistory && (serverPort || serverSslPort) && !hardcodedPeers.some(peer => peer.host === serverHost)) {
             const newServerHistory = new Set(serverHistory);
             newServerHistory.add({ host: serverHost, tcp: Number(serverPort), ssl: Number(serverSslPort) });
-            await DefaultPreference.set(BlueElectrum.ELECTRUM_SERVER_HISTORY, JSON.stringify(Array.from(newServerHistory)));
+            await DefaultPreference.set(ELECTRUM_SERVER_HISTORY, JSON.stringify(Array.from(newServerHistory)));
             setServerHistory(newServerHistory);
           }
         }
@@ -366,7 +366,7 @@ const ElectrumSettings: React.FC = () => {
   const checkServer = async () => {
     setIsLoading(true);
     try {
-      const features = await BlueElectrum.serverFeatures();
+      const features = await serverFeatures();
       triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
       presentAlert({ message: JSON.stringify(features, null, 2) });
     } catch (error) {
@@ -421,7 +421,7 @@ const ElectrumSettings: React.FC = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     try {
       triggerSelectionHapticFeedback();
-      await BlueElectrum.setDisabled(value);
+      await setDisabled(value);
       setIsElectrumDisabled(value);
     } catch (error) {
       triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
@@ -487,10 +487,18 @@ const ElectrumSettings: React.FC = () => {
                   const parsed = Number(text.trim());
                   if (Number.isNaN(parsed)) {
                     // Handle invalid input
-                    sslPort === undefined ? setPort(undefined) : setSslPort(undefined);
+                    if (sslPort === undefined) {
+                      setPort(undefined);
+                    } else {
+                      setSslPort(undefined);
+                    }
                     return;
                   }
-                  sslPort === undefined ? setPort(parsed) : setSslPort(parsed);
+                  if (sslPort === undefined) {
+                    setPort(parsed);
+                  } else {
+                    setSslPort(parsed);
+                  }
                 }}
                 numberOfLines={1}
                 style={[styles.inputText, stylesHook.inputText]}
