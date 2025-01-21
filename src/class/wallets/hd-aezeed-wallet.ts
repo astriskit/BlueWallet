@@ -19,13 +19,11 @@ const bip32 = BIP32Factory(ecc);
  * @see https://github.com/lightningnetwork/lnd/blob/master/keychain/derivation.go
  */
 export class HDAezeedWallet extends AbstractHDElectrumWallet {
-  static readonly type = 'HDAezeedWallet';
-  static readonly typeReadable = 'HD Aezeed';
+  static readonly type: string = 'HDAezeedWallet';
+  static readonly typeReadable: string = 'HD Aezeed';
   public readonly segwitType = 'p2wpkh';
   static readonly derivationPath = "m/84'/0'/0'";
-  // @ts-ignore: override
   public readonly type = HDAezeedWallet.type;
-  // @ts-ignore: override
   public readonly typeReadable = HDAezeedWallet.typeReadable;
 
   private _entropyHex?: string;

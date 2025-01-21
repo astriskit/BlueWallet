@@ -16,8 +16,6 @@ import { broadcastV2 } from '@/src/blue_modules/blue-electrum/broadcastV2';
 import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTransactionsByAddress';
 
 import ecc from '../../blue_modules/noble_ecc';
-// import { HDSegwitBech32Wallet } from './hd-segwit-bech32-wallet'; // NOTE!: fixing require-cycle of here crashes the app
-import { HDSegwitBech32Wallet } from '../'; // NOTE!: fixing require-cycle of here crashes the app
 import { randomBytes } from '../rng';
 import { AbstractWallet } from './abstract-wallet';
 import { CreateTransactionResult } from './types/CreateTransactionResult';
@@ -26,6 +24,8 @@ import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
 import { Transaction } from './types/Transaction';
 import { Utxo } from './types/Utxo';
 import { scriptPubKeyToAddress } from './utils/legacy-wallet';
+import { GetTransactions } from './utils/GetTransactions';
+
 const ECPair: ECPairAPI = ECPairFactory(ecc);
 bitcoin.initEccLib(ecc);
 
@@ -34,15 +34,15 @@ bitcoin.initEccLib(ecc);
  *  (legacy P2PKH compressed)
  */
 export class LegacyWallet extends AbstractWallet {
-  static readonly type = 'legacy';
-  static readonly typeReadable = 'Legacy (P2PKH)';
-  // @ts-ignore: override
+  static readonly type: string = 'legacy';
+  static readonly typeReadable: string = 'Legacy (P2PKH)';
   public readonly type = LegacyWallet.type;
-  // @ts-ignore: override
   public readonly typeReadable = LegacyWallet.typeReadable;
 
-  _txs_by_external_index: Transaction[] = [];
   _txs_by_internal_index: Transaction[] = [];
+  _txs_by_external_index: Transaction[] = [];
+
+  _getTransactionTrait = new GetTransactions();
 
   /**
    * Simple function which says that we havent tried to fetch balance
@@ -358,8 +358,7 @@ export class LegacyWallet extends AbstractWallet {
     this._txs_by_external_index = this._txs_by_external_index || [];
     this._txs_by_internal_index = [];
 
-    const hd = new HDSegwitBech32Wallet();
-    return hd.getTransactions.apply(this);
+    return this._getTransactionTrait.getTransactions.apply(this);
   }
 
   /**

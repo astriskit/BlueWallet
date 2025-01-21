@@ -15,11 +15,9 @@ type AbstractHDWalletStatics = {
  * @deprecated
  */
 export class AbstractHDWallet extends LegacyWallet {
-  static readonly type = 'abstract';
-  static readonly typeReadable = 'abstract';
-  // @ts-ignore: override
+  static readonly type: string = 'abstract';
+  static readonly typeReadable: string = 'abstract';
   public readonly type = AbstractHDWallet.type;
-  // @ts-ignore: override
   public readonly typeReadable = AbstractHDWallet.typeReadable;
 
   next_free_address_index: number;

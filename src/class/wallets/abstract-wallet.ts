@@ -15,19 +15,19 @@ type UtxoMetadata = {
 };
 
 export class AbstractWallet {
-  static readonly type = 'abstract';
-  static readonly typeReadable = 'abstract';
-  // @ts-ignore: override
+  static readonly type: string = 'abstract';
+  static readonly typeReadable: string = 'abstract';
   public readonly type = AbstractWallet.type;
-  // @ts-ignore: override
   public readonly typeReadable = AbstractWallet.typeReadable;
 
   static fromJson(obj: string): AbstractWallet {
     const obj2 = JSON.parse(obj);
     const temp = new this();
     for (const key2 of Object.keys(obj2)) {
-      // @ts-ignore This kind of magic is not allowed in typescript, we should try and be more specific
-      temp[key2] = obj2[key2];
+      if (key2 !== '_getTransactionTrait') {
+        // @ts-ignore This kind of magic is not allowed in typescript, we should try and be more specific
+        temp[key2] = obj2[key2];
+      }
     }
 
     return temp;
