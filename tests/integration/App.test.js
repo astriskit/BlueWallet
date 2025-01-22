@@ -1,30 +1,64 @@
 import assert from 'assert';
 import React from 'react';
-import TestRenderer from 'react-test-renderer';
+import * as TestRenderer from '@testing-library/react-native';
+
+import '../mocks/react-reanimated';
 
 import { Header } from '../../src/components/Header';
 import SelfTest from '../../src/screen/settings/SelfTest';
 import Settings from '../../src/screen/settings/Settings';
 
-jest.mock('../../blue_modules/BlueElectrum', () => {
+import { BlueDefaultTheme as MockTheme } from '../fixtures/Theme';
+
+jest.mock('expo-router', () => {
+  return {
+    router: {
+      navigate: jest.fn(),
+      dismissTo: jest.fn(),
+      dismissAll: jest.fn(),
+      dismiss: jest.fn(),
+    },
+    useNavigationContainerRef: jest.fn(() => {
+      return { current: '' };
+    }),
+  };
+});
+
+jest.mock('@react-navigation/native', () => {
+  return {
+    DefaultTheme: { colors: {} },
+    DarkTheme: { colors: {} },
+    useTheme: () => MockTheme,
+  };
+});
+
+jest.mock('react-native/Libraries/LogBox/LogBox', () => ({
+  __esModule: true,
+  default: {
+    ignoreLogs: jest.fn(),
+    ignoreAllLogs: jest.fn(),
+  },
+}));
+
+jest.mock('../../src/blue_modules/BlueElectrum', () => {
   return {
     connectMain: jest.fn(),
   };
 });
 
 it('Header works', () => {
-  const rendered = TestRenderer.create(<Header />).toJSON();
+  const rendered = TestRenderer.render(<Header />).toJSON();
   expect(rendered).toBeTruthy();
 });
 
 // eslint-disable-next-line jest/no-disabled-tests
 it.skip('Settings work', () => {
-  const rendered = TestRenderer.create(<Settings />).toJSON();
+  const rendered = TestRenderer.render(<Settings />).toJSON();
   expect(rendered).toBeTruthy();
 });
 
 it('SelfTest work', () => {
-  const component = TestRenderer.create(<SelfTest />);
+  const component = TestRenderer.render(<SelfTest />);
   const root = component.root;
   const rendered = component.toJSON();
   expect(rendered).toBeTruthy();
