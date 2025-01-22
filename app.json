@@ -45,7 +45,8 @@
             "Notifications"
           ]
         }
-      ]
+      ],
+	    "@config-plugins/detox"
     ],
     "experiments": {
       "typedRoutes": true

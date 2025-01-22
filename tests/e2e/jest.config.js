@@ -1,3 +1,4 @@
+/** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
   maxWorkers: 1,
   testTimeout: 333_000,
