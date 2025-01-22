@@ -16,6 +16,15 @@
     },
     "production": {
       "autoIncrement": true
+    },
+    "test": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "simulator": true
+      }
     }
   },
   "submit": {
