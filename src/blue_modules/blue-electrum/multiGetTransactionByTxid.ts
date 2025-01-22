@@ -7,13 +7,15 @@ import { disableBatching, mainClient } from './client';
 import { splitIntoChunks } from './splitIntoChunks';
 
 import { ElectrumTransaction, ElectrumTransactionWithHex } from './types';
-import { scriptPubKeyToAddress as segwitBech32ScriptPubKeyToAddress } from '../../class/wallets/utils/segwit-bech32-wallet';
-import { scriptPubKeyToAddress as legacyWalletScriptPubKeyToAddress } from '../../class/wallets/utils/legacy-wallet';
-import { scriptPubKeyToAddress as segwitP2SHWalletScriptPubKeyToAddress } from '../../class/wallets/utils/segwit-p2sh-wallet';
-import { scriptPubKeyToAddress as taprootWalletScriptPubKeyToAddress } from '../../class/wallets/utils/taproot';
 import { calculateBlockTime } from './calculateBlockTime';
 import { txhashHeightCache } from './constants';
 import { estimateCurrentBlockheight } from './estimateCurrentBlockHeight';
+
+/** require-cycle */
+import { SegwitBech32Wallet } from '../../class/wallets/segwit-bech32-wallet';
+import { LegacyWallet } from '../../class/wallets/legacy-wallet';
+import { SegwitP2SHWallet } from '../../class/wallets/segwit-p2sh-wallet';
+import { TaprootWallet } from '../../class/wallets/taproot-wallet';
 
 export function txhexToElectrumTransaction(txhex: string): ElectrumTransactionWithHex {
   const tx = bitcoin.Transaction.fromHex(txhex);
@@ -66,17 +68,17 @@ export function txhexToElectrumTransaction(txhex: string): ElectrumTransactionWi
     let address: false | string = false;
     let type: false | string = false;
 
-    if (segwitBech32ScriptPubKeyToAddress(out.script.toString('hex'))) {
-      address = segwitBech32ScriptPubKeyToAddress(out.script.toString('hex'));
+    if (SegwitBech32Wallet.scriptPubKeyToAddress(out.script.toString('hex'))) {
+      address = SegwitBech32Wallet.scriptPubKeyToAddress(out.script.toString('hex'));
       type = 'witness_v0_keyhash';
-    } else if (segwitP2SHWalletScriptPubKeyToAddress(out.script.toString('hex'))) {
-      address = segwitP2SHWalletScriptPubKeyToAddress(out.script.toString('hex'));
+    } else if (SegwitP2SHWallet.scriptPubKeyToAddress(out.script.toString('hex'))) {
+      address = SegwitP2SHWallet.scriptPubKeyToAddress(out.script.toString('hex'));
       type = '???'; // TODO
-    } else if (legacyWalletScriptPubKeyToAddress(out.script.toString('hex'))) {
-      address = legacyWalletScriptPubKeyToAddress(out.script.toString('hex'));
+    } else if (LegacyWallet.scriptPubKeyToAddress(out.script.toString('hex'))) {
+      address = LegacyWallet.scriptPubKeyToAddress(out.script.toString('hex'));
       type = '???'; // TODO
     } else {
-      address = taprootWalletScriptPubKeyToAddress(out.script.toString('hex'));
+      address = TaprootWallet.scriptPubKeyToAddress(out.script.toString('hex'));
       type = 'witness_v1_taproot';
     }
 
