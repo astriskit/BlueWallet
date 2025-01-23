@@ -11,7 +11,7 @@ const MasterView: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <>
-      <GestureHandlerRootView style={styles.root}>
+      <GestureHandlerRootView style={styles.root} testID="rootGestureHandler">
         {children}
         {walletsInitialized && (
           <Suspense>
