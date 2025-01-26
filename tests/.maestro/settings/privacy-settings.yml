@@ -1,0 +1,13 @@
+appId: com.harry-expo.bluewallet
+---
+- tapOn: 
+    id: "SettingsPrivacy"
+- tapOn: 
+    id: "ClipboardSwitch"
+- tapOn: 
+    id: "ClipboardSwitch"
+- tapOn: 
+    id: "QuickActionsSwitch"
+- tapOn: 
+    id: "QuickActionsSwitch"
+- runFlow: "../helpers/go-back.yaml"

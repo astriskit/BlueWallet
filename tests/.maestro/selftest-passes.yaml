@@ -1,0 +1,36 @@
+appId: com.harry-expo.bluewallet
+---
+- launchApp:
+    appId: com.harry-expo.bluewallet
+    clearKeychain: true
+    clearState: true
+
+- runFlow: 'helpers/assert-wallets-list.yaml'
+
+- tapOn:
+    id: "SettingsButton"
+
+- tapOn:
+    id: "AboutButton"
+
+- scrollUntilVisible:
+    centerElement: true
+    element:
+      id: "RunSelfTestButton"
+    direction: DOWN
+
+- assertVisible:
+    id: "RunSelfTestButton"
+
+- tapOn:
+    id: "RunSelfTestButton"
+    
+- extendedWaitUntil:
+    visible:
+      id: "SelfTestOk"
+    timeout: 300000
+
+- runFlow:
+    file: "helpers/repeat-go-back.yaml"
+    env:
+        GO_BACK_TIMES: 3

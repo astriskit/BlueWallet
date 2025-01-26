@@ -1,0 +1,14 @@
+appId: com.harry-expo.bluewallet
+---
+# Reinstalling the app to clean up storage
+- runFlow: 'helpers/init-app.yaml'
+
+# Go to Settings
+- tapOn: 
+    id: "SettingsButton"
+
+- runFlow: "settings/tools-settings.yml"
+- runFlow: "settings/about-settings.yml"
+
+- runFlow: "./helpers/go-back.yaml"
+

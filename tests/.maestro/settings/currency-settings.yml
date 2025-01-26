@@ -1,0 +1,8 @@
+appId: com.harry-expo.bluewallet
+---
+- tapOn: 
+    id: "Currency"
+- tapOn: "ARS ($)"
+- assertVisible: "Rate is obtained from Yadio"
+- tapOn: "USD ($)"
+- runFlow: "../helpers/go-back.yaml"

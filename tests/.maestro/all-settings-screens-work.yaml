@@ -1,0 +1,16 @@
+appId: com.harry-expo.bluewallet
+---
+# Reinstalling the app to clean up storage
+- runFlow: 'helpers/init-app.yaml'
+
+# Go to Settings
+- tapOn: 
+    id: "SettingsButton"
+- runFlow: "settings/general-settings.yml"
+# - runFlow: "settings/currency-settings.yml" # turning back to USD is not working
+- runFlow: "settings/language-settings.yml"
+- runFlow: "settings/security-settings.yml"
+- runFlow: "settings/network-settings.yml"
+
+- runFlow: "./helpers/go-back.yaml"
+

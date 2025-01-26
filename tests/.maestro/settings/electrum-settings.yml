@@ -1,0 +1,53 @@
+appId: com.harry-expo.bluewallet
+---
+- tapOn: 
+    id: "ElectrumSettings"
+- scrollUntilVisible:
+    element:
+      text: "E.g., 10.20.30.40"
+    direction: DOWN
+
+- tapOn:
+    text: "E.g., 10.20.30.40"
+- inputText:
+    text: "electrum.blockstream.info"
+- pressKey: enter
+
+- tapOn:
+    id: "PortInput"
+- inputText:
+    text: "50001"
+- pressKey: enter
+
+- scrollUntilVisible:
+    element: 
+      text: "Save"
+    direction: DOWN
+
+- tapOn: "Save"
+- assertVisible: "OK"
+
+- tapOn: "OK"
+
+- tapOn: 
+    id: "HeaderMenuButton"
+- tapOn: "Reset to default"
+- assertVisible: "OK"
+- tapOn: "OK"
+
+- assertVisible: "OK"
+- tapOn: "OK"
+
+- scrollUntilVisible:
+    element: 
+        text: "E.g., 10.20.30.40" # testID on the textInput seems to be not working in current iteration
+    centerElement: true
+- assertVisible: 
+    text: "E.g., 10.20.30.40"
+- assertVisible: 
+    id: "PortInput"
+    text: ""
+- assertVisible:
+    id: "SSLPortInput"
+    selected: false
+- runFlow: '../helpers/go-back.yaml'

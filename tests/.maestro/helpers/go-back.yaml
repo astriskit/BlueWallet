@@ -1,0 +1,16 @@
+appId: com.harry-expo.bluewallet
+---
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible:
+          id: "GO_BACK"
+      - tapOn:
+          id: "GO_BACK"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+    

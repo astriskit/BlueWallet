@@ -1,0 +1,8 @@
+appId: com.harry-expo.bluewallet
+---
+- launchApp:
+    clearState: true
+    permissions: 
+      all: unset
+
+- runFlow: 'assert-wallets-list.yaml'

@@ -1,0 +1,11 @@
+appId: com.harry-expo.bluewallet
+---
+- tapOn: 
+    id: "Language"
+- tapOn: "Chinese (ZH)"
+- runFlow: '../helpers/go-back.yaml'
+- assertVisible: "语言"
+- tapOn: 
+    id: "Language"
+- tapOn: "English"
+- runFlow: '../helpers/go-back.yaml'
