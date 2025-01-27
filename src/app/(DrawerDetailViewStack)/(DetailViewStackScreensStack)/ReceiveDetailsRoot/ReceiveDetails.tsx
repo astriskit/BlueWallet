@@ -1,6 +1,7 @@
-import { Redirect } from 'expo-router';
 import React from 'react';
 
+import { ReceiveDetailsComponent } from '@/src/navigation/LazyLoadReceiveDetailsStack';
+
 export default () => {
-  return <Redirect href="./ReceiveDetails" />;
+  return <ReceiveDetailsComponent />;
 };
