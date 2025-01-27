@@ -1,0 +1,21 @@
+appId: com.harry-expo.bluewallet
+---
+- runFlow:
+    when: 
+      true: ${INPUT_CLEAR_FIRST === true}
+    commands:
+      - longPressOn:
+          id: ${INPUT_ID}
+      - tapOn: "Cut" # TODO: check for correct text
+
+- tapOn: 
+    id: ${INPUT_ID}
+- inputText: ${INPUT_VALUE}
+
+- runFlow:
+    when:
+      true: ${INPUT_HIT_ENTER === true}
+    commands:
+      - pressKey: enter
+
+- hideKeyboard

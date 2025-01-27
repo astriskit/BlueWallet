@@ -1,7 +1,9 @@
 appId: com.harry-expo.bluewallet
+name: "Clean install and run"
 ---
 - launchApp:
     clearState: true
+    clearKeychain: true
     permissions: 
       all: unset
 

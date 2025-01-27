@@ -1,4 +1,5 @@
 appId: com.harry-expo.bluewallet
+name: all settings screens work - 2
 ---
 # Reinstalling the app to clean up storage
 - runFlow: 'helpers/init-app.yaml'

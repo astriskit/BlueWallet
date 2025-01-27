@@ -1,0 +1,6 @@
+appId: com.harry-expo.bluewallet
+---
+- tapOn:
+    id: "WalletNameInput"
+- inputText: ${WALLET_NAME}
+- hideKeyboard

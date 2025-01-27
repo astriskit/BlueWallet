@@ -1,0 +1,126 @@
+appId: com.harry-expo.bluewallet
+name: "can encrypt storage, and decrypt storage works"
+---
+- runFlow: "helpers/init-app.yaml"
+- runFlow: "helpers/flow-create-bitcoin-wallet.yaml"
+
+- runFlow: 
+    file: "helpers/assert-tap.yaml"
+    env:
+      TAP_ID: "SettingsButton"
+
+- runFlow: 
+    file: "helpers/assert-tap.yaml"
+    env:
+      TAP_ID: "SecurityButton"
+
+# lets encrypt the storage.
+# lets put correct passwords and encrypt the storage
+- runFlow:
+    when:
+      platform: "Android"
+    commands:
+      - tapOn: "CompoundButton" # TODO: find the proper id
+      - tapOn:
+          id: "IUnderstandButton"
+      - runFlow: 
+          file: "helpers/tap-input.yaml"
+          env:
+            INPUT_ID: PasswordInput
+            INPUT_VALUE: pass
+            INPUT_HIT_ENTER: true
+      - runFlow: 
+          file: "helpers/tap-input.yaml"
+          env:
+            INPUT_ID: ConfirmPasswordInput
+            INPUT_VALUE: pass
+            INPUT_HIT_ENTER: true
+      - tapOn:
+          id: "OKButton"
+      - waitForAnimationToEnd
+      - tapOn:
+          id: 'PlausibleDeniabilityButton'
+      # trying to enable plausible denability
+      - tapOn:
+          id: CreateFakeStorageButton
+      - waitForAnimationToEnd
+      - runFlow: 
+          file: "helpers/tap-input.yaml"
+          env:
+            INPUT_ID: PasswordInput
+            INPUT_VALUE: fake
+            INPUT_HIT_ENTER: true
+      - runFlow: 
+          file: "helpers/tap-input.yaml"
+          env:
+            INPUT_ID: ConfirmPasswordInput
+            INPUT_VALUE: fake
+            INPUT_HIT_ENTER: true
+      - tapOn:
+          id: "OKButton"
+      - waitForAnimationToEnd
+      
+      # created fake storage.
+      # creating a wallet inside this fake storage
+      - runFlow: 
+          file: 'helpers/flow-create-bitcoin-wallet.yaml'
+          env:
+            WALLET_NAME: fake_wallet
+      
+      # relaunch the app, unlock with fake password, expect to see fake wallet
+      - launchApp:
+          stopApp: true
+      - extendedWaitUntil:
+          visible: 'OK'
+          timeout: 33000
+      - assertVisible: 'Your storage is encrypted. Password is required to decrypt it.'
+      - runFlow: 
+          file: "helpers/tap-input.yaml"
+          env:
+            INPUT_ID: <SOME_ID> # find id: android.widget.EditText
+            INPUT_VALUE: qqq
+      - tapOn: "OK"
+      - runFlow: 'helpers/assert-wallets-list.yaml'
+
+      # previously created wallet IN MAIN STORAGE should be visible
+      - runFlow: 'helpers/assert-wallet-exists.yaml'
+
+      # now go to settings, and decrypt
+      - tapOn:
+          id: "SettingsButton"
+      - tapOn:
+          id: "SecurityButton"
+      
+      # putting FAKE storage password. should not succeed
+      - tapOn: "CompoundButton" # TODO: find proper id: android.widget.CompoundButto
+      - tapOn: "OK"
+      - runFlow: 
+          file: "helpers/tap-input.yaml"
+          env:
+            INPUT_ID: PasswordInput
+            INPUT_VALUE: fake
+            INPUT_HIT_ENTER: true
+      - tapOn:
+          id: "OKButton"
+      - waitForAnimationToEnd
+
+      # correct password
+      - tapOn: "CompoundButton" # TODO: find proper id: android.widget.CompoundButto
+      - tapOn: "OK"
+      - runFlow: 
+          file: "helpers/tap-input.yaml"
+          env:
+            INPUT_ID: PasswordInput
+            INPUT_VALUE: pass
+            INPUT_HIT_ENTER: true
+            INPUT_CLEAR_FIRST: true
+      - tapOn:
+          id: "OKButton"
+      - waitForAnimationToEnd
+
+      # relaunch app
+      - launchApp:
+          stopApp: true
+      
+      - runFlow: "helpers/assert-wallet-exists.yaml" # success
+      - runFlow: 'helpers/flow-delete-wallet.yaml'

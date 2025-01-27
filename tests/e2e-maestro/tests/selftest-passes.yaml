@@ -1,4 +1,5 @@
 appId: com.harry-expo.bluewallet
+name: "selftest passes"
 ---
 - launchApp:
     appId: com.harry-expo.bluewallet

@@ -1,0 +1,27 @@
+appId: com.harry-expo.bluewallet
+---
+- runFlow: "assert-wallet-exists.yaml"
+- tapOn: ${WALLET_NAME}
+- waitForAnimationToEnd
+- tapOn: 
+    id: "WalletDetails"
+- runFlow: 
+    file: "swipe-until-not-visible.yaml"
+    env: 
+      SWIPE_ID_FROM: WalletDetailsScroll
+      SWIPE_ID_NOT_VISIBLE: HeaderMenuButton
+- tapOn:
+    id: "HeaderMenuButton"
+- tapOn: "Delete"
+- extendedWaitUntil:
+    visible: "Yes, Delete"
+    timeout: 33000
+- tapOn: "Yes, Delete"
+# - runFlow:
+#     when:
+#       true: ${REMAINING_BALANCE === true}
+#     commands:
+- assertVisible:
+    id: "NoTransactionsMessage"
+
+    

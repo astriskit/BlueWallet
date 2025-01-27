@@ -1,0 +1,7 @@
+appId: com.harry-expo.bluewallet
+name: GOTO ${TAP_ID}
+---
+- assertVisible:
+    id: ${TAP_ID}
+- tapOn:
+    id: ${TAP_ID}

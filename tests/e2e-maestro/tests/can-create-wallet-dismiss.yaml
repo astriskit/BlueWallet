@@ -1,0 +1,64 @@
+appId: com.harry-expo.bluewallet
+name: "can create wallet, reload app and it persists. then go to receive screen, set custom amount and label. Dismiss modal and go to WalletsList."
+---
+- runFlow: "helpers/init-app.yaml"
+- runFlow: "helpers/flow-create-bitcoin-wallet.yaml"
+- runFlow: "helpers/reload-app.yaml"
+- runFlow: "helpers/assert-wallet.yaml"
+
+- tapOn:
+    id: ${WALLET_NAME}
+- extendedWaitUntil:
+    visible:
+      id: "ReceiveButton"
+    timeout: 33000
+- tapOn: 
+    id: "ReceiveButton" # crashing the app!
+    enabled: true
+- tapOn: "Yes, I have."
+- runFlow:
+    when:
+      visible: "No, and do not ask me again."
+    commands:
+      - tapOn: "No, and do not ask me again."
+- extendedWaitUntil:
+    visible:
+      id: "BitcoinAddressQRCodeContainer"
+    timeout: 33000
+- extendedWaitUntil:
+    visible:
+      id: "CopyTextToClipboard"
+    timeout: 33000
+- tapOn: 
+    id: "SetCustomAmountButton"
+- tapOn: 
+    id: "BitcoinAmountInput"
+- inputText: "1"
+- hideKeyboard
+- tapOn: 
+    id: "CustomAmountDescription"
+- inputText: "test"
+- pressKey: enter
+- hideKeyboard
+- tapOn: 
+    id: "CustomAmountSaveButton"
+- assertVisible:
+    id: "CustomAmountDescriptionText"
+    text: "test"
+- assertVisible:
+    id: "BitcoinAmountText"
+    text: "1 BTC"
+- extendedWaitUntil:
+    visible:
+      id: "BitcoinAddressQRCodeContainer"
+    timeout: 33000
+- extendedWaitUntil:
+    visible:
+      id: "CopyTextToClipboard"
+    timeout: 33000
+
+- runFlow: 'helpers/go-back.yaml'
+- runFlow: 'helpers/go-back.yaml'
+
+- runFlow: 'helpers/flow-delete-wallet.yaml'
+

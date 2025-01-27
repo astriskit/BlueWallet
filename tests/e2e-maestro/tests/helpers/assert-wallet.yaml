@@ -1,0 +1,7 @@
+appId: com.harry-expo.bluewallet
+---
+- runFlow:
+    file: "swipe-until-not-visible.yaml"
+    env: 
+      SWIPE_ID_FROM: WalletsList
+      SWIPE_ID_NOT_VISIBLE: ${WALLET_NAME}

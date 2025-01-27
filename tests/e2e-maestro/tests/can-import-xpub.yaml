@@ -1,0 +1,127 @@
+appId: com.harry-expo.bluewallet
+name: can import 2of2 multisig using individual cosigners (1 signer, 1 xpub)
+---
+- runFlow: 'helpers/init-app.yaml'
+# going to Import Wallet screen and importing Vault
+- runFlow: "helpers/assert-create-wallet.yaml"
+- tapOn:
+    id: "CreateAWallet"
+- extendedWaitUntil:
+    visible: 
+      id: "ActivateVaultButton"
+    timeout: 33000
+- tapOn:
+    id: "ActivateVaultButton"
+- tapOn:
+    id: "Create"
+# vault settings
+- tapOn:
+    id: "VaultAdvancedCustomize"
+- tapOn:
+    id: "DecreaseN"
+- tapOn:
+    id: "ModalDoneButton"
+
+- tapOn:
+    id: "LetsStart"
+
+# key1 - seed:
+
+- tapOn:
+    id: 'VaultCosignerImport1'
+- runFlow:
+    file: 'helpers/tap-open-scanner.yaml'
+    env:
+      SCAN_TAP_ID: ScanOrOpenFile
+
+- assertVisible:
+    id: ScanQrBackdoorButton # error: no-back-door opening!
+
+- repeat:
+    while:
+      notVisible: 
+        id: scanQrBackdoorInput
+    commands:
+      - tapOn:
+          id: 'ScanQrBackdoorButton'
+          retryTapIfNoChange: false
+
+- assertVisible:
+    id: scanQrBackdoorInput
+
+- runFlow: 
+    file: 'helpers/tap-input.yaml'
+    env:
+      INPUT_ID: scanQrBackdoorInput
+      INPUT_VALUE: pipe goose bottom run seed curious thought kangaroo example family coral success
+- tapOn:
+    id: scanQrBackdoorOkButton
+- tapOn:
+    id: DoImportKeyButton # when seed - need to extra tap the button
+
+# key2 - xpub:
+
+- tapOn:
+    id: VaultCosignerImport2
+- tapOn: 
+    id: ScanOrOpenFile
+
+# wait for camera screen to initialize
+- waitForAnimationToEnd:
+    timeout: 5000
+
+- repeat: # why?
+    times: 5
+    commands:
+      - tapOn:
+          id: 'ScanQrBackdoorButton'
+- runFlow: 
+    file: 'helpers/tap-input.yaml'
+    env:
+      INPUT_ID: scanQrBackdoorInput
+      INPUT_VALUE: 'ur:crypto-account/oeadcypdlouebgaolytaadmetaaddloxaxhdclaxfdyksnwkuypkfevlfzfroyiyecoeosbakbpdcldawzhtcarkwsndcphphsbsdsayaahdcxfgjyckryosmwtdptlbflonbkimlsmovolslbytonayisprvoieftgeflzcrtvesbamtaaddyotadlocsdyykaeykaeykaoykaocypdlouebgaxaaaycyttatrnolimvetsst'
+- tapOn:
+    id: scanQrBackdoorOkButton
+# when xpub - it automatically closes the modal, so no need to tap the button
+
+- tapOn:
+    id: CreateButton
+- extendedWaitUntil:
+    visible:
+      id: "Multisig Vault"
+- tapOn:
+    id: "Multisig Vault" # go inside the wallet
+- extendedWaitUntil:
+    visible:
+      id: ReceiveButton
+- tapOn:
+    id: ReceiveButton
+- tapOn: 'Yes, I have.'
+
+# in case emulator has no google services and doesnt support pushes
+# we just dont show this popup
+- runFlow:
+    when: 
+      visible: "No, and do not ask me again."
+    commands:
+      - tapOn: "No, and do not ask me again."
+
+- extendedWaitUntil:
+    visible: bc1qmf06nt4jhvzz4387ak8fecs42k6jqygr2unumetfc7xkdup7ah9s8phlup
+    timeout: 33000
+
+- runFlow: 'helpers/go-back.yaml'
+
+- tapOn:
+    id: WalletDetails
+- extendedWaitUntil:
+    visible: "2 / 2 (native segwit)"
+
+- runFlow: 'helpers/go-back.yaml'
+- runFlow: 
+    file: 'helpers/flow-delete-wallet.yaml'
+    env:
+      WALLET_NAME: Multisig Vault
+    
+
+

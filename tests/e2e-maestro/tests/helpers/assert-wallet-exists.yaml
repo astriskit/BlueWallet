@@ -1,0 +1,4 @@
+appId: com.harry-expo.bluewallet
+---
+- runFlow: "assert-wallets-list.yaml"
+- runFlow: "assert-wallet.yaml"
