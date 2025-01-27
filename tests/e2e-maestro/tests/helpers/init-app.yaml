@@ -7,4 +7,9 @@ name: "Clean install and run"
     permissions: 
       all: unset
 
+- runFlow: 
+    when:
+      true: ${DEV_CLIENT === '1'}
+    file: 'debug-run.yaml'
+
 - runFlow: 'assert-wallets-list.yaml'

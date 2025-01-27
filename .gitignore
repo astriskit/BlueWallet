@@ -102,3 +102,6 @@ ios/*
 
 expo-env.d.ts
 # @end expo-cli
+
+# local-dev-clients
+dev-clients/*

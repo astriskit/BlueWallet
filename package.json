@@ -74,6 +74,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint:quickfix": "git status --porcelain | grep -v '\\.json' | grep -E '\\.js|\\.ts' --color=never |  awk '{print $2}' | xargs eslint --fix; exit 0",
     "unit": "jest -b -w tests/unit/*",
+    "e2e:debug": "maestro test tests/e2e-maestro -e DEV_CLIENT=1",
     "e2e": "maestro test tests/e2e-maestro"
   },
   "dependencies": {
