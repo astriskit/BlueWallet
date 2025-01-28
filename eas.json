@@ -17,12 +17,13 @@
     "production": {
       "autoIncrement": true
     },
-    "test": {
+    "test_debug": {
       "android": {
-        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
         "withoutCredentials": true
       },
       "ios": {
+        "buildConfiguration": "Debug",
         "simulator": true
       }
     }
