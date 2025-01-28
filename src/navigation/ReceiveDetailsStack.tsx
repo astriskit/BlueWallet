@@ -17,7 +17,7 @@ const ReceiveDetailsStackRoot = () => {
         options={navigationStyle({
           headerBackVisible: false,
           title: loc.receive.header,
-          statusBarStyle: 'light',
+          // statusBarStyle: 'light',
         })(theme)}
       />
       <Stack.Screen name="index" />

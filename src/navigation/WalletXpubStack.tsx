@@ -9,7 +9,13 @@ const WalletXpubStackRoot = () => {
   const theme = useTheme();
 
   return (
-    <Stack screenOptions={{ headerShadowVisible: false, statusBarStyle: 'light' }} initialRouteName="WalletXpub">
+    <Stack
+      screenOptions={{
+        headerShadowVisible: false,
+        // statusBarStyle: 'light'
+      }}
+      initialRouteName="WalletXpub"
+    >
       <Stack.Screen
         name="WalletXpub"
         options={navigationStyle({

@@ -16,14 +16,14 @@ const LNDCreateInvoiceRoot = () => {
           title: loc.receive.header,
           closeButtonPosition: CloseButtonPosition.Right,
           headerBackVisible: false,
-          statusBarStyle: 'light',
+          // statusBarStyle: 'light',
         })(theme)}
       />
       <Stack.Screen name="SelectWallet" options={navigationStyle({ title: loc.wallets.select_wallet })(theme)} />
       <Stack.Screen
         name="LNDViewInvoice"
         options={navigationStyle({
-          statusBarStyle: 'auto',
+          // statusBarStyle: 'auto',
           headerTitle: loc.lndViewInvoice.lightning_invoice,
           headerStyle: {
             backgroundColor: theme.colors.customHeader,

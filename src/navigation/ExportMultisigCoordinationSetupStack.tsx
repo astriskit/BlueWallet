@@ -20,7 +20,7 @@ const ExportMultisigCoordinationSetupStack = () => {
         name="ExportMultisigCoordinationSetup"
         options={navigationStyle({
           headerBackVisible: false,
-          statusBarStyle: 'light',
+          // statusBarStyle: 'light',
           title: loc.multisig.export_coordination_setup,
         })(theme)}
       />

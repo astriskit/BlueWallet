@@ -17,7 +17,7 @@ const SendDetailsStack = () => {
         name="SendDetails"
         options={navigationStyle({
           title: loc.send.header,
-          statusBarStyle: 'light',
+          // statusBarStyle: 'light',
           closeButtonPosition: CloseButtonPosition.Left,
         })(theme)}
         initialParams={{

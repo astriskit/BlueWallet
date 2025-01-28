@@ -263,7 +263,7 @@ const WalletsAdd: React.FC = () => {
   useEffect(() => {
     setOptions({
       headerRight: () => HeaderRight,
-      statusBarStyle: Platform.select({ ios: 'light', default: colorScheme === 'dark' ? 'light' : 'dark' }),
+      // statusBarStyle: Platform.select({ ios: 'light', default: colorScheme === 'dark' ? 'light' : 'dark' }),
     });
   }, [HeaderRight, colorScheme, colors.foregroundColor, setOptions, toolTipActions]);
 

@@ -31,7 +31,7 @@ const getTransactionStatusOptions = ({ route, navigation, theme }: GetTransactio
       headerBackTitleStyle: { fontSize: 0 },
       // headerBackTitleVisible: true,
       headerBackVisible: true, // moved from headerBackTitleVisible
-      statusBarStyle: 'auto',
+      // statusBarStyle: 'auto',
     })(theme),
     headerRight: () => (
       <HeaderRightButton

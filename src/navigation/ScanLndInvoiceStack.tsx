@@ -12,7 +12,11 @@ const ScanLndInvoiceRoot = () => {
     <Stack screenOptions={{ headerShadowVisible: false }}>
       <Stack.Screen
         name="ScanLndInvoice"
-        options={navigationStyle({ headerBackVisible: false, title: loc.send.header, statusBarStyle: 'light' })(theme)}
+        options={navigationStyle({
+          headerBackVisible: false,
+          title: loc.send.header,
+          // statusBarStyle: 'light',
+        })(theme)}
         initialParams={{ uri: undefined, walletID: undefined, invoice: undefined }}
       />
       <Stack.Screen name="SelectWallet" options={navigationStyle({ title: loc.wallets.select_wallet })(theme)} />
