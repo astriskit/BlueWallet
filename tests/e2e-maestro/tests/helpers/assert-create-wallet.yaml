@@ -1,6 +1,0 @@
-appId: com.harry-expo.bluewallet
----
-- runFlow:
-    file: "assert-wallet.yaml"
-    env:
-      WALLET_NAME: "CreateAWallet"

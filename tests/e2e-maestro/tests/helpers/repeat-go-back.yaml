@@ -1,7 +1,0 @@
-appId: com.harry-expo.bluewallet
----
-- repeat:
-    times: ${GO_BACK_TIMES}
-    commands:
-      - runFlow:
-          file: "go-back.yaml"

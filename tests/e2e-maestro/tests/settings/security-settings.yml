@@ -1,5 +1,0 @@
-appId: com.harry-expo.bluewallet
----
-- tapOn:
-    id: "SecurityButton"
-- runFlow: '../helpers/go-back.yaml'

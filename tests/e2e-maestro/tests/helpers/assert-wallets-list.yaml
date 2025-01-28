@@ -1,7 +1,0 @@
-appId: com.harry-expo.bluewallet
----
-- waitForAnimationToEnd:
-    timeout: 300000 # 300 seconds (Maestro uses milliseconds)
-
-- assertVisible:
-    id: "WalletsList"

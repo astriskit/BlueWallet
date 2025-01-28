@@ -1,8 +1,0 @@
-appId: com.harry-expo.bluewallet
----
-- tapOn: 
-    id: "GeneralSettings"
-
-- runFlow: "./privacy-settings.yml"
-
-- runFlow: "../helpers/go-back.yaml"
