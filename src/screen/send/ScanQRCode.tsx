@@ -1,8 +1,10 @@
-import { useFocusEffect, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as bitcoin from 'bitcoinjs-lib';
 import createHash from 'create-hash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+
 import Base43 from '../../blue_modules/base43';
 import * as fs from '../../blue_modules/fs';
 import { BlueURDecoder, extractSingleWorkload } from '../../blue_modules/ur';
@@ -17,13 +19,16 @@ import { useSettings } from '../../hooks/context/useSettings';
 import CameraScreen from '../../components/CameraScreen';
 import SafeArea from '../../components/SafeArea';
 import presentAlert from '../../components/Alert';
+import { ScanQRCodeParamList } from '@/src/navigation/DetailViewStackParamList';
 
-let decoder = false;
+const __E2E_TESTING__ = false;
+
+let decoder: BlueURDecoder | null = null;
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#000000',
+    ...(__E2E_TESTING__ ? {} : { backgroundColor: '#000000' }),
   },
   openSettingsContainer: {
     justifyContent: 'center',
@@ -33,13 +38,10 @@ const styles = StyleSheet.create({
   backdoorButton: {
     width: 60,
     height: 60,
-    backgroundColor: 'rgba(0,0,0,0.01)',
-    position: 'absolute',
+    backgroundColor: 'rgb(0,0,0)',
     top: 10,
     left: '50%',
-    transform: [{ translateX: -30 }],
   },
-  backdoorInputWrapper: { position: 'absolute', left: '5%', top: '0%', width: '90%', height: '70%', backgroundColor: 'white' },
   progressWrapper: { position: 'absolute', alignSelf: 'center', alignItems: 'center', top: '50%', padding: 8, borderRadius: 8 },
   backdoorInput: {
     height: '50%',
@@ -55,16 +57,13 @@ const ScanQRCode = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { setIsDrawerShouldHide } = useSettings();
   const navigation = useNavigation();
-  const route = useRoute();
-  const navigationState = navigation.getState();
-  const previousRoute = navigationState.routes[navigationState.routes.length - 2];
-  const defaultLaunchedBy = previousRoute ? previousRoute.name : undefined;
+  const router = useRouter();
+  // @ts-ignore can take function too
+  const { launchedBy, onBarScanned, showFileImportButton } = useLocalSearchParams<ScanQRCodeParamList>();
 
-  const { launchedBy = defaultLaunchedBy, onBarScanned, showFileImportButton } = route.params || {};
   const scannedCache = {};
   const { colors } = useTheme();
   const isFocused = useIsFocused();
-  const [backdoorPressed, setBackdoorPressed] = useState(0);
   const [urTotal, setUrTotal] = useState(0);
   const [urHave, setUrHave] = useState(0);
   const [backdoorText, setBackdoorText] = useState('');
@@ -102,19 +101,26 @@ const ScanQRCode = () => {
     }, [setIsDrawerShouldHide]),
   );
 
+  const navigateWithData = (data: string) => {
+    if (typeof onBarScanned === 'function') {
+      onBarScanned?.({ data });
+      return;
+    } else if (launchedBy) {
+      navigation.dispatch(CommonActions.navigate({ name: launchedBy, params: { onBarScanned: data } }));
+      return;
+    }
+    router.dismiss();
+    router.setParams({ onBarScanned: data });
+  };
+
   const _onReadUniformResourceV2 = part => {
     if (!decoder) decoder = new BlueURDecoder();
     try {
       decoder.receivePart(part);
       if (decoder.isComplete()) {
         const data = decoder.toString();
-        decoder = false; // nullify for future use (?)
-        if (launchedBy) {
-          const merge = true;
-          navigation.navigate({ name: launchedBy, params: { onBarScanned: data }, merge });
-        } else {
-          onBarScanned && onBarScanned({ data });
-        }
+        decoder = null; // nullify for future use
+        navigateWithData(data);
       } else {
         setUrTotal(100);
         setUrHave(Math.floor(decoder.estimatedPercentComplete() * 100));
@@ -153,12 +159,7 @@ const ScanQRCode = () => {
           // its something else. probably plain text is expected
           data = Buffer.from(payload, 'hex').toString();
         }
-        if (launchedBy) {
-          const merge = true;
-          navigation.navigate({ name: launchedBy, params: { onBarScanned: data }, merge });
-        } else {
-          onBarScanned && onBarScanned({ data });
-        }
+        navigateWithData(data);
       } else {
         setAnimatedQRCodeData(animatedQRCodeData);
       }
@@ -212,26 +213,14 @@ const ScanQRCode = () => {
       const hex = Base43.decode(ret.data);
       bitcoin.Psbt.fromHex(hex); // if it doesnt throw - all good
       const data = Buffer.from(hex, 'hex').toString('base64');
-      if (launchedBy) {
-        const merge = true;
-
-        navigation.navigate({ name: launchedBy, params: { onBarScanned: data }, merge });
-      } else {
-        onBarScanned && onBarScanned({ data });
-      }
+      navigateWithData(data);
       return;
     } catch (_) {}
 
     if (!isLoading) {
       setIsLoading(true);
       try {
-        if (launchedBy) {
-          const merge = true;
-
-          navigation.navigate({ name: launchedBy, params: { onBarScanned: ret.data }, merge });
-        } else {
-          onBarScanned && onBarScanned(ret.data);
-        }
+        navigateWithData(ret.data);
       } catch (e) {
         console.log(e);
       }
@@ -267,17 +256,11 @@ const ScanQRCode = () => {
 
   const handleBackdoorOkPress = () => {
     setBackdoorVisible(false);
-    setBackdoorText('');
     if (backdoorText) onBarCodeRead({ data: backdoorText });
+    setBackdoorText('');
   };
 
-  // this is an invisible backdoor button on bottom left screen corner
-  // tapping it 10 times fires prompt dialog asking for a string thats gona be passed to onBarCodeRead.
-  // this allows to mock and test QR scanning in e2e tests
   const handleInvisibleBackdoorPress = async () => {
-    setBackdoorPressed(backdoorPressed + 1);
-    if (backdoorPressed < 5) return;
-    setBackdoorPressed(0);
     setBackdoorVisible(true);
   };
 
@@ -297,7 +280,7 @@ const ScanQRCode = () => {
           <BlueSpacing40 />
           <Button title={loc._.cancel} onPress={dismiss} />
         </View>
-      ) : isFocused ? (
+      ) : isFocused && !__E2E_TESTING__ ? (
         <CameraScreen
           onReadCode={handleReadCode}
           showFrame={false}
@@ -317,7 +300,7 @@ const ScanQRCode = () => {
         </View>
       )}
       {backdoorVisible && (
-        <View style={styles.backdoorInputWrapper}>
+        <View>
           <BlueText>Provide QR code contents manually:</BlueText>
           <TextInput
             testID="scanQrBackdoorInput"
@@ -335,13 +318,16 @@ const ScanQRCode = () => {
           <Button title="OK" testID="scanQrBackdoorOkButton" onPress={handleBackdoorOkPress} />
         </View>
       )}
-      <TouchableOpacity
-        accessibilityRole="button"
-        accessibilityLabel={loc._.qr_custom_input_button}
-        testID="ScanQrBackdoorButton"
-        style={styles.backdoorButton}
-        onPress={handleInvisibleBackdoorPress}
-      />
+      {__E2E_TESTING__ && !backdoorVisible && (
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={loc._.qr_custom_input_button}
+          testID="ScanQrBackdoorButton"
+          style={styles.backdoorButton}
+          onPress={handleInvisibleBackdoorPress}
+        />
+      )}
+      {__E2E_TESTING__ && <Button title="Go back" onPress={navigation.goBack} />}
     </View>
   );
 
