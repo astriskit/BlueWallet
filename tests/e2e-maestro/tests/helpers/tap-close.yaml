@@ -1,0 +1,4 @@
+appId: com.harry-expo.bluewallet
+---
+- tapOn:
+    id: NavigationCloseButton

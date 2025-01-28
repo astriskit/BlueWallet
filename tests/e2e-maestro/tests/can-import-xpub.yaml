@@ -37,14 +37,8 @@ name: can import 2of2 multisig using individual cosigners (1 signer, 1 xpub)
 - assertVisible:
     id: ScanQrBackdoorButton # error: no-back-door opening!
 
-- repeat:
-    while:
-      notVisible: 
-        id: scanQrBackdoorInput
-    commands:
-      - tapOn:
-          id: 'ScanQrBackdoorButton'
-          retryTapIfNoChange: false
+- tapOn:
+    id: ScanQrBackdoorButton
 
 - assertVisible:
     id: scanQrBackdoorInput
@@ -70,11 +64,8 @@ name: can import 2of2 multisig using individual cosigners (1 signer, 1 xpub)
 - waitForAnimationToEnd:
     timeout: 5000
 
-- repeat: # why?
-    times: 5
-    commands:
-      - tapOn:
-          id: 'ScanQrBackdoorButton'
+- tapOn:
+    id: 'ScanQrBackdoorButton'
 - runFlow: 
     file: 'helpers/tap-input.yaml'
     env:
@@ -101,10 +92,17 @@ name: can import 2of2 multisig using individual cosigners (1 signer, 1 xpub)
 # in case emulator has no google services and doesnt support pushes
 # we just dont show this popup
 - runFlow:
-    when: 
+    when:
+      platform: Android
       visible: "No, and do not ask me again."
     commands:
       - tapOn: "No, and do not ask me again."
+- runFlow:
+    when:
+      platform: iOS
+      visible: "Allow"
+    commands:
+      - tapOn: "Don’t Allow"
 
 - extendedWaitUntil:
     visible: bc1qmf06nt4jhvzz4387ak8fecs42k6jqygr2unumetfc7xkdup7ah9s8phlup
@@ -114,9 +112,16 @@ name: can import 2of2 multisig using individual cosigners (1 signer, 1 xpub)
 
 - tapOn:
     id: WalletDetails
-- extendedWaitUntil:
-    visible: "2 / 2 (native segwit)"
+- waitForAnimationToEnd
 
+- assertVisible:
+    id: "WalletDetailsScroll"
+
+- assertVisible: 
+    text: "2 / 2 (native segwit)"
+    id: "WalletMultiSigType:2:2:native segwit"
+
+- runFlow: 'helpers/go-back.yaml'
 - runFlow: 'helpers/go-back.yaml'
 - runFlow: 
     file: 'helpers/flow-delete-wallet.yaml'

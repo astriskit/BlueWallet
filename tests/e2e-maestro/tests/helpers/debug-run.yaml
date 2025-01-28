@@ -5,6 +5,7 @@ appId: com.harry-expo.bluewallet
 
 - extendedWaitUntil:
     visible: Continue
+    timeout: 33000
 
 - runFlow:
     when:
