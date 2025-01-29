@@ -3,14 +3,15 @@
     "name": "BlueWallet(Expo)",
     "slug": "bluewallet",
     "scheme": "bluewallet",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "icon": "./src/img/icon.png",
     "android": {
-      "package": "com.harry_expo.bluewallet",
+      "package": "io.bluewallet.bluewallet",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.POST_NOTIFICATIONS"
-      ]
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "ios": {
       "bundleIdentifier": "com.harry-expo.bluewallet",
@@ -46,7 +47,9 @@
           ]
         }
       ],
-      "@config-plugins/detox"
+      ["@config-plugins/detox", {
+        "subdomains": "*"
+      }]
     ],
     "experiments": {
       "typedRoutes": true

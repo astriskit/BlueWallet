@@ -83,7 +83,7 @@
   },
   "dependencies": {
     "@astriskit/rn-community-push-notification-ios-config": "^1.0.0",
-    "@astriskit/rn-push-notification-config": "^1.0.8",
+    "@astriskit/rn-push-notification-config": "^1.0.9",
     "@babel/preset-env": "7.25.8",
     "@bugsnag/react-native": "8.2.0",
     "@bugsnag/source-maps": "2.3.3",

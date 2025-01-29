@@ -16,5 +16,16 @@ const withJettifier: ConfigPlugin<boolean> = (_, enable = false) =>
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   // @ts-ignore config!
-  return withPlugins(config, [[withJettifier, true], withPushNotificationIOS, [withPushNotification, { color: { name: 'colorPrimary' } }]]);
+  return withPlugins(config, [
+    [withJettifier, true],
+    withPushNotificationIOS,
+    [
+      withPushNotification,
+      {
+        color: { name: 'colorPrimary' },
+        defaultChannel: true,
+        channels: [{ name: 'BlueWallet notifications', description: 'Notifications about incoming payments' }],
+      },
+    ],
+  ]);
 };
