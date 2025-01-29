@@ -2,16 +2,16 @@ import type { NativeStackNavigationOptions } from '@react-navigation/native-stac
 
 export const NavigationDefaultOptions: NativeStackNavigationOptions = {
   headerShown: false,
-  // presentation: 'modal', // For now!
+  presentation: 'modal',
   headerShadowVisible: false,
 };
 
 export const NavigationFormModalOptions: NativeStackNavigationOptions = {
   headerShown: false,
   // presentation: "formSheet", // note: crashes the app!
-  // presentation: 'modal', // Buggy(?)
+  presentation: 'modal',
 };
 
 export const StatusBarLightOptions: NativeStackNavigationOptions = {
-  // statusBarStyle: 'light', // Buggy(?)
+  statusBarStyle: 'light',
 };

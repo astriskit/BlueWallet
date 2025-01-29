@@ -14,7 +14,7 @@ const AztecoRedeemStackRoot = () => {
         name="AztecoRedeem"
         options={navigationStyle({
           title: loc.azteco.title,
-          // statusBarStyle: 'auto',
+          statusBarStyle: 'auto',
         })(theme)}
       />
       <Stack.Screen

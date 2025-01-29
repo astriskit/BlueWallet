@@ -70,13 +70,13 @@ const DetailViewStackScreensStack = () => {
         name="WalletDetails"
         options={navigationStyle({
           headerTitle: loc.wallets.details_title,
-          // statusBarStyle: 'auto',
+          statusBarStyle: 'auto',
         })(theme)}
       />
       <Stack.Screen
         name="TransactionDetails"
         options={navigationStyle({
-          // statusBarStyle: 'auto',
+          statusBarStyle: 'auto',
           headerStyle: {
             backgroundColor: theme.colors.customHeader,
           },
@@ -91,7 +91,7 @@ const DetailViewStackScreensStack = () => {
         }}
         options={navigationStyle({
           title: '',
-          // statusBarStyle: 'auto',
+          statusBarStyle: 'auto',
           headerStyle: {
             backgroundColor: theme.colors.customHeader,
           },
@@ -107,7 +107,7 @@ const DetailViewStackScreensStack = () => {
       <Stack.Screen
         name="LNDViewInvoice"
         options={navigationStyle({
-          // statusBarStyle: 'auto',
+          statusBarStyle: 'auto',
           headerTitle: loc.lndViewInvoice.lightning_invoice,
           headerStyle: {
             backgroundColor: theme.colors.customHeader,
@@ -160,7 +160,7 @@ const DetailViewStackScreensStack = () => {
         name="WalletAddresses"
         options={navigationStyle({
           title: loc.addresses.addresses_title,
-          // statusBarStyle: 'auto',
+          statusBarStyle: 'auto',
         })(theme)}
       />
 
@@ -214,7 +214,7 @@ const DetailViewStackScreensStack = () => {
           gestureEnabled: false,
           presentation: 'containedModal',
           title: loc.wallets.manage_title,
-          // statusBarStyle: 'auto',
+          statusBarStyle: 'auto',
         })(theme)}
       />
       <Stack.Screen

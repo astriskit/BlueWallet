@@ -66,11 +66,11 @@ const SelectWallet: React.FC = () => {
     return wallets.filter(item => item.allowSend());
   }, [availableWallets, chainType, onChainRequireSend, wallets]);
 
-  // useEffect(() => {
-  //   setOptions({
-  //     statusBarStyle: isLoading || (availableWallets || filterWallets()).length === 0 ? 'light' : 'auto',
-  //   });
-  // }, [isLoading, availableWallets, setOptions, filterWallets]);
+  useEffect(() => {
+    setOptions({
+      statusBarStyle: isLoading || (availableWallets || filterWallets()).length === 0 ? 'light' : 'auto',
+    });
+  }, [isLoading, availableWallets, setOptions, filterWallets]);
 
   useEffect(() => {
     if (!isModal) {

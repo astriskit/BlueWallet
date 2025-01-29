@@ -63,7 +63,7 @@ const AddWalletStack = () => {
       <Stack.Screen
         name="ImportCustomDerivationPath"
         options={navigationStyle({
-          // statusBarStyle: 'light', // buggy
+          statusBarStyle: 'light',
           title: loc.wallets.import_derivation_title,
         })(theme)}
       />
@@ -71,7 +71,7 @@ const AddWalletStack = () => {
       <Stack.Screen
         name="ImportSpeed"
         options={navigationStyle({
-          // statusBarStyle: 'light',
+          statusBarStyle: 'light',
           title: loc.wallets.import_title,
         })(theme)}
       />
@@ -114,7 +114,7 @@ const AddWalletStack = () => {
           },
           headerTintColor: '#FFFFFF',
           // headerBackTitleVisible: false, // TODO: refactor-type
-          // statusBarStyle: 'light',
+          statusBarStyle: 'light',
           headerShadowVisible: false,
         })(theme)}
       />
