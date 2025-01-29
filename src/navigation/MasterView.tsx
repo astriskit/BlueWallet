@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { FAB as Fab } from '@rneui/themed';
 import { router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -32,7 +32,7 @@ const MasterView: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </Suspense>
         )}
       </GestureHandlerRootView>
-      {__E2E_TESTING__ && (
+      {__E2E_TESTING__ && Platform.OS === 'ios' && (
         <SafeArea style={styles.back}>
           <Fab title="<" size="small" testID="GO_BACK" onPress={goBack} />
         </SafeArea>
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   },
   back: {
     flex: 0.0125,
+    marginBottom: 20,
   },
 });
 
