@@ -21,7 +21,7 @@ import SafeArea from '../../components/SafeArea';
 import presentAlert from '../../components/Alert';
 import { ScanQRCodeParamList } from '@/src/navigation/DetailViewStackParamList';
 
-const __E2E_TESTING__ = false;
+const __E2E_TESTING__ = true;
 
 let decoder: BlueURDecoder | null = null;
 

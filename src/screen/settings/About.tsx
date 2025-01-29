@@ -4,7 +4,7 @@ import { Alert, Image, Linking, Platform, ScrollView, StyleSheet, Text, Touchabl
 import { getApplicationName, getBuildNumber, getBundleId, getUniqueIdSync, getVersion, hasGmsSync } from 'react-native-device-info';
 import { Icon } from '@rneui/themed';
 import Rate, { AndroidMarket } from 'react-native-rate';
-import A from '../../blue_modules/analytics';
+// import A from '../../blue_modules/analytics';
 import { BlueCard, BlueSpacing20, BlueTextCentered } from '../../BlueComponents';
 import { HDSegwitBech32Wallet } from '../../class';
 import presentAlert from '../../components/Alert';
@@ -213,7 +213,7 @@ const About: React.FC = () => {
           accessibilityRole="button"
           onPress={() => {
             const stringToCopy = 'userId:' + getUniqueIdSync();
-            A.logError('copied unique id');
+            // A.logError('copied unique id');
             Clipboard.setStringAsync(stringToCopy);
           }}
         >
