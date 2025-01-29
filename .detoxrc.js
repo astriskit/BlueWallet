@@ -6,7 +6,7 @@ module.exports = {
   testRunner: {
     $0: 'jest',
     args: {
-      config: 'e2e/jest.config.js',
+      config: 'tests/e2e/jest.config.js',
       _: ['e2e'],
     },
   },
@@ -46,15 +46,15 @@ module.exports = {
     simulator: {
       type: 'ios.simulator',
       device: {
-        name: 'iPhone 14',
+        name: 'of-test-dev',
       },
     },
     emulator: {
       type: 'android.emulator',
       device: {
-        avdName: 'pixel_4',
+        avdName: 'Pixel_6_API_33',
       },
-    },
+    }
   },
   configurations: {
     'ios.debug': {

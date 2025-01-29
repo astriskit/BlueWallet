@@ -1,7 +1,8 @@
 import assert from 'assert';
 import * as bitcoin from 'bitcoinjs-lib';
 
-import { extractTextFromElementById, getSwitchValue, hashIt, helperImportWallet, sleep, sup, yo } from './helperz';
+import { extractTextFromElementById, getSwitchValue, hashIt, helperImportWallet, sleep, sup, yo, back } from './helperz';
+import { openApp } from './openApp';
 
 /**
  * in this suite each test requires that there is one specific wallet present, thus, we import it
@@ -14,12 +15,12 @@ beforeAll(async () => {
     return;
   }
   // reinstalling the app just for any case to clean up app's storage
-  await device.launchApp({ delete: true });
+  await openApp({ delete: true });
 
   console.log('before all - importing bip48...');
   await helperImportWallet(process.env.HD_MNEMONIC_BIP84, 'HDsegwitBech32', 'Imported HD SegWit (BIP84 Bech32 Native)', '0.00105526');
   console.log('...imported!');
-  await device.pressBack();
+  await back();
   await sleep(15000);
 }, 1200_000);
 
@@ -86,16 +87,13 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // now, testing scanQR with bip21:
 
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
     await element(by.id('changeAmountUnitButton')).tap(); // switched to SATS
     await element(by.id('BlueAddressInputScanQrButton')).tap();
 
-    // tapping 5 times invisible button is a backdoor:
-    for (let c = 0; c <= 5; c++) {
-      await element(by.id('ScanQrBackdoorButton')).tap();
-      await sleep(1000);
-    }
+    await element(by.id('ScanQrBackdoorButton')).tap();
+    await sleep(1000);
 
     const bip21 = 'bitcoin:bc1qnapskphjnwzw2w3dk4anpxntunc77v6qrua0f7?amount=0.00015&pj=https://btc.donate.kukks.org/BTC/pj';
     await element(by.id('scanQrBackdoorInput')).replaceText(bip21);
@@ -116,18 +114,15 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // now, testing scanQR with just address after amount set to 1.1 USD. Denomination should not change after qrcode scan
 
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
     await element(by.id('changeAmountUnitButton')).tap(); // switched to SATS
     await element(by.id('changeAmountUnitButton')).tap(); // switched to FIAT
     await element(by.id('BitcoinAmountInput')).replaceText('1.1');
     await element(by.id('BlueAddressInputScanQrButton')).tap();
 
-    // tapping 5 times invisible button is a backdoor:
-    for (let c = 0; c <= 5; c++) {
-      await element(by.id('ScanQrBackdoorButton')).tap();
-      await sleep(1000);
-    }
+    await element(by.id('ScanQrBackdoorButton')).tap();
+    await sleep(1000);
 
     await element(by.id('scanQrBackdoorInput')).replaceText('bc1qnapskphjnwzw2w3dk4anpxntunc77v6qrua0f7');
     await element(by.id('scanQrBackdoorOkButton')).tap();
@@ -148,8 +143,8 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // now, testing units switching, and then creating tx with SATS:
 
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
     await element(by.id('changeAmountUnitButton')).tap(); // switched to BTC
     await element(by.id('BitcoinAmountInput')).replaceText('0.00015');
     await element(by.id('changeAmountUnitButton')).tap(); // switched to sats
@@ -312,8 +307,8 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     assert.ok(transaction.outs[0].value > 100000);
 
     // add second output with amount
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Add Recipient')).tap();
     await yo('Transaction1');
@@ -358,11 +353,8 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Sign a transaction')).tap();
 
-    // tapping 5 times invisible button is a backdoor:
-    for (let c = 0; c <= 5; c++) {
-      await element(by.id('ScanQrBackdoorButton')).tap();
-      await sleep(1000);
-    }
+    await element(by.id('ScanQrBackdoorButton')).tap();
+    await sleep(1000);
     // 1 input, 2 outputs. wallet can fully sign this tx
     const psbt =
       'cHNidP8BAFICAAAAAXYa7FEQBAQ2X0B48aHHKKgzkVuHfQ2yCOi3v9RR0IqlAQAAAAAAAACAAegDAAAAAAAAFgAUSnH40G+jiJfreeRb36cs641KFm8AAAAAAAEBH5YVAAAAAAAAFgAUTKHjDm4OJQSbvy9uzyLYi5i5XIoiBgMQcGrP5TIMrdvb73yB4WnZvkPzKr1EzJXJYBHWmlPJZRgAAAAAVAAAgAAAAIAAAACAAQAAAD4AAAAAAA==';
@@ -405,9 +397,9 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
       await element(by.id('BIP47Switch')).tap();
       await element(by.id('WalletDetailsScroll')).swipe('up', 'fast', 1);
       await expect(element(by.text('Contacts'))).toBeVisible();
-      await device.pressBack();
+      await back();
     } else {
-      await device.pressBack();
+      await back();
     }
 
     // go to receive screen and check that payment code is there
@@ -429,8 +421,8 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     ).toBeVisible();
 
     // now, testing contacts list
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
     await element(by.text('Imported HD SegWit (BIP84 Bech32 Native)')).tap();
     await element(by.id('WalletDetails')).tap();
     await element(by.id('WalletDetailsScroll')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
@@ -469,9 +461,9 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // now, doing a real transaction with our contacts
 
-    await device.pressBack();
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
+    await back();
     await element(by.text('Imported HD SegWit (BIP84 Bech32 Native)')).tap();
     await yo('SendButton');
 
@@ -529,14 +521,14 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
 
     // rename test
     await element(by.id('WalletNameInput')).replaceText('testname');
-    await device.pressBack();
+    await back();
     await sup('testname');
     await expect(element(by.id('WalletLabel'))).toHaveText('testname');
     await element(by.id('WalletDetails')).tap();
 
     // rename back
     await element(by.id('WalletNameInput')).replaceText('Imported HD SegWit (BIP84 Bech32 Native)');
-    await device.pressBack();
+    await back();
     await sup('Imported HD SegWit (BIP84 Bech32 Native)');
     await expect(element(by.id('WalletLabel'))).toHaveText('Imported HD SegWit (BIP84 Bech32 Native)');
     await element(by.id('WalletDetails')).tap();
@@ -546,13 +538,13 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.id('WalletExport')).tap();
     await element(by.id('WalletExportScroll')).swipe('up', 'fast', 1);
     await expect(element(by.id('Secret'))).toHaveText(process.env.HD_MNEMONIC_BIP84);
-    await device.pressBack();
+    await back();
 
     // XPUB
     await element(by.id('WalletDetailsScroll')).swipe('up', 'fast', 1);
     await element(by.id('XPub')).tap();
     await expect(element(by.id('CopyTextToClipboard'))).toBeVisible();
-    await device.pressBack();
+    await back();
 
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
   });
@@ -666,9 +658,9 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     assert.strictEqual(tx1.ins[0].index, 0);
 
     // back to wallet screen
-    await device.pressBack();
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
+    await back();
 
     // create tx with unfrozen input
     await yo('SendButton');

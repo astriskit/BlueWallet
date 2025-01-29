@@ -3,18 +3,22 @@ const { resolveConfig } = require('detox/internals');
 
 const platform = device.getPlatform();
 
-module.exports.openApp = async function openApp() {
+module.exports.openApp = async function openApp(deviceInstallOptions = {}) {
   const config = await resolveConfig();
   if (config.configurationName.split('.')[1] === 'debug') {
-    return await openAppForDebugBuild(platform);
+    await openAppForDebugBuild(platform, deviceInstallOptions);
   } else {
-    return await device.launchApp({
+    if (platform === 'ios' && deviceInstallOptions?.delete) {
+      await device.clearKeychain();
+    }
+    await device.launchApp({
       newInstance: true,
+      ...deviceInstallOptions,
     });
   }
 };
 
-async function openAppForDebugBuild(platform) {
+async function openAppForDebugBuild(platform, deviceInstallOptions = {}) {
   const deepLinkUrl = process.env.EXPO_USE_UPDATES
     ? // Testing latest published EAS update for the test_debug channel
       getDeepLinkUrl(getLatestUpdateUrl())
@@ -22,10 +26,14 @@ async function openAppForDebugBuild(platform) {
       getDeepLinkUrl(getDevLauncherPackagerUrl(platform));
 
   if (platform === 'ios') {
+    if (deviceInstallOptions?.delete) {
+      await device.clearKeychain();
+    }
     await device.launchApp({
       newInstance: true,
+      ...deviceInstallOptions,
     });
-    sleep(3000);
+    await sleep(3000);
     await device.openURL({
       url: deepLinkUrl,
     });
@@ -33,20 +41,18 @@ async function openAppForDebugBuild(platform) {
     await device.launchApp({
       newInstance: true,
       url: deepLinkUrl,
+      ...deviceInstallOptions,
     });
   }
 
   await sleep(3000);
 }
 
-const getDeepLinkUrl = url =>
-  `bluewallet://expo-development-client/?url=${encodeURIComponent(url)}`;
+const getDeepLinkUrl = url => `bluewallet://expo-development-client/?url=${encodeURIComponent(url)}`;
 
-const getDevLauncherPackagerUrl = platform =>
-  `http://localhost:8081/index.bundle?platform=${platform}&dev=true&minify=false&disableOnboarding=1`;
+const getDevLauncherPackagerUrl = platform => `http:/localhost:8081/?disableOnboarding=1`;
 
-const getLatestUpdateUrl = () =>
-  `https://u.expo.dev/${getAppId()}?channel-name=test_debug&disableOnboarding=1`;
+const getLatestUpdateUrl = () => `https://u.expo.dev/${getAppId()}?channel-name=test_debug&disableOnboarding=1`;
 
 const getAppId = () => appConfig?.expo?.extra?.eas?.projectId ?? '';
 

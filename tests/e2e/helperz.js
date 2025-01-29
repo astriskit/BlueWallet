@@ -143,3 +143,30 @@ export async function helperCreateWallet(walletName) {
   await element(by.id('WalletsList')).swipe('right', 'fast', 1); // in case emu screen is small and it doesnt fit
   await expect(element(by.id(walletName || 'cr34t3d'))).toBeVisible();
 }
+
+export const back = async () => {
+  const platform = device.getPlatform();
+  if (platform === 'android') {
+    return await device.pressBack();
+  }
+  return await element(by.id('GO_BACK')).tap();
+};
+
+const typeInto =
+  (useId = true) =>
+  async (inputId, text, eraseFirst = false) => {
+    const platform = device.getPlatform();
+    if (platform === 'ios') {
+      await element(by[useId ? 'id' : 'text'](inputId)).tap();
+    }
+    if (eraseFirst) {
+      await element(by[useId ? 'id' : 'text'](inputId)).clearText();
+    }
+    await element(by[useId ? 'id' : 'text'](inputId)).typeText(text);
+    // if (platform === 'ios') {
+    //   await element(by.id(inputId)).tap({ x: -2, y: -2 }); // bring out of focus
+    // }
+  };
+
+export const typeIntoByText = typeInto(false);
+export const typeIntoById = typeInto(true);

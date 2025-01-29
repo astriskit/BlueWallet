@@ -1,8 +1,9 @@
-import { hashIt, helperDeleteWallet, helperImportWallet, sleep, yo } from './helperz';
+import { hashIt, helperDeleteWallet, helperImportWallet, sleep, yo, back } from './helperz';
+import { openApp } from './openApp';
 
 beforeAll(async () => {
   // reinstalling the app just for any case to clean up app's storage
-  await device.launchApp({ delete: true });
+  await openApp({ delete: true });
 }, 300_000);
 
 describe('BlueWallet UI Tests - import Watch-only wallet (zpub)', () => {
@@ -20,7 +21,7 @@ describe('BlueWallet UI Tests - import Watch-only wallet (zpub)', () => {
     if (process.env.TRAVIS) {
       if (require('fs').existsSync(lockFile)) return console.warn('skipping', JSON.stringify('t31'), 'as it previously passed on Travis');
     }
-    await device.launchApp({ newInstance: true });
+    await openApp({ newInstance: true });
     await helperImportWallet(
       // MNEMONICS_KEYSTONE
       'zpub6s2EvLxwvDpaHNVP5vfordTyi8cH1fR8usmEjz7RsSQjfTTGU2qA5VEcEyYYBxpZAyBarJoTraB4VRJKVz97Au9jRNYfLAeeHC5UnRZbz8Y',
@@ -49,7 +50,7 @@ describe('BlueWallet UI Tests - import Watch-only wallet (zpub)', () => {
     await expect(element(by.id('BitcoinAddressQRCodeContainer'))).toBeVisible();
 
     await expect(element(by.text('bitcoin:BC1QC8WUN6LF9VCAJPDDTGDPD2PDRP0KWP29J6UPGV?amount=1&label=Test'))).toBeVisible();
-    await device.pressBack();
+    await back();
     await element(by.id('SendButton')).tap();
     await element(by.text('OK')).tap();
 
@@ -62,12 +63,9 @@ describe('BlueWallet UI Tests - import Watch-only wallet (zpub)', () => {
     const signedPsbt =
       'UR:CRYPTO-PSBT/HDWTJOJKIDJYZMADAEGOAOAEAEAEADLFIAYKFPTOTIHSMNDLJTLFTYPAHTFHZESOAODIBNADFDCPFZZEKSSTTOJYKPRLJOAEAEAEAEAEZMZMZMZMADNBDSAEAEAEAEAEAECFKOPTBBCFBGNTGUVAEHNDPECFUYNBHKRNPMCMJNYTBKROYKLOPSAEAEAEAEAEADADCTBEDIAEAEAEAEAEAECMAEBBFTZSECYTJZTEKGOEKECAVOGHMTVWGYIAMHCSKOSWADAYJEAOFLDYFYAOCXGEUTDNBDTNMKTOQDLASKMTTSCLCSHPOLGDBEHDBBZMNERLRFSFIDLTMHTLMTLYWKAOCXFRBWHGOSGYRLYKTSSSSSIEWDZOVOSTFNISKTBYCLLRLRHSHFCMSGTTVDRHURNSOLADCLAXENRDWMCPOTZMHKGMFPNTHLMNDMCETOHLOXTANDAMEOTSURLFHHPLTSDPCSJTWSGAAEAEDLFPLTSW';
 
-    // tapping 5 times invisible button is a backdoor:
     await sleep(5000); // wait for camera screen to initialize
-    for (let c = 0; c <= 5; c++) {
-      await element(by.id('ScanQrBackdoorButton')).tap();
-      await sleep(1000);
-    }
+    await element(by.id('ScanQrBackdoorButton')).tap();
+    await sleep(1000);
 
     await element(by.id('scanQrBackdoorInput')).replaceText(unsignedPsbt);
     await element(by.id('scanQrBackdoorOkButton')).tap();
@@ -79,19 +77,17 @@ describe('BlueWallet UI Tests - import Watch-only wallet (zpub)', () => {
 
     // tapping 5 times invisible button is a backdoor:
     await sleep(5000); // wait for camera screen to initialize
-    for (let c = 0; c <= 5; c++) {
-      await element(by.id('ScanQrBackdoorButton')).tap();
-      await sleep(1000);
-    }
+    await element(by.id('ScanQrBackdoorButton')).tap();
+    await sleep(1000);
 
     await element(by.id('scanQrBackdoorInput')).replaceText(signedPsbt);
     await element(by.id('scanQrBackdoorOkButton')).tap();
     await expect(element(by.id('ScanQrBackdoorButton'))).toBeNotVisible();
     await yo('PsbtWithHardwareWalletBroadcastTransactionButton');
 
-    await device.pressBack();
-    await device.pressBack();
-    await device.pressBack();
+    await back();
+    await back();
+    await back();
     await helperDeleteWallet('Imported Watch-only', '10000');
 
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
