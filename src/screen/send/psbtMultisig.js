@@ -158,7 +158,7 @@ const PsbtMultisig = () => {
       const newPsbt = psbt.combine(receivedPSBT);
       setPsbt(newPsbt);
     } catch (error) {
-      presentAlert({ message: error });
+      presentAlert({ message: error?.message || 'Error while combining!' });
     }
   };
 

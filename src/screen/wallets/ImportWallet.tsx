@@ -31,26 +31,30 @@ const ImportWallet = () => {
   const triggerImport = route?.params?.triggerImport ?? false;
   const [importText, setImportText] = useState<string>(label);
   const [isToolbarVisibleForAndroid, setIsToolbarVisibleForAndroid] = useState<boolean>(false);
-  const [, setSpeedBackdoor] = useState<number>(0);
+  const [speedBackdoor, setSpeedBackdoor] = useState<number>(0);
   const [searchAccountsMenuState, setSearchAccountsMenuState] = useState<boolean>(false);
   const [askPassphraseMenuState, setAskPassphraseMenuState] = useState<boolean>(false);
   const [clearClipboardMenuState, setClearClipboardMenuState] = useState<boolean>(true);
   const { isPrivacyBlurEnabled } = useSettings();
-  const styles = StyleSheet.create({
-    root: {
-      paddingTop: 10,
-      backgroundColor: colors.elevated,
-      flex: 1,
-    },
-    center: {
-      flex: 1,
-      marginHorizontal: 16,
-      backgroundColor: colors.elevated,
-    },
-    button: {
-      padding: 10,
-    },
-  });
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        root: {
+          paddingTop: 10,
+          backgroundColor: colors.elevated,
+          flex: 1,
+        },
+        center: {
+          flex: 1,
+          marginHorizontal: 16,
+          backgroundColor: colors.elevated,
+        },
+        button: {
+          padding: 10,
+        },
+      }),
+    [colors.elevated],
+  );
 
   const onBlur = useCallback(() => {
     const valueWithSingleWhitespace = importText.replace(/^\s+|\s+$|\s+(?=\s)/g, '');
@@ -122,14 +126,20 @@ const ImportWallet = () => {
     }
   }, [route.name, onBarScanned, route.params?.onBarScanned, navigation]);
 
-  const speedBackdoorTap = () => {
-    setSpeedBackdoor(v => {
-      v += 1;
-      if (v < 5) return v;
+  const resetSpeedBackdoor = useCallback(() => {
+    setSpeedBackdoor(0);
+  }, []);
+
+  const speedBackdoorTap = useCallback(() => {
+    setSpeedBackdoor(v => (v += 1));
+  }, []);
+
+  useEffect(() => {
+    if (speedBackdoor === 5) {
+      resetSpeedBackdoor();
       navigation.navigate('ImportSpeed');
-      return 0;
-    });
-  };
+    }
+  }, [navigation, speedBackdoor, resetSpeedBackdoor]);
 
   const toolTipOnPressMenuItem = useCallback(
     (menuItem: string) => {

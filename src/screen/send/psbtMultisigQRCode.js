@@ -3,6 +3,8 @@ import * as bitcoin from 'bitcoinjs-lib';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
+import { router } from '@/src/NavigationService';
+
 import { BlueSpacing20 } from '../../BlueComponents';
 import presentAlert from '../../components/Alert';
 import { DynamicQRCode } from '../../components/DynamicQRCode';
@@ -55,10 +57,10 @@ const PsbtMultisigQRCode = () => {
         presentAlert({ message: loc.wallets.import_error });
       } else {
         // psbt base64?
-        navigation.navigate({ name: 'PsbtMultisig', params: { receivedPSBTBase64: ret.data }, merge: true });
+        router.dismissTo({ pathname: '/SendDetailsRoot/PsbtMultisig', params: { ...params, receivedPSBTBase64: ret.data } });
       }
     },
-    [navigation],
+    [params],
   );
 
   useEffect(() => {

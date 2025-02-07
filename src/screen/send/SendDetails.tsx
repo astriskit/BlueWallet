@@ -368,7 +368,7 @@ const SendDetails = () => {
     }, []),
   );
 
-  const getChangeAddressAsync = async () => {
+  const getChangeAddressAsync = useCallback(async () => {
     if (changeAddress) return changeAddress; // cache
 
     let change;
@@ -395,7 +395,7 @@ const SendDetails = () => {
     if (change) setChangeAddress(change); // cache
 
     return change;
-  };
+  }, [changeAddress, sleep, wallet]);
   /**
    * TODO: refactor this mess, get rid of regexp, use https://github.com/bitcoinjs/bitcoinjs-lib/issues/890 etc etc
    *
@@ -466,87 +466,7 @@ const SendDetails = () => {
     [setParams, wallet],
   );
 
-  const createTransaction = async () => {
-    assert(wallet, 'Internal error: wallet is not set');
-    Keyboard.dismiss();
-    setIsLoading(true);
-    const requestedSatPerByte = feeRate;
-    for (const [index, transaction] of addresses.entries()) {
-      let error;
-      if (!transaction.amount || Number(transaction.amount) < 0 || parseFloat(String(transaction.amount)) === 0) {
-        error = loc.send.details_amount_field_is_not_valid;
-        console.log('validation error');
-      } else if (parseFloat(String(transaction.amountSats)) <= 500) {
-        error = loc.send.details_amount_field_is_less_than_minimum_amount_sat;
-        console.log('validation error');
-      } else if (!requestedSatPerByte || parseFloat(requestedSatPerByte) < 1) {
-        error = loc.send.details_fee_field_is_not_valid;
-        console.log('validation error');
-      } else if (!transaction.address) {
-        error = loc.send.details_address_field_is_not_valid;
-        console.log('validation error');
-      } else if (balance - Number(transaction.amountSats) < 0) {
-        // first sanity check is that sending amount is not bigger than available balance
-        error = frozenBalance > 0 ? loc.send.details_total_exceeds_balance_frozen : loc.send.details_total_exceeds_balance;
-        console.log('validation error');
-      } else if (transaction.address) {
-        const address = transaction.address.trim().toLowerCase();
-        if (address.startsWith('lnb') || address.startsWith('lightning:lnb')) {
-          error = loc.send.provided_address_is_invoice;
-          console.log('validation error');
-        }
-      }
-
-      if (!error) {
-        const cl = new ContactList();
-        if (!wallet.isAddressValid(transaction.address) && !cl.isPaymentCodeValid(transaction.address)) {
-          console.log('validation error');
-          error = loc.send.details_address_field_is_not_valid;
-        }
-      }
-
-      // validating payment codes, if any
-      if (!error) {
-        if (transaction.address.startsWith('sp1')) {
-          if (!wallet.allowSilentPaymentSend()) {
-            console.log('validation error');
-            error = loc.send.cant_send_to_silentpayment_adress;
-          }
-        }
-
-        if (transaction.address.startsWith('PM')) {
-          if (!wallet.allowBIP47()) {
-            console.log('validation error');
-            error = loc.send.cant_send_to_bip47;
-          } else if (!(wallet as unknown as AbstractHDElectrumWallet).getBIP47NotificationTransaction(transaction.address)) {
-            console.log('validation error');
-            error = loc.send.cant_find_bip47_notification;
-          } else {
-            // BIP47 is allowed, notif tx is in place, lets sync joint addresses with the receiver
-            await (wallet as unknown as AbstractHDElectrumWallet).syncBip47ReceiversAddresses(transaction.address);
-          }
-        }
-      }
-
-      if (error) {
-        scrollView.current?.scrollToIndex({ index });
-        setIsLoading(false);
-        presentAlert({ title: loc.errors.error, message: error });
-        triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
-        return;
-      }
-    }
-
-    try {
-      await createPsbtTransaction();
-    } catch (Err: any) {
-      setIsLoading(false);
-      presentAlert({ title: loc.errors.error, message: Err.message });
-      triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
-    }
-  };
-
-  const createPsbtTransaction = async () => {
+  const createPsbtTransaction = useCallback(async () => {
     if (!wallet) return;
     const change = await getChangeAddressAsync();
     assert(change, 'Could not get change address');
@@ -645,7 +565,100 @@ const SendDetails = () => {
       psbt,
     });
     setIsLoading(false);
-  };
+  }, [
+    addresses,
+    feeRate,
+    getChangeAddressAsync,
+    isTransactionReplaceable,
+    navigation,
+    payjoinUrl,
+    routeParams.launchedBy,
+    saveToDisk,
+    transactionMemo,
+    txMetadata,
+    utxos,
+    wallet,
+  ]);
+
+  const createTransaction = useCallback(async () => {
+    assert(wallet, 'Internal error: wallet is not set');
+    Keyboard.dismiss();
+    setIsLoading(true);
+    const requestedSatPerByte = feeRate;
+    for (const [index, transaction] of addresses.entries()) {
+      let error;
+      if (!transaction.amount || Number(transaction.amount) < 0 || parseFloat(String(transaction.amount)) === 0) {
+        error = loc.send.details_amount_field_is_not_valid;
+        console.log('validation error');
+      } else if (parseFloat(String(transaction.amountSats)) <= 500) {
+        error = loc.send.details_amount_field_is_less_than_minimum_amount_sat;
+        console.log('validation error');
+      } else if (!requestedSatPerByte || parseFloat(requestedSatPerByte) < 1) {
+        error = loc.send.details_fee_field_is_not_valid;
+        console.log('validation error');
+      } else if (!transaction.address) {
+        error = loc.send.details_address_field_is_not_valid;
+        console.log('validation error');
+      } else if (balance - Number(transaction.amountSats) < 0) {
+        // first sanity check is that sending amount is not bigger than available balance
+        error = frozenBalance > 0 ? loc.send.details_total_exceeds_balance_frozen : loc.send.details_total_exceeds_balance;
+        console.log('validation error');
+      } else if (transaction.address) {
+        const address = transaction.address.trim().toLowerCase();
+        if (address.startsWith('lnb') || address.startsWith('lightning:lnb')) {
+          error = loc.send.provided_address_is_invoice;
+          console.log('validation error');
+        }
+      }
+
+      if (!error) {
+        const cl = new ContactList();
+        if (!wallet.isAddressValid(transaction.address) && !cl.isPaymentCodeValid(transaction.address)) {
+          console.log('validation error');
+          error = loc.send.details_address_field_is_not_valid;
+        }
+      }
+
+      // validating payment codes, if any
+      if (!error) {
+        if (transaction.address.startsWith('sp1')) {
+          if (!wallet.allowSilentPaymentSend()) {
+            console.log('validation error');
+            error = loc.send.cant_send_to_silentpayment_adress;
+          }
+        }
+
+        if (transaction.address.startsWith('PM')) {
+          if (!wallet.allowBIP47()) {
+            console.log('validation error');
+            error = loc.send.cant_send_to_bip47;
+          } else if (!(wallet as unknown as AbstractHDElectrumWallet).getBIP47NotificationTransaction(transaction.address)) {
+            console.log('validation error');
+            error = loc.send.cant_find_bip47_notification;
+          } else {
+            // BIP47 is allowed, notif tx is in place, lets sync joint addresses with the receiver
+            await (wallet as unknown as AbstractHDElectrumWallet).syncBip47ReceiversAddresses(transaction.address);
+          }
+        }
+      }
+
+      if (error) {
+        scrollView.current?.scrollToIndex({ index });
+        setIsLoading(false);
+        presentAlert({ title: loc.errors.error, message: error });
+        triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+        return;
+      }
+    }
+
+    try {
+      await createPsbtTransaction();
+    } catch (Err: any) {
+      setIsLoading(false);
+      presentAlert({ title: loc.errors.error, message: Err.message });
+      triggerHapticFeedback(HapticFeedbackTypes.NotificationError);
+    }
+  }, [addresses, balance, createPsbtTransaction, feeRate, frozenBalance, wallet]);
 
   useEffect(() => {
     const newWallet = wallets.find(w => w.getID() === routeParams.walletID);
@@ -655,22 +668,31 @@ const SendDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeParams.walletID]);
 
-  const setTransactionMemo = (memo: string) => {
-    setParams({ transactionMemo: memo });
-  };
+  const setTransactionMemo = useCallback(
+    (memo: string) => {
+      setParams({ transactionMemo: memo });
+    },
+    [setParams],
+  );
+
+  const navigateToQRCodeScanner = useCallback(() => {
+    navigation.navigate('ScanQRCode', {
+      showFileImportButton: true,
+    });
+  }, [navigation]);
 
   /**
    * same as `importTransaction`, but opens camera instead.
    *
    * @returns {Promise<void>}
    */
-  const importQrTransaction = async () => {
+  const importQrTransaction = useCallback(async () => {
     if (wallet?.type !== WatchOnlyWallet.type) {
       return presentAlert({ title: loc.errors.error, message: 'Importing transaction in non-watchonly wallet (this should never happen)' });
     }
 
     navigateToQRCodeScanner();
-  };
+  }, [navigateToQRCodeScanner, wallet?.type]);
 
   const importQrTransactionOnBarScanned = useCallback(
     (ret: any) => {
@@ -707,7 +729,7 @@ const SendDetails = () => {
    *
    * @returns {Promise<void>}
    */
-  const importTransaction = async () => {
+  const importTransaction = useCallback(async () => {
     if (wallet?.type !== WatchOnlyWallet.type) {
       return presentAlert({ title: loc.errors.error, message: 'Importing transaction in non-watchonly wallet (this should never happen)' });
     }
@@ -758,9 +780,9 @@ const SendDetails = () => {
         presentAlert({ title: loc.errors.error, message: loc.send.details_no_signed_tx });
       }
     }
-  };
+  }, [navigation, transactionMemo, wallet]);
 
-  const askCosignThisTransaction = async () => {
+  const askCosignThisTransaction = useCallback(async () => {
     return new Promise(resolve => {
       Alert.alert(
         '',
@@ -779,7 +801,7 @@ const SendDetails = () => {
         { cancelable: false },
       );
     });
-  };
+  }, []);
 
   const _importTransactionMultisig = useCallback(
     async (base64arg: string | false) => {
@@ -811,9 +833,9 @@ const SendDetails = () => {
     [navigation, sleep, transactionMemo, wallet],
   );
 
-  const importTransactionMultisig = () => {
+  const importTransactionMultisig = useCallback(() => {
     return _importTransactionMultisig(false);
-  };
+  }, [_importTransactionMultisig]);
 
   const onBarScanned = useCallback(
     (ret: any) => {
@@ -902,13 +924,7 @@ const SendDetails = () => {
     _importTransactionMultisig,
   ]);
 
-  const navigateToQRCodeScanner = () => {
-    navigation.navigate('ScanQRCode', {
-      showFileImportButton: true,
-    });
-  };
-
-  const handleAddRecipient = () => {
+  const handleAddRecipient = useCallback(() => {
     setAddresses(prevAddresses => [...prevAddresses, { address: '', key: String(Math.random()) } as IPaymentDestinations]);
 
     // Wait for the state to update before scrolling
@@ -919,7 +935,7 @@ const SendDetails = () => {
         animated: true,
       });
     }, 0);
-  };
+  }, [addresses.length]);
 
   const onRemoveAllRecipientsConfirmed = useCallback(() => {
     setAddresses([{ address: '', key: String(Math.random()) } as IPaymentDestinations]);

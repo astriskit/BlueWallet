@@ -34,6 +34,7 @@ export async function helperImportWallet(importText, walletType, expectedWalletL
     await element(by.id('SpeedBackdoor')).tap();
     await sleep(1000);
   }
+  await sleep(3000);
   await element(by.id('SpeedMnemonicInput')).replaceText(importText);
   await element(by.id('SpeedWalletTypeInput')).replaceText(walletType);
   if (passphrase) await element(by.id('SpeedPassphraseInput')).replaceText(passphrase);
@@ -43,8 +44,11 @@ export async function helperImportWallet(importText, walletType, expectedWalletL
   await sup('OK', 3 * 61000);
   await element(by.text('OK')).tap();
 
+  await sleep(3000)
+  
   // lets go inside wallet
   await element(by.text(expectedWalletLabel)).tap();
+  await sleep(3000)
   // label might change in the future
   await expect(element(by.id('WalletBalance'))).toHaveText(expectedBalance);
 }

@@ -171,7 +171,7 @@ const DetailViewStackScreensStack = () => {
       <Stack.Screen
         name="Settings"
         options={navigationStyle({
-          headerTransparent: true,
+          // headerTransparent: true, // commenting fixes overlapping text on android
           title: loc.settings.header,
           // workaround to deal with the flicker when headerBackTitleVisible is false
           headerBackTitleStyle: { fontSize: 0 },

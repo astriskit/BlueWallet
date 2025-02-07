@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BlueFormLabel, BlueFormMultiInput, BlueSpacing20 } from '../../BlueComponents';
@@ -22,32 +22,36 @@ const ImportSpeed = () => {
   const [passphrase, setPassphrase] = useState<string>('');
   const { addAndSaveWallet } = useStorage();
 
-  const styles = StyleSheet.create({
-    root: {
-      paddingTop: 40,
-      backgroundColor: colors.elevated,
-    },
-    center: {
-      flex: 1,
-      marginHorizontal: 16,
-      backgroundColor: colors.elevated,
-    },
-    pathInput: {
-      flexDirection: 'row',
-      borderWidth: 1,
-      borderBottomWidth: 0.5,
-      minHeight: 44,
-      height: 44,
-      alignItems: 'center',
-      marginVertical: 8,
-      borderRadius: 4,
-      paddingHorizontal: 8,
-      color: '#81868e',
-      borderColor: colors.formBorder,
-      borderBottomColor: colors.formBorder,
-      backgroundColor: colors.inputBackgroundColor,
-    },
-  });
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        root: {
+          paddingTop: 40,
+          backgroundColor: colors.elevated,
+        },
+        center: {
+          flex: 1,
+          marginHorizontal: 16,
+          backgroundColor: colors.elevated,
+        },
+        pathInput: {
+          flexDirection: 'row',
+          borderWidth: 1,
+          borderBottomWidth: 0.5,
+          minHeight: 44,
+          height: 44,
+          alignItems: 'center',
+          marginVertical: 8,
+          borderRadius: 4,
+          paddingHorizontal: 8,
+          color: '#81868e',
+          borderColor: colors.formBorder,
+          borderBottomColor: colors.formBorder,
+          backgroundColor: colors.inputBackgroundColor,
+        },
+      }),
+    [colors.elevated, colors.formBorder, colors.inputBackgroundColor],
+  );
 
   const importMnemonic = async () => {
     setLoading(true);
@@ -73,9 +77,9 @@ const ImportSpeed = () => {
         wallet.setPassphrase(passphrase);
       }
       await wallet.fetchBalance();
+      await addAndSaveWallet(wallet);
       // @ts-ignore: navigation
       navigation.getParent().pop();
-      addAndSaveWallet(wallet);
     } catch (e: any) {
       presentAlert({ message: e.message });
     } finally {

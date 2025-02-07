@@ -50,7 +50,7 @@ async function openAppForDebugBuild(platform, deviceInstallOptions = {}) {
 
 const getDeepLinkUrl = url => `bluewallet://expo-development-client/?url=${encodeURIComponent(url)}`;
 
-const getDevLauncherPackagerUrl = platform => `http:/localhost:8081/?disableOnboarding=1`;
+const getDevLauncherPackagerUrl = platform => `http:/10.0.2.2:8081/?disableOnboarding=1`; // might need to change the host while running the dev
 
 const getLatestUpdateUrl = () => `https://u.expo.dev/${getAppId()}?channel-name=test_debug&disableOnboarding=1`;
 

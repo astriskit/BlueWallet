@@ -152,7 +152,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     //   await back();
     //   await back();
     // } else {
-    //   await back();
+    await back();
     // }
 
     // tools
@@ -193,7 +193,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     await helperCreateWallet();
 
-    await device.launchApp({ newInstance: true });
+    await openApp({ newInstance: true });
     await yo('WalletsList');
     await expect(element(by.id('cr34t3d'))).toBeVisible();
     await element(by.id('cr34t3d')).tap();
@@ -273,7 +273,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     if (process.env.TRAVIS) await sleep(3000); // hopefully helps prevent crash
 
     // relaunch app
-    await device.launchApp({ newInstance: true });
+    await openApp({ newInstance: true });
     await waitFor(element(by.text('OK')))
       .toBeVisible()
       .withTimeout(33000);
@@ -330,15 +330,17 @@ describe('BlueWallet UI Tests - no wallets', () => {
     if (process.env.TRAVIS) await sleep(3000); // hopefully helps prevent crash
 
     // trying new password
-    await element(by.id('PasswordInput')).clearText();
-    await element(by.id('PasswordInput')).typeText('passwordForFakeStorage');
+    // await element(by.id('PasswordInput')).clearText();
+    await element(by.id('PasswordInput')).replaceText('passwordForFakeStorage');
     await element(by.id('PasswordInput')).tapReturnKey();
-    await element(by.id('ConfirmPasswordInput')).clearText();
-    await element(by.id('ConfirmPasswordInput')).typeText('passwordForFakeStorage'); // retyping
+    // await element(by.id('ConfirmPasswordInput')).clearText();
+    await element(by.id('ConfirmPasswordInput')).replaceText('passwordForFakeStorage'); // retyping
     await element(by.id('ConfirmPasswordInput')).tapReturnKey();
+    await sleep(3000);
     await element(by.id('OKButton')).tap();
     if (process.env.TRAVIS) await sleep(3000); // hopefully helps prevent crash
 
+    await sleep(3000);
     // created fake storage.
     // creating a wallet inside this fake storage
     await helperCreateWallet('fake_wallet');
@@ -346,7 +348,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // relaunch the app, unlock with fake password, expect to see fake wallet
 
     // relaunch app
-    await device.launchApp({ newInstance: true });
+    await openApp({ newInstance: true });
     await waitFor(element(by.text('OK')))
       .toBeVisible()
       .withTimeout(33000);
@@ -360,7 +362,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await expect(element(by.id('cr34t3d'))).toBeVisible();
 
     // relaunch app
-    await device.launchApp({ newInstance: true });
+    await openApp({ newInstance: true });
     await sleep(3000);
     //
     await expect(element(by.text('Your storage is encrypted. Password is required to decrypt it.'))).toBeVisible();
@@ -424,13 +426,14 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.id('ConfirmPasswordInput')).typeText('fake'); // retyping
     await element(by.id('ConfirmPasswordInput')).tapReturnKey();
     await element(by.id('OKButton')).tap();
-    if (process.env.TRAVIS) await sleep(3000); // hopefully helps prevent crash
+    // if (process.env.TRAVIS) await sleep(3000); // hopefully helps prevent crash
+    await sleep(3000); // hopefully helps prevent crash
     // created fake storage.
     // creating a wallet inside this fake storage
     await helperCreateWallet('fake_wallet');
 
     // relaunch app
-    await device.launchApp({ newInstance: true });
+    await openApp({ newInstance: true });
     await waitFor(element(by.text('OK')))
       .toBeVisible()
       .withTimeout(33000);
@@ -462,7 +465,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     if (process.env.TRAVIS) await sleep(3000); // hopefully helps prevent crash
 
     // relaunch app
-    await device.launchApp({ newInstance: true });
+    await openApp({ newInstance: true });
     await yo('cr34t3d'); // success
     await helperDeleteWallet('cr34t3d');
     process.env.TRAVIS && require('fs').writeFileSync(lockFile, '1');
@@ -594,15 +597,19 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.type('android.widget.EditText')).typeText(feeRate + '\n');
     await element(by.text('OK')).tap();
 
-    if (process.env.TRAVIS) await sleep(5000);
+    // if (process.env.TRAVIS) await sleep(5000);
+    await sleep(5000);
     try {
       await element(by.id('CreateTransactionButton')).tap();
     } catch (_) {}
 
     await waitFor(element(by.id('ItemUnsigned'))).toBeVisible();
+    await sleep(3000);
     await waitFor(element(by.id('ItemSigned'))).toBeNotVisible(); // not a single green checkmark
+    await sleep(3000);
 
     await element(by.id('ProvideSignature')).tap();
+    await sleep(3000);
     await element(by.id('CosignedScanOrImportFile')).tap();
 
     const ursSignedByPassport = [
@@ -621,9 +628,13 @@ describe('BlueWallet UI Tests - no wallets', () => {
       await waitFor(element(by.id('UrProgressBar'))).toBeVisible();
     }
 
+    await sleep(3000);
+
     await waitFor(element(by.id('ItemSigned'))).toBeVisible(); // one green checkmark visible
 
+    await sleep(3000);
     await element(by.id('ProvideSignature')).tap();
+    await sleep(3000);
     await element(by.id('CosignedScanOrImportFile')).tap();
 
     const urSignedByPassportAndKeystone = [
@@ -640,18 +651,23 @@ describe('BlueWallet UI Tests - no wallets', () => {
       await waitFor(element(by.id('UrProgressBar'))).toBeVisible();
     }
 
+    await sleep(3000);
     await waitFor(element(by.id('ExportSignedPsbt'))).toBeVisible();
+    await sleep(3000);
 
     await element(by.id('PsbtMultisigConfirmButton')).tap();
+    await sleep(3000);
 
     // created. verifying:
     await yo('TransactionValue');
     await expect(element(by.id('TransactionValue'))).toHaveText('0.0005');
     await element(by.id('TransactionDetailsButton')).tap();
+    await sleep(3000);
 
     const txhex = await extractTextFromElementById('TxhexInput');
 
     const transaction = bitcoin.Transaction.fromHex(txhex);
+    await sleep(3000);
     assert.ok(transaction.ins.length === 1);
     assert.strictEqual(transaction.outs.length, 2);
     assert.strictEqual(bitcoin.address.fromOutputScript(transaction.outs[0].script), 'bc1q063ctu6jhe5k4v8ka99qac8rcm2tzjjnuktyrl'); // to address

@@ -21,7 +21,8 @@ import SafeArea from '../../components/SafeArea';
 import presentAlert from '../../components/Alert';
 import { ScanQRCodeParamList } from '@/src/navigation/DetailViewStackParamList';
 
-const __E2E_TESTING__ = true;
+// TODO: configure using commandline
+const __E2E_TESTING__ = false; // NOTE: remember to revert this when building production releases
 
 let decoder: BlueURDecoder | null = null;
 
@@ -42,7 +43,14 @@ const styles = StyleSheet.create({
     top: 10,
     left: '50%',
   },
-  progressWrapper: { position: 'absolute', alignSelf: 'center', alignItems: 'center', top: '50%', padding: 8, borderRadius: 8 },
+  progressWrapper: {
+    ...(__E2E_TESTING__ ? {} : { position: 'absolute' }),
+    alignSelf: 'center',
+    alignItems: 'center',
+    top: '50%',
+    padding: 8,
+    borderRadius: 8,
+  },
   backdoorInput: {
     height: '50%',
     marginTop: 5,
@@ -106,7 +114,7 @@ const ScanQRCode = () => {
       onBarScanned?.({ data });
       return;
     } else if (launchedBy) {
-      navigation.dispatch(CommonActions.navigate({ name: launchedBy, params: { onBarScanned: data } }));
+      navigation.dispatch(CommonActions.navigate({ name: launchedBy, params: { onBarScanned: data }, merge: true }));
       return;
     }
     router.dismiss();

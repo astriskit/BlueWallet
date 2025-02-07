@@ -6,6 +6,7 @@ import loc from '../loc';
 import { SecondButton } from './SecondButton';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../blue_modules/hapticFeedback';
 import { useKeyboard } from '../hooks/useKeyboard';
+import { KeyboardAvoidingView } from './KeyboardAvoidingView';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -314,7 +315,7 @@ const PromptPasswordConfirmationModal = forwardRef<PromptPasswordConfirmationMod
             )}
             {(modalType === MODAL_TYPES.ENTER_PASSWORD ||
               ((modalType === MODAL_TYPES.CREATE_PASSWORD || modalType === MODAL_TYPES.CREATE_FAKE_STORAGE) && !showExplanation)) && (
-              <>
+              <KeyboardAvoidingView>
                 <Text adjustsFontSizeToFit style={[styles.textLabel, stylesHook.feeModalLabel]}>
                   {modalType === MODAL_TYPES.CREATE_PASSWORD
                     ? loc.settings.password_explain
@@ -353,7 +354,7 @@ const PromptPasswordConfirmationModal = forwardRef<PromptPasswordConfirmationMod
                     </Animated.View>
                   )}
                 </View>
-              </>
+              </KeyboardAvoidingView>
             )}
           </Animated.View>
         )}
