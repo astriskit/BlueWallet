@@ -41,6 +41,7 @@ const ScanLndInvoiceRoot = () => {
           headerShadowVisible: false,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

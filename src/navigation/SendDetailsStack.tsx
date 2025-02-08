@@ -61,6 +61,7 @@ const SendDetailsStack = () => {
           headerShadowVisible: false,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

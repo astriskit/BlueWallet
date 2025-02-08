@@ -4,7 +4,7 @@ import { Icon } from '@rneui/themed';
 import WalletGradient from '../../class/wallet-gradient';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { DetailViewStackParamList } from '../DetailViewStackParamList';
-import { navigationRef } from '../../NavigationService';
+import { router } from '../../NavigationService';
 import { RouteProp } from '@react-navigation/native';
 
 export type WalletTransactionsRouteProps = RouteProp<DetailViewStackParamList, 'WalletTransactions'>;
@@ -13,8 +13,11 @@ const getWalletTransactionsOptions = ({ route }: { route: WalletTransactionsRout
   const { isLoading, walletID, walletType } = route.params;
 
   const onPress = () => {
-    navigationRef.navigate('WalletDetails', {
-      walletID,
+    router.navigate({
+      pathname: '/WalletDetails',
+      params: {
+        walletID,
+      },
     });
   };
 

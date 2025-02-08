@@ -2,5 +2,5 @@ import { Redirect } from 'expo-router';
 import React from 'react';
 
 export default () => {
-  return <Redirect href="./ExportMultisigCoordinationSetup" />;
+  return <Redirect href="./LNDCreateInvoice" />;
 };

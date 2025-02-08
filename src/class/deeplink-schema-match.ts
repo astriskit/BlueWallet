@@ -7,8 +7,9 @@ import { WatchOnlyWallet } from './';
 import Azteco from './azteco';
 import Lnurl from './lnurl';
 import type { TWallet } from './wallets/types';
+import { RouterParam, Router } from '../NavigationService';
 
-type TCompletionHandlerParams = [string, object];
+type TCompletionHandlerParams = [string, object] | RouterParam;
 type TContext = {
   wallets: TWallet[];
   saveToDisk: () => void;
@@ -63,39 +64,30 @@ class DeeplinkSchemaMatch {
         const action = event.url.split('widget?action=')[1];
         if (wallet.chain === Chain.ONCHAIN) {
           if (action === 'openSend') {
-            completionHandler([
-              'SendDetailsRoot',
-              {
-                screen: 'SendDetails',
-                params: {
-                  walletID: wallet.getID(),
-                },
+            completionHandler({
+              pathname: '/SendDetailsRoot/SendDetails',
+              params: {
+                walletID: wallet.getID(),
               },
-            ]);
+            });
           } else if (action === 'openReceive') {
-            completionHandler([
-              'ReceiveDetailsRoot',
-              {
-                screen: 'ReceiveDetails',
-                params: {
-                  walletID: wallet.getID(),
-                },
+            completionHandler({
+              pathname: '/ReceiveDetailsRoot/ReceiveDetails',
+              params: {
+                walletID: wallet.getID(),
               },
-            ]);
+            });
           }
         } else if (wallet.chain === Chain.OFFCHAIN) {
           if (action === 'openSend') {
-            completionHandler([
-              'ScanLndInvoiceRoot',
-              {
-                screen: 'ScanLndInvoice',
-                params: {
-                  walletID: wallet.getID(),
-                },
+            completionHandler({
+              pathname: '/ScanLndInvoiceRoot/ScanLndInvoice',
+              params: {
+                walletID: wallet.getID(),
               },
-            ]);
+            });
           } else if (action === 'openReceive') {
-            completionHandler(['LNDCreateInvoiceRoot', { screen: 'LNDCreateInvoice', params: { walletID: wallet.getID() } }]);
+            completionHandler({ pathname: '/LNDCreateInvoiceRoot/LNDCreateInvoice', params: { walletID: wallet.getID() } });
           }
         }
       }
@@ -103,15 +95,12 @@ class DeeplinkSchemaMatch {
       readFileOutsideSandbox(decodeURI(event.url))
         .then(file => {
           if (file) {
-            completionHandler([
-              'SendDetailsRoot',
-              {
-                screen: 'PsbtWithHardwareWallet',
-                params: {
-                  deepLinkPSBT: file,
-                },
+            completionHandler({
+              pathname: '/SendDetailsRoot/PsbtWithHardwareWallet',
+              params: {
+                deepLinkPSBT: file,
               },
-            ]);
+            });
           }
         })
         .catch(e => console.warn(e));
@@ -138,76 +127,58 @@ class DeeplinkSchemaMatch {
       completionHandler([
         'SelectWallet',
         {
-          onWalletSelect: (wallet: TWallet, { navigation }: any) => {
-            navigation.pop(); // close select wallet screen
-            navigation.navigate(...DeeplinkSchemaMatch.isBothBitcoinAndLightningOnWalletSelect(wallet, isBothBitcoinAndLightning));
+          onWalletSelect: (wallet: TWallet, { navigation }: { navigation: Router }) => {
+            // navigation.pop(); // close select wallet screen
+            navigation.replace(DeeplinkSchemaMatch.isBothBitcoinAndLightningOnWalletSelect(wallet, isBothBitcoinAndLightning));
           },
         },
       ]);
     } else if (DeeplinkSchemaMatch.isBitcoinAddress(event.url)) {
-      completionHandler([
-        'SendDetailsRoot',
-        {
-          screen: 'SendDetails',
-          params: {
-            uri: event.url.replace('://', ':'),
-          },
+      completionHandler({
+        pathname: '/SendDetailsRoot/SendDetails',
+        params: {
+          uri: event.url.replace('://', ':'), // TODO: check/why? ://->:
         },
-      ]);
+      });
     } else if (DeeplinkSchemaMatch.isLightningInvoice(event.url)) {
-      completionHandler([
-        'ScanLndInvoiceRoot',
-        {
-          screen: 'ScanLndInvoice',
-          params: {
-            uri: event.url.replace('://', ':'),
-          },
+      completionHandler({
+        pathname: '/ScanLndInvoiceRoot/ScanLndInvoice',
+        params: {
+          uri: event.url.replace('://', ':'), // TODO: check/why? ://->:
         },
-      ]);
+      });
     } else if (DeeplinkSchemaMatch.isLnUrl(event.url)) {
       // at this point we can not tell if it is lnurl-pay or lnurl-withdraw since it needs additional async call
       // to the server, which is undesirable here, so LNDCreateInvoice screen will handle it for us and will
       // redirect user to LnurlPay screen if necessary
-      completionHandler([
-        'LNDCreateInvoiceRoot',
-        {
-          screen: 'LNDCreateInvoice',
-          params: {
-            uri: event.url.replace('lightning:', '').replace('LIGHTNING:', ''),
-          },
+      completionHandler({
+        pathname: '/LNDCreateInvoiceRoot/LNDCreateInvoice',
+        params: {
+          uri: event.url.replace('lightning:', '').replace('LIGHTNING:', ''),
         },
-      ]);
+      });
     } else if (Lnurl.isLightningAddress(event.url)) {
       // this might be not just an email but a lightning address
       // @see https://lightningaddress.com
-      completionHandler([
-        'ScanLndInvoiceRoot',
-        {
-          screen: 'ScanLndInvoice',
-          params: {
-            uri: event.url,
-          },
+      completionHandler({
+        pathname: '/ScanLndInvoiceRoot/ScanLndInvoice',
+        params: {
+          uri: event.url,
         },
-      ]);
+      });
     } else if (Azteco.isRedeemUrl(event.url)) {
-      completionHandler([
-        'AztecoRedeemRoot',
-        {
-          screen: 'AztecoRedeem',
-          params: Azteco.getParamsFromUrl(event.url),
-        },
-      ]);
+      completionHandler({
+        pathname: '/AztecoRedeemRoot/AztecoRedeem',
+        params: Azteco.getParamsFromUrl(event.url),
+      });
     } else if (new WatchOnlyWallet().setSecret(event.url).init().valid()) {
-      completionHandler([
-        'AddWalletRoot',
-        {
-          screen: 'ImportWallet',
-          params: {
-            triggerImport: true,
-            label: event.url,
-          },
+      completionHandler({
+        pathname: '/AddWalletRoot/ImportWallet',
+        params: {
+          triggerImport: 'true', // TODO: check-later "true" vs true
+          label: event.url,
         },
-      ]);
+      });
     } else {
       const urlObject = URL.parse(event.url, true); // eslint-disable-line n/no-deprecated-api
       (async () => {
@@ -291,29 +262,23 @@ class DeeplinkSchemaMatch {
     );
   }
 
-  static isBothBitcoinAndLightningOnWalletSelect(wallet: TWallet, uri: any): TCompletionHandlerParams {
+  static isBothBitcoinAndLightningOnWalletSelect(wallet: TWallet, uri: any): RouterParam {
     if (wallet.chain === Chain.ONCHAIN) {
-      return [
-        'SendDetailsRoot',
-        {
-          screen: 'SendDetails',
-          params: {
-            uri: uri.bitcoin,
-            walletID: wallet.getID(),
-          },
+      return {
+        pathname: '/SendDetailsRoot/SendDetails',
+        params: {
+          uri: uri.bitcoin,
+          walletID: wallet.getID(),
         },
-      ];
+      };
     } else {
-      return [
-        'ScanLndInvoiceRoot',
-        {
-          screen: 'ScanLndInvoice',
-          params: {
-            uri: uri.lndInvoice,
-            walletID: wallet.getID(),
-          },
+      return {
+        pathname: '/ScanLndInvoiceRoot/ScanLndInvoice',
+        params: {
+          uri: uri.lndInvoice,
+          walletID: wallet.getID(),
         },
-      ];
+      };
     }
   }
 

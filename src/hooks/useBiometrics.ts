@@ -3,7 +3,7 @@ import { Alert, Platform } from 'react-native';
 import ReactNativeBiometrics, { BiometryTypes as RNBiometryTypes } from 'react-native-biometrics';
 import RNSecureKeyStore, { ACCESSIBLE } from 'react-native-secure-key-store';
 import loc from '../loc';
-import * as NavigationService from '../NavigationService';
+import { reset } from '../NavigationService';
 import presentAlert from '../components/Alert';
 import { useStorage } from './context/useStorage';
 
@@ -28,7 +28,7 @@ const clearKeychain = async () => {
     console.debug('Wiping key: STORAGEKEY');
     await RNSecureKeyStore.set(STORAGEKEY, '', { accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY });
     console.debug('Wiped key: STORAGEKEY');
-    NavigationService.reset();
+    reset();
   } catch (error: any) {
     console.warn(error);
     presentAlert({ message: error.message });

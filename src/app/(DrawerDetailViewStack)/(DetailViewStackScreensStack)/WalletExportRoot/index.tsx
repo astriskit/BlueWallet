@@ -1,3 +1,6 @@
-import { WalletExportComponent } from '@/src/navigation/LazyLoadWalletExportStack';
+import { Redirect } from 'expo-router';
+import React from 'react';
 
-export default WalletExportComponent;
+export default () => {
+  return <Redirect href="./WalletExport" />;
+};

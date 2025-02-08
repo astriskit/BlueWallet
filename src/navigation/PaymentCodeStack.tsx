@@ -12,6 +12,7 @@ const PaymentCodeStackRoot = () => {
   return (
     <Stack initialRouteName="PaymentCodesList" screenOptions={{ headerShadowVisible: false }}>
       <Stack.Screen name="PaymentCodesList" options={navigationStyle({ title: loc.bip47.contacts })(theme)} />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

@@ -7,6 +7,7 @@ import SafeArea from '../components/SafeArea';
 import { BiometricType, unlockWithBiometrics, useBiometrics } from '../hooks/useBiometrics';
 import loc from '../loc';
 import { useStorage } from '../hooks/context/useStorage';
+import { Redirect } from 'expo-router';
 
 enum AuthType {
   Encrypted,
@@ -52,7 +53,7 @@ function reducer(state: State, action: Action): State {
 const UnlockWith: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const isUnlockingWallets = useRef(false);
-  const { setWalletsInitialized, isStorageEncrypted, startAndDecrypt } = useStorage();
+  const { setWalletsInitialized, walletsInitialized, isStorageEncrypted, startAndDecrypt } = useStorage();
   const { deviceBiometricType, isBiometricUseCapableAndEnabled, isBiometricUseEnabled } = useBiometrics();
 
   useEffect(() => {
@@ -143,6 +144,8 @@ const UnlockWith: React.FC = () => {
       }
     }
   };
+
+  if (walletsInitialized) return <Redirect href="/(DrawerDetailViewStack)" />;
 
   return (
     <SafeArea style={styles.root}>

@@ -16,6 +16,7 @@ const SignVerifyStackRoot = () => {
         // component={SignVerifyComponent}
         options={navigationStyle({ headerBackVisible: false, statusBarStyle: 'light', title: loc.addresses.sign_title })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

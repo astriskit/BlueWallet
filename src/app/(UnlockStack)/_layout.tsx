@@ -8,7 +8,10 @@ const UnlockStackLayout = () => {
         headerShown: false,
         animationTypeForReplace: 'push',
       }}
-    />
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="UnlockWithScreen" />
+    </Stack>
   );
 };
 

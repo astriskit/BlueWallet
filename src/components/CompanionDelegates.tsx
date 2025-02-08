@@ -1,7 +1,6 @@
 import '@/shim.js';
 import 'react-native-gesture-handler'; // should be on top
 
-import { CommonActions } from '@react-navigation/native';
 import { useCallback, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus, Linking } from 'react-native';
 import A from '../blue_modules/analytics';
@@ -20,7 +19,7 @@ import { LightningCustodianWallet } from '../class';
 import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
 import loc from '../loc';
 import { Chain } from '../models/bitcoinUnits';
-import { navigationRef } from '../NavigationService';
+import { router, RouterParam } from '../NavigationService';
 import ActionSheet from '../screen/ActionSheet';
 import { useStorage } from '../hooks/context/useStorage';
 import RNQRGenerator from 'rn-qr-generator';
@@ -85,18 +84,16 @@ const CompanionDelegates = () => {
           fetchAndSaveWalletTransactions(walletID);
           if (wasTapped) {
             if (payload.type !== 3 || wallet.chain === Chain.OFFCHAIN) {
-              navigationRef.dispatch(
-                CommonActions.navigate({
-                  name: 'WalletTransactions',
-                  params: {
-                    walletID,
-                    walletType: wallet.type,
-                  },
-                }),
-              );
+              router.navigate({
+                pathname: '/WalletTransactions',
+                params: {
+                  walletID,
+                  walletType: wallet.type,
+                },
+              });
             } else {
-              navigationRef.navigate('ReceiveDetailsRoot', {
-                screen: 'ReceiveDetails',
+              router.navigate({
+                pathname: '/ReceiveDetailsRoot/ReceiveDetails',
                 params: {
                   walletID,
                   address: payload.address,
@@ -133,18 +130,16 @@ const CompanionDelegates = () => {
             fetchAndSaveWalletTransactions(walletID);
             if (wasTapped) {
               if (payload.type !== 3 || wallet.chain === Chain.OFFCHAIN) {
-                navigationRef.dispatch(
-                  CommonActions.navigate({
-                    name: 'WalletTransactions',
-                    params: {
-                      walletID,
-                      walletType: wallet.type,
-                    },
-                  }),
-                );
+                router.navigate({
+                  pathname: '/WalletTransactions',
+                  params: {
+                    walletID,
+                    walletType: wallet.type,
+                  },
+                });
               } else {
-                navigationRef.navigate('ReceiveDetailsRoot', {
-                  screen: 'ReceiveDetails',
+                router.navigate({
+                  pathname: '/ReceiveDetailsRoot/ReceiveDetails',
                   params: {
                     walletID,
                     address: payload.address,
@@ -205,7 +200,7 @@ const CompanionDelegates = () => {
             triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
             DeeplinkSchemaMatch.navigationRouteFor(
               { url: qrResult.values[0] },
-              (value: [string, any]) => navigationRef.navigate(...value),
+              (value: [string, any]) => navigationRef.navigate(...value), // FIX_ME navigationRef
               {
                 wallets,
                 addWallet,
@@ -217,7 +212,7 @@ const CompanionDelegates = () => {
             throw new Error(loc.send.qr_error_no_qrcode);
           }
         } else {
-          DeeplinkSchemaMatch.navigationRouteFor(event, (value: [string, any]) => navigationRef.navigate(...value), {
+          DeeplinkSchemaMatch.navigationRouteFor(event, value => router.navigate(value as RouterParam), {
             wallets,
             addWallet,
             saveToDisk,

@@ -23,6 +23,7 @@ const AztecoRedeemStackRoot = () => {
           title: loc.wallets.select_wallet,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

@@ -1,3 +1,6 @@
-import UnlockWith from '../../screen/UnlockWith';
+import { Redirect } from 'expo-router';
+import React from 'react';
 
-export default UnlockWith;
+export default () => {
+  return <Redirect href="./UnlockWithScreen" />;
+};

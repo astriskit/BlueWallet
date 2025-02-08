@@ -20,6 +20,7 @@ const ReceiveDetailsStackRoot = () => {
           statusBarStyle: 'light',
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

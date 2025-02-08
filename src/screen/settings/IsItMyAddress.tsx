@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Divider } from '@rneui/themed';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import presentAlert from '../../components/Alert';
-import { navigate } from '../../NavigationService';
+import { router } from '../../NavigationService';
 
 type RouteProps = RouteProp<DetailViewStackParamList, 'IsItMyAddress'>;
 type NavigationProp = NativeStackNavigationProp<DetailViewStackParamList, 'IsItMyAddress'>;
@@ -109,7 +109,7 @@ const IsItMyAddress: React.FC = () => {
   };
 
   const importScan = async () => {
-    navigate('ScanQRCode');
+    router.navigate({ pathname: '/ScanQRCode' });
   };
 
   useEffect(() => {

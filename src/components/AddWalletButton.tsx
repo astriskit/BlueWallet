@@ -5,7 +5,7 @@ import { useTheme } from './themes';
 import ToolTipMenu from './TooltipMenu';
 import { CommonToolTipActions } from '../typings/CommonToolTipActions';
 import loc from '../loc';
-import { navigationRef } from '../NavigationService';
+import { router } from '../NavigationService';
 
 type AddWalletButtonProps = {
   onPress?: (event: GestureResponderEvent) => void;
@@ -32,7 +32,7 @@ const AddWalletButton: React.FC<AddWalletButtonProps> = ({ onPress }) => {
   const onPressMenuItem = useCallback((action: string) => {
     switch (action) {
       case CommonToolTipActions.ImportWallet.id:
-        navigationRef.current?.navigate('AddWalletRoot', { screen: 'ImportWallet' });
+        router.navigate('/AddWalletRoot/ImportWallet');
         break;
       default:
         break;

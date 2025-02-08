@@ -22,7 +22,7 @@ const DetailViewStackScreensStack = () => {
   const { wallets } = useStorage();
   const { isTotalBalanceEnabled } = useSettings();
 
-  const DetailButton = useMemo(() => <HeaderRightButton testID="DetailButton" disabled={true} title={loc.send.create_details} />, []);
+  const DetailButton = useMemo(() => <HeaderRightButton testID="DetailButton" disabled title={loc.send.create_details} />, []);
 
   const navigateToAddWallet = useCallback(() => {
     navigation.navigate('AddWalletRoot');
@@ -65,6 +65,7 @@ const DetailViewStackScreensStack = () => {
         animationTypeForReplace: 'push',
       }}
     >
+      <Stack.Screen name="index" />
       <Stack.Screen name="WalletsList" options={navigationStyle(walletListScreenOptions)(theme)} />
       <Stack.Screen
         name="WalletTransactions"
@@ -169,16 +170,6 @@ const DetailViewStackScreensStack = () => {
         })(theme)}
       />
 
-      <Stack.Screen
-        name="AddWalletRoot"
-        options={navigationStyle({
-          closeButtonPosition: CloseButtonPosition.Left,
-          ...NavigationFormModalOptions,
-        })(theme)}
-      />
-      <Stack.Screen name="SendDetailsRoot" options={NavigationFormModalOptions} />
-      <Stack.Screen name="LNDCreateInvoiceRoot" options={NavigationDefaultOptions} />
-      <Stack.Screen name="ScanLndInvoiceRoot" options={NavigationDefaultOptions} />
       <Stack.Screen name="AztecoRedeemRoot" options={NavigationDefaultOptions} />
       {/* screens */}
       <Stack.Screen name="WalletExportRoot" options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }} />
@@ -220,6 +211,30 @@ const DetailViewStackScreensStack = () => {
       <Stack.Screen name="ReleaseNotes" options={navigationStyle({ title: loc.settings.about_release_notes })(theme)} />
       <Stack.Screen name="ToolsScreen" options={navigationStyle({ title: loc.settings.tools })(theme)} />
       <Stack.Screen name="SettingsPrivacy" options={navigationStyle({ title: loc.settings.privacy })(theme)} />
+      <Stack.Screen name="SignVerifyRoot" options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }} />
+      <Stack.Screen name="ReceiveDetailsRoot" options={NavigationDefaultOptions} />
+      <Stack.Screen
+        name="ManageWallets"
+        options={navigationStyle({
+          headerBackVisible: false,
+          gestureEnabled: false,
+          presentation: 'containedModal',
+          title: loc.wallets.manage_title,
+          statusBarStyle: 'auto',
+        })(theme)}
+      />
+      <Stack.Screen
+        name="AddWalletRoot"
+        options={navigationStyle({
+          closeButtonPosition: CloseButtonPosition.Left,
+          ...NavigationFormModalOptions,
+        })(theme)}
+      />
+      <Stack.Screen name="SendDetailsRoot" options={NavigationFormModalOptions} />
+      <Stack.Screen name="LNDCreateInvoiceRoot" options={NavigationDefaultOptions} />
+      <Stack.Screen name="ScanLndInvoiceRoot" options={NavigationDefaultOptions} />
+      {/* screens */}
+      <Stack.Screen name="WalletXpubRoot" options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }} />
       <Stack.Screen
         name="ViewEditMultisigCosignersRoot"
         options={{
@@ -230,9 +245,6 @@ const DetailViewStackScreensStack = () => {
         }}
         initialParams={{ walletID: undefined, cosigners: undefined }}
       />
-      <Stack.Screen name="WalletXpubRoot" options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }} />
-      <Stack.Screen name="SignVerifyRoot" options={{ ...NavigationDefaultOptions, ...StatusBarLightOptions }} />
-      <Stack.Screen name="ReceiveDetailsRoot" options={NavigationDefaultOptions} />
       <Stack.Screen
         name="ScanQRCode"
         options={{
@@ -240,16 +252,6 @@ const DetailViewStackScreensStack = () => {
           presentation: 'fullScreenModal',
           statusBarHidden: true,
         }}
-      />
-      <Stack.Screen
-        name="ManageWallets"
-        options={navigationStyle({
-          headerBackVisible: false,
-          gestureEnabled: false,
-          presentation: 'containedModal',
-          title: loc.wallets.manage_title,
-          statusBarStyle: 'auto',
-        })(theme)}
       />
     </Stack>
   );

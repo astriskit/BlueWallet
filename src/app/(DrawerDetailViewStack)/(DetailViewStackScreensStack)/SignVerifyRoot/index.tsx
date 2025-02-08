@@ -1,3 +1,6 @@
-import { SignVerifyComponent } from '@/src/navigation/LazyLoadSignVerifyStack';
+import { Redirect } from 'expo-router';
+import React from 'react';
 
-export default SignVerifyComponent;
+export default () => {
+  return <Redirect href="./SignVerify" />;
+};

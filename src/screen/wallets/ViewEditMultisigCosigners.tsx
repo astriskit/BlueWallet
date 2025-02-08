@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CommonActions, RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import {
   ActivityIndicator,
   Alert,
@@ -50,7 +50,7 @@ import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import { useSettings } from '../../hooks/context/useSettings';
 import { ViewEditMultisigCosignersStackParamList } from '../../navigation/ViewEditMultisigCosignersStack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { navigationRef } from '../../NavigationService';
+import { router } from '../../NavigationService';
 import SafeArea from '../../components/SafeArea';
 
 type RouteParams = RouteProp<ViewEditMultisigCosignersStackParamList, 'ViewEditMultisigCosigners'>;
@@ -193,9 +193,7 @@ const ViewEditMultisigCosigners: React.FC = () => {
       setIsSaveButtonDisabled(true);
       setWalletsWithNewOrder(newWallets);
       setTimeout(() => {
-        navigationRef.dispatch(
-          CommonActions.navigate({ name: 'WalletTransactions', params: { walletID: wallet.getID(), walletType: MultisigHDWallet.type } }),
-        );
+        router.navigate({ pathname: '/WalletsList', params: { walletID: wallet.getID(), walletType: MultisigHDWallet.type } });
       }, 500);
     }, 100);
   };

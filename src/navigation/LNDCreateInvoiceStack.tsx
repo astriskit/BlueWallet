@@ -47,6 +47,7 @@ const LNDCreateInvoiceRoot = () => {
           headerShadowVisible: false,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

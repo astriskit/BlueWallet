@@ -1,5 +1,5 @@
-import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
-import { navigationRef } from '../NavigationService';
+import { CommonActions, NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
+import { useNavigationContainerRef } from '../NavigationService';
 import { presentWalletExportReminder } from '../helpers/presentWalletExportReminder';
 import { unlockWithBiometrics, useBiometrics } from './useBiometrics';
 import { useStorage } from './context/useStorage';
@@ -18,6 +18,7 @@ const requiresBiometrics = [
 const requiresWalletExportIsSaved = ['ReceiveDetailsRoot', 'WalletAddresses'];
 
 export const useExtendedNavigation = <T extends NavigationProp<ParamListBase>>(): T => {
+  const navRef = useNavigationContainerRef();
   const originalNavigation = useNavigation<T>();
   const { wallets, saveToDisk } = useStorage();
   const { isBiometricUseEnabled } = useBiometrics();
@@ -37,16 +38,18 @@ export const useExtendedNavigation = <T extends NavigationProp<ParamListBase>>()
       const isRequiresBiometrics = requiresBiometrics.includes(screenName);
       const isRequiresWalletExportIsSaved = requiresWalletExportIsSaved.includes(screenName);
 
-      const proceedWithNavigation = () => {
-        console.log('Proceeding with navigation to', screenName);
-        if (navigationRef.current?.isReady()) {
-          if (typeof screenOrOptions === 'string') {
-            originalNavigation.navigate({ name: screenOrOptions, params, merge: options?.merge });
-          } else {
-            originalNavigation.navigate({ ...screenOrOptions, params, merge: options?.merge });
-          }
+    const proceedWithNavigation = () => {
+      // TODO: add a map of the file-structure and find an apt option to navigate to!
+      console.log('Proceeding with navigation to', screenName);
+      if (navRef.current?.isReady()) {
+        if (typeof screenOrOptions === 'string') {
+          // console.log(originalNavigation.getState(), 'state');
+          originalNavigation.dispatch(CommonActions.navigate({ name: screenOrOptions, params, merge: options?.merge }));
+        } else {
+          originalNavigation.dispatch(CommonActions.navigate({ ...screenOrOptions, params, merge: options?.merge }));
         }
-      };
+      }
+    };
 
       (async () => {
         // NEW: If the current (active) screen is 'ScanQRCode', bypass all checks.
@@ -112,7 +115,7 @@ export const useExtendedNavigation = <T extends NavigationProp<ParamListBase>>()
 
   const navigateToWalletsList = useCallback(() => {
     enhancedNavigate('WalletsList');
-  }, [enhancedNavigate]);
+  }, [enhancedNavigate]);;
 
   return useMemo(
     () => ({

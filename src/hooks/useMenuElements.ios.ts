@@ -1,8 +1,7 @@
 /** TODO: later menu-elements */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
-import * as NavigationService from '../NavigationService';
+import { router } from '../NavigationService';
 import { useStorage } from './context/useStorage';
 
 /*
@@ -23,21 +22,17 @@ const useMenuElements = () => {
     reloadTransactionsMenuActionRef.current = newFunction;
   }, []);
 
-  const dispatchNavigate = useCallback((routeName: string, screen?: string) => {
-    NavigationService.dispatch(CommonActions.navigate({ name: routeName, params: screen ? { screen } : undefined }));
-  }, []);
-
   const eventActions = useMemo(
     () => ({
-      openSettings: () => dispatchNavigate('Settings'),
-      addWallet: () => dispatchNavigate('AddWalletRoot'),
-      importWallet: () => dispatchNavigate('AddWalletRoot', 'ImportWallet'),
+      openSettings: () => router.navigate({ pathname: '/Settings' }),
+      addWallet: () => router.navigate({ pathname: '/AddWalletRoot' }),
+      importWallet: () => router.navigate({ pathname: '/AddWalletRoot/ImportWallet' }),
       reloadTransactions: () => {
         console.debug('Calling reloadTransactionsMenuActionFunction');
         reloadTransactionsMenuActionRef.current?.();
       },
     }),
-    [dispatchNavigate],
+    [],
   );
 
   useEffect(() => {

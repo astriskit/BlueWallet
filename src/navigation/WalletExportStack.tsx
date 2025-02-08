@@ -21,6 +21,7 @@ const WalletExportStack = () => {
           title: loc.wallets.export_title,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

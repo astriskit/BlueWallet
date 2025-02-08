@@ -24,6 +24,7 @@ const ExportMultisigCoordinationSetupStack = () => {
           title: loc.multisig.export_coordination_setup,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

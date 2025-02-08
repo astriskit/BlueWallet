@@ -3,7 +3,6 @@ import { Drawer } from 'expo-router/drawer';
 import React, { useLayoutEffect, useMemo } from 'react';
 import { I18nManager, LayoutAnimation, StyleSheet } from 'react-native';
 
-import { isHandset } from '../blue_modules/environment';
 import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
 import DrawerList from '../screen/wallets/DrawerList';
 import { useSettings } from '../hooks/context/useSettings';
@@ -19,7 +18,6 @@ const DrawerRoot = () => {
   const { isDrawerShouldHide } = useSettings();
 
   const drawerStyle: DrawerNavigationOptions = useMemo(() => {
-    if (isHandset) return {};
     return {
       drawerPosition: I18nManager.isRTL ? 'right' : 'left',
       drawerStyle: { width: isLargeScreen && !isDrawerShouldHide ? 320 : '0%' },
@@ -33,18 +31,17 @@ const DrawerRoot = () => {
 
   return (
     <GestureHandlerRootView style={DrawerRootStyles.root}>
-      <Drawer screenOptions={drawerStyle} drawerContent={isHandset ? undefined : DrawerListContent}>
+      <Drawer screenOptions={drawerStyle} drawerContent={DrawerListContent} initialRouteName="(DetailViewStackScreensStack)">
         <Drawer.Screen
           name="(DetailViewStackScreensStack)"
           options={{
             headerShown: false,
-            configureGestureHandler: isHandset
-              ? undefined
-              : gesture => {
-                  return gesture.enableTrackpadTwoFingerGesture(true);
-                },
+            configureGestureHandler: gesture => {
+              return gesture.enableTrackpadTwoFingerGesture(true);
+            },
           }}
         />
+        <Drawer.Screen name="index" options={{ headerShown: false }} />
       </Drawer>
     </GestureHandlerRootView>
   );

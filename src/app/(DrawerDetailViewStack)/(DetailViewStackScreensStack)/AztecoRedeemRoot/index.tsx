@@ -1,3 +1,6 @@
-import { AztecoRedeemComponent } from '@/src/navigation/LazyLoadAztecoRedeemStack';
+import { Redirect } from 'expo-router';
+import React from 'react';
 
-export default AztecoRedeemComponent;
+export default () => {
+  return <Redirect href="./AztecoRedeem" />;
+};

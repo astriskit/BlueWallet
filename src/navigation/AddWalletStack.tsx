@@ -51,6 +51,7 @@ const AddWalletStack = () => {
   const theme = useTheme();
   return (
     <Stack initialRouteName="AddWallet">
+      <Stack.Screen name="index" />
       <Stack.Screen
         name="AddWallet"
         options={navigationStyle({

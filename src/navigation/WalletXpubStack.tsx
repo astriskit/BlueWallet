@@ -17,6 +17,7 @@ const WalletXpubStackRoot = () => {
           headerTitle: loc.wallets.xpub_title,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

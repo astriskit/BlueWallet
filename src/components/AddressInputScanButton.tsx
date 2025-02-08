@@ -116,7 +116,7 @@ export const AddressInputScanButton = ({
                 presentAlert({ message: (error as Error).message });
               }
             } else {
-              const clipboardText = await Clipboard.getStringAsyncAsync();
+              const clipboardText = await Clipboard.getStringAsync();
               onChangeText(clipboardText);
             }
           } catch (error) {

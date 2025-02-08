@@ -37,6 +37,7 @@ const ViewEditMultisigCosignersStackRoot = () => {
           headerShadowVisible: false,
         })(theme)}
       />
+      <Stack.Screen name="index" />
     </Stack>
   );
 };

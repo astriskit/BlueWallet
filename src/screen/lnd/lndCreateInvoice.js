@@ -26,7 +26,7 @@ import { useTheme } from '../../components/themes';
 import { presentWalletExportReminder } from '../../helpers/presentWalletExportReminder';
 import loc, { formatBalance, formatBalancePlain, formatBalanceWithoutSuffix } from '../../loc';
 import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
-import * as NavigationService from '../../NavigationService';
+import { router } from '../../NavigationService';
 import { useStorage } from '../../hooks/context/useStorage';
 import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
 import { majorTomToGroundControl, tryToObtainPermissions } from '../../blue_modules/notifications';
@@ -214,8 +214,8 @@ const LNDCreateInvoice = () => {
             })
             .catch(() => {
               getParent().pop();
-              NavigationService.navigate('WalletExportRoot', {
-                screen: 'WalletExport',
+              router.navigate({
+                pathname: '/WalletExportRoot/WalletExport',
                 params: {
                   walletID,
                 },
