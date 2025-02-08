@@ -4,7 +4,7 @@ import { presentWalletExportReminder } from '../helpers/presentWalletExportRemin
 import { useBiometrics } from './useBiometrics';
 import { useStorage } from './context/useStorage';
 import { requestCameraAuthorization } from '../helpers/scan-qr';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { unlockWithBiometrics } from './utils/biometrics';
 
 // List of screens that require biometrics
