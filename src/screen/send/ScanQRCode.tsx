@@ -21,15 +21,12 @@ import SafeArea from '../../components/SafeArea';
 import presentAlert from '../../components/Alert';
 import { ScanQRCodeParamList } from '@/src/navigation/DetailViewStackParamList';
 
-// TODO: configure using commandline
-const __E2E_TESTING__ = false; // NOTE: remember to revert this when building production releases
-
 let decoder: BlueURDecoder | null = null;
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    ...(__E2E_TESTING__ ? {} : { backgroundColor: '#000000' }),
+    backgroundColor: '#000000',
   },
   openSettingsContainer: {
     justifyContent: 'center',
@@ -40,11 +37,9 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     backgroundColor: 'rgb(0,0,0)',
-    top: 10,
-    left: '50%',
   },
   progressWrapper: {
-    ...(__E2E_TESTING__ ? {} : { position: 'absolute' }),
+    position: 'absolute',
     alignSelf: 'center',
     alignItems: 'center',
     top: '50%',
@@ -288,7 +283,7 @@ const ScanQRCode = () => {
           <BlueSpacing40 />
           <Button title={loc._.cancel} onPress={dismiss} />
         </View>
-      ) : isFocused && !__E2E_TESTING__ ? (
+      ) : isFocused && !backdoorVisible ? (
         <CameraScreen
           onReadCode={handleReadCode}
           showFrame={false}
@@ -297,6 +292,20 @@ const ScanQRCode = () => {
           onFilePickerButtonPress={showFilePicker}
           onImagePickerButtonPress={onShowImagePickerButtonPress}
           onCancelButtonPress={dismiss}
+          extraIcons={[
+            ...(!backdoorVisible
+              ? [
+                  <TouchableOpacity
+                    key="scan-qr-backdoor"
+                    accessibilityRole="button"
+                    accessibilityLabel={loc._.qr_custom_input_button}
+                    testID="ScanQrBackdoorButton"
+                    style={styles.backdoorButton}
+                    onPress={handleInvisibleBackdoorPress}
+                  />,
+                ]
+              : []),
+          ]}
         />
       ) : null}
       {urTotal > 0 && (
@@ -326,16 +335,6 @@ const ScanQRCode = () => {
           <Button title="OK" testID="scanQrBackdoorOkButton" onPress={handleBackdoorOkPress} />
         </View>
       )}
-      {__E2E_TESTING__ && !backdoorVisible && (
-        <TouchableOpacity
-          accessibilityRole="button"
-          accessibilityLabel={loc._.qr_custom_input_button}
-          testID="ScanQrBackdoorButton"
-          style={styles.backdoorButton}
-          onPress={handleInvisibleBackdoorPress}
-        />
-      )}
-      {__E2E_TESTING__ && <Button title="Go back" onPress={navigation.goBack} />}
     </View>
   );
 

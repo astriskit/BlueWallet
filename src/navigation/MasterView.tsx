@@ -10,9 +10,6 @@ import SafeArea from '../components/SafeArea';
 
 const CompanionDelegates = lazy(() => import('../components/CompanionDelegates'));
 
-// TODO: move this to environment/app.config
-const __E2E_TESTING__ = false; // toggle when building for end to end testing, particularly for ios.
-
 const MasterView: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { walletsInitialized } = useStorage();
 
@@ -32,11 +29,6 @@ const MasterView: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </Suspense>
         )}
       </GestureHandlerRootView>
-      {__E2E_TESTING__ && Platform.OS === 'ios' && (
-        <SafeArea style={styles.back}>
-          <Fab title="<" size="small" testID="GO_BACK" onPress={goBack} />
-        </SafeArea>
-      )}
       {__DEV__ && <DevMenu />}
     </>
   );
@@ -45,10 +37,6 @@ const MasterView: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  back: {
-    flex: 0.0125,
-    marginBottom: 20,
   },
 });
 

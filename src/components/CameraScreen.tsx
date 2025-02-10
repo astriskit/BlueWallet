@@ -13,6 +13,7 @@ interface CameraScreenProps {
   onImagePickerButtonPress?: () => void;
   onFilePickerButtonPress?: () => void;
   onReadCode?: (event: OnReadCodeData) => void;
+  extraIcons?: React.ReactElement[];
 }
 
 const CameraScreen: React.FC<CameraScreenProps> = ({
@@ -22,6 +23,7 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
   onImagePickerButtonPress,
   onFilePickerButtonPress,
   onReadCode,
+  extraIcons = [],
 }) => {
   const cameraRef = useRef<CameraApi>(null);
   const [torchMode, setTorchMode] = useState(false);
@@ -106,6 +108,7 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
           </Animated.View>
         </TouchableOpacity>
         <View style={styles.rightButtonsContainer}>
+          {extraIcons}
           {showImagePickerButton && (
             <TouchableOpacity
               accessibilityRole="button"
