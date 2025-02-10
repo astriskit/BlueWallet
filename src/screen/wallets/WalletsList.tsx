@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import { useFocusEffect, useIsFocused, useRoute, RouteProp } from '@react-navigation/native';
 import { findNodeHandle, Image, InteractionManager, SectionList, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-// import A from '../../blue_modules/analytics';
+import A from '../../blue_modules/analytics';
 import { getClipboardContent } from '../../blue_modules/clipboard';
 import { isDesktop } from '../../blue_modules/environment';
 import * as fs from '../../blue_modules/fs';
@@ -150,9 +150,9 @@ const WalletsList: React.FC = () => {
 
   const verifyBalance = useCallback(() => {
     if (getBalance() !== 0) {
-      // A(A.ENUM.GOT_NONZERO_BALANCE);
+      A(A.ENUM.GOT_NONZERO_BALANCE);
     } else {
-      // A(A.ENUM.GOT_ZERO_BALANCE);
+      A(A.ENUM.GOT_ZERO_BALANCE);
     }
   }, [getBalance]);
 

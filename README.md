@@ -123,7 +123,7 @@ Builds automated and tested with BrowserStack
 
 <a href="https://www.browserstack.com/"><img src="https://i.imgur.com/syscHCN.png" width="160px"></a>
 
-Bugs reported via BugSnag
+Bugs reported via [BugSnag](https://docs.bugsnag.com/platforms/react-native/expo/)
 
 <a href="https://www.bugsnag.com"><img src="https://images.typeform.com/images/QKuaAssrFCq7/image/default" width="160px"></a>
 

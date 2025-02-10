@@ -1,4 +1,4 @@
-import Bugsnag from '@bugsnag/react-native';
+import Bugsnag from '@bugsnag/expo';
 import { getUniqueId } from 'react-native-device-info';
 
 import { BlueApp as BlueAppClass } from '../class';

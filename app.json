@@ -47,9 +47,13 @@
           ]
         }
       ],
-      ["@config-plugins/detox", {
-        "subdomains": "*"
-      }]
+      [
+        "@config-plugins/detox",
+        {
+          "subdomains": "*"
+        }
+      ],
+      "@bugsnag/plugin-expo-eas-sourcemaps"
     ],
     "experiments": {
       "typedRoutes": true
@@ -60,6 +64,9 @@
       },
       "eas": {
         "projectId": "5902ca6c-31e8-4737-a286-e93dba1150c2"
+      },
+      "bugsnag": {
+        "apiKey": "17ba9059f676f1cc4f45d98182388b01"
       }
     }
   }

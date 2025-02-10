@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 
-// import A from '../../blue_modules/analytics';
+import A from '../../blue_modules/analytics';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
 import { BlueApp, HDSegwitBech32Wallet, HDSegwitP2SHWallet, LightningCustodianWallet, SegwitP2SHWallet } from '../../class';
@@ -330,7 +330,7 @@ const WalletsAdd: React.FC = () => {
         }
         addWallet(w);
         await saveToDisk();
-        // A(A.ENUM.CREATED_WALLET);
+        A(A.ENUM.CREATED_WALLET);
         triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
         if (w.type === HDSegwitP2SHWallet.type || w.type === HDSegwitBech32Wallet.type) {
           navigate('PleaseBackup', {
@@ -373,12 +373,12 @@ const WalletsAdd: React.FC = () => {
       }
       // giving app, not adding anything
     }
-    // A(A.ENUM.CREATED_LIGHTNING_WALLET);
+    A(A.ENUM.CREATED_LIGHTNING_WALLET);
     await wallet.generate();
     addWallet(wallet);
     await saveToDisk();
 
-    // A(A.ENUM.CREATED_WALLET);
+    A(A.ENUM.CREATED_WALLET);
     triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
     navigate('PleaseBackupLNDHub', {
       walletID: wallet.getID(),

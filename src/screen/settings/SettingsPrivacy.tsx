@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { openSettings } from 'react-native-permissions';
-// import A from '../../blue_modules/analytics';
+import A from '../../blue_modules/analytics';
 import { Header } from '../../components/Header';
 import ListItem, { PressableWrapper } from '../../components/ListItem';
 import { useTheme } from '../../components/themes';
@@ -62,7 +62,7 @@ const SettingsPrivacy: React.FC = () => {
     setIsLoading(SettingsPrivacySection.All);
     try {
       setDoNotTrackStorage(value);
-      // A.setOptOut(value);
+      A.setOptOut(value);
     } catch (e) {
       console.debug('onDoNotTrackValueChange catch', e);
     }
