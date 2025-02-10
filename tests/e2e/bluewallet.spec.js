@@ -71,12 +71,12 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await back();
 
     //
-    // currency
+    // currency - just fails during e2e
     // change currency to ARS ($) and switch it back to USD ($)
     // await element(by.id('Currency')).tap();
     // await element(by.text('ARS ($)')).tap();
     // await sup('Rate is obtained from Yadio');
-    // await element(by.text('USD ($)')).tap(); // shows network error - hence skipping
+    // await element(by.text('USD ($)')).tap();
     // await back();
 
     // language
@@ -108,7 +108,8 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await element(by.text('OK')).tap();
     await element(by.id('HeaderMenuButton')).tap();
     await element(by.text('Reset to default')).tap();
-    await element(by.text('RESET TO DEFAULT')).tap();
+    await sup('OK');
+    await element(by.text('OK')).tap();
     await sup('OK');
     await element(by.text('OK')).tap();
     await element(by.id('ElectrumSettingsScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
@@ -142,18 +143,18 @@ describe('BlueWallet UI Tests - no wallets', () => {
     // notifications
     // turn on notifications if available
     // console.warn('yo');
-    // await sleep(300000);
-    // if (await expectToBeVisible('NotificationSettings')) {
-    //   await element(by.id('NotificationSettings')).tap();
-    //   await element(by.id('NotificationsSwitch')).tap();
-    //   await sup('OK');
-    //   await element(by.text('OK')).tap();
-    //   await element(by.id('NotificationsSwitch')).tap(); // some issue with the flow
-    //   await back();
-    //   await back();
-    // } else {
-    await back();
-    // }
+    await sleep(300000);
+    if (await expectToBeVisible('NotificationSettings')) {
+      await element(by.id('NotificationSettings')).tap();
+      await element(by.id('NotificationsSwitch')).tap();
+      await sup('OK');
+      await element(by.text('OK')).tap();
+      await element(by.id('NotificationsSwitch')).tap(); // some issue with the flow
+      await back();
+      await back();
+    } else {
+      await back();
+    }
 
     // tools
     await element(by.id('Tools')).tap();
