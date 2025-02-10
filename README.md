@@ -57,19 +57,27 @@ You will now need to either connect an Android device to your computer or run an
 5. Click on "Create Virtual Device..." and go through the steps to create a virtual device
 6. Launch your newly created virtual device by clicking the `Play` button under `Actions` column
 
-Once you connected an Android device or launched an emulator, run this:
+Once you connected an Android device or launched an emulator, run following:
+
+1. To build the [development client](https://docs.expo.dev/develop/development-builds/introduction/) locally which can be afterwards found at `<project-root>/android/app/build/outputs/apk/debug/app-debug.apk`. This is a one time step, required if some native library changes or app config changes in the project.
+```
+npm run build:android:debug 
+```
+2. Then find the `app-debug.apk` and install in the virtual device. One can do that by dropping the apk on the emulator.
+3. After that run the expo/metro-server using -
+```
+npm run android
+```
+
+More about running the dev-client can be found [here](https://docs.expo.dev/develop/development-builds/use-development-builds/).
+
+The above flow will build the app and let you install it. Once everything loads up, you should have the built app running.
+
+* To run on iOS, like above.
 
 ```
-npx react-native run-android
-```
-
-The above command will build the app and install it. Once you launch the app it will take some time for all of the dependencies to load. Once everything loads up, you should have the built app running.
-
-* To run on iOS:
-
-```
-npx pod-install
-npm start
+npm run build:ios:debug
+npm run ios
 ```
 
 In another terminal window within the BlueWallet folder:
@@ -79,7 +87,7 @@ npx react-native run-ios
 **To debug BlueWallet on the iOS Simulator, you must choose a Rosetta-compatible iOS Simulator. This can be done by navigating to the Product menu in Xcode, selecting Destination Architectures, and then opting for "Show Both." This action will reveal the simulators that support Rosetta.
 **
 
-* To run on macOS using Mac Catalyst:
+* To run on macOS using Mac Catalyst: [NOTE: Unsupported ATM]
 
 ```
 npx pod-install
