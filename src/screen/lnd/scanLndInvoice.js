@@ -288,7 +288,7 @@ const ScanLndInvoice = () => {
       if (!value) return;
       DeeplinkSchemaMatch.navigationRouteFor({ url: value }, completionValue => {
         triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-        navigate(...completionValue);
+        navigate(completionValue);
       });
     },
     [navigate],

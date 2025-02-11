@@ -189,8 +189,8 @@ const WalletsList: React.FC = () => {
       if (!value) return;
       DeeplinkSchemaMatch.navigationRouteFor({ url: value }, completionValue => {
         triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-        // @ts-ignore: for now
-        navigation.navigate(...completionValue);
+        // @ts-ignore value
+        navigation.navigate(completionValue);
       });
     },
     [navigation],

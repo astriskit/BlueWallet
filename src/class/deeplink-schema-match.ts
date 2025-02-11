@@ -9,7 +9,7 @@ import Lnurl from './lnurl';
 import { RouterParam, Router } from '../NavigationService';
 import { TWallet } from './wallets/types/TWallet';
 
-type TCompletionHandlerParams = [string, object] | RouterParam;
+export type TCompletionHandlerParams = RouterParam;
 type TContext = {
   wallets: TWallet[];
   saveToDisk: () => void;
@@ -38,7 +38,7 @@ class DeeplinkSchemaMatch {
    * navigation dictionary required by react-navigation
    *
    * @param event {{url: string}} URL deeplink as passed to app, e.g. `bitcoin:bc1qh6tf004ty7z7un2v5ntu4mkf630545gvhs45u7?amount=666&label=Yo`
-   * @param completionHandler {function} Callback that returns [string, params: object]
+   * @param completionHandler {function} Callback that returns {pathname: string, params: object}
    */
   static navigationRouteFor(
     event: { url: string },
@@ -124,15 +124,16 @@ class DeeplinkSchemaMatch {
       console.log(e);
     }
     if (isBothBitcoinAndLightning) {
-      completionHandler([
-        'SelectWallet',
-        {
+      completionHandler({
+        pathname: '/SelectWallet',
+        params: {
+          // @ts-ignore param-function
           onWalletSelect: (wallet: TWallet, { navigation }: { navigation: Router }) => {
             // navigation.pop(); // close select wallet screen
             navigation.replace(DeeplinkSchemaMatch.isBothBitcoinAndLightningOnWalletSelect(wallet, isBothBitcoinAndLightning));
           },
         },
-      ]);
+      });
     } else if (DeeplinkSchemaMatch.isBitcoinAddress(event.url)) {
       completionHandler({
         pathname: '/SendDetailsRoot/SendDetails',

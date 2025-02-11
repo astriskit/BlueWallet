@@ -16,10 +16,10 @@ import {
   setApplicationIconBadgeNumber,
 } from '../blue_modules/notifications';
 import { LightningCustodianWallet } from '../class';
-import DeeplinkSchemaMatch from '../class/deeplink-schema-match';
+import DeeplinkSchemaMatch, { TCompletionHandlerParams } from '../class/deeplink-schema-match';
 import loc from '../loc';
 import { Chain } from '../models/bitcoinUnits';
-import { router, RouterParam } from '../NavigationService';
+import { navigationRef, router, RouterParam } from '../NavigationService';
 import ActionSheet from '../screen/ActionSheet';
 import { useStorage } from '../hooks/context/useStorage';
 import RNQRGenerator from 'rn-qr-generator';
@@ -200,7 +200,10 @@ const CompanionDelegates = () => {
             triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
             DeeplinkSchemaMatch.navigationRouteFor(
               { url: qrResult.values[0] },
-              (value: [string, any]) => navigationRef.navigate(...value), // FIX_ME navigationRef
+              (value: TCompletionHandlerParams) => {
+                // @ts-ignore value
+                navigationRef?.()?.navigate(value);
+              },
               {
                 wallets,
                 addWallet,
