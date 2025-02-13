@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { LogBox } from 'react-native';
 
 import App from './App';
-// import A from './blue_modules/analytics';
+import A from './blue_modules/analytics';
 import { restoreSavedPreferredFiatCurrencyAndExchangeFromStorage } from './blue_modules/currency';
 
 if (!Error.captureStackTrace) {
@@ -23,7 +23,7 @@ LogBox.ignoreLogs([
 export const BlueAppComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     restoreSavedPreferredFiatCurrencyAndExchangeFromStorage();
-    // A(A.ENUM.INIT); // TODO: add later
+    A(A.ENUM.INIT);
   }, []);
   return <App>{children}</App>;
 };
