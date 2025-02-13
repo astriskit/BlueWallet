@@ -149,8 +149,6 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
           onZoom={handleZoom}
           onReadCode={handleReadCode}
           torchMode={torchMode ? 'on' : 'off'}
-          shutterPhotoSound
-          maxPhotoQualityPrioritization="quality"
           onOrientationChange={handleOrientationChange}
         />
       </View>

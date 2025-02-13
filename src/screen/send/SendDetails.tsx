@@ -715,6 +715,7 @@ const SendDetails = () => {
           walletID: wallet.getID(),
           psbt,
         });
+
         setIsLoading(false);
       }
     },
@@ -881,7 +882,6 @@ const SendDetails = () => {
       navigation.navigate('CreateTransaction', {
         fee: new BigNumber(psbt.getFee()).dividedBy(100000000).toNumber(),
         feeSatoshi: psbt.getFee(),
-        wallet,
         tx: tx.toHex(),
         recipients,
         satoshiPerByte: psbt.getFeeRate(),
@@ -896,32 +896,38 @@ const SendDetails = () => {
     const data = routeParams.onBarScanned;
     if (data) {
       if (selectedDataProcessor.current) {
+        console.debug('SendDetails - selectedDataProcessor:', selectedDataProcessor.current);
         switch (selectedDataProcessor.current) {
           case CommonToolTipActions.ImportTransactionQR:
             importQrTransactionOnBarScanned(data);
             break;
-          case CommonToolTipActions.CoSignTransaction:
           case CommonToolTipActions.SignPSBT:
             handlePsbtSign(data);
             break;
+          case CommonToolTipActions.CoSignTransaction:
           case CommonToolTipActions.ImportTransactionMultsig:
             _importTransactionMultisig(data);
             break;
+          case CommonToolTipActions.ImportTransaction:
+            processAddressData(data);
+            break;
           default:
-            console.log('Unknown selectedDataProcessor:', selectedDataProcessor.current);
+            console.debug('Unknown selectedDataProcessor:', selectedDataProcessor.current);
         }
+      } else {
+        processAddressData(data);
       }
     }
-    setParams({ onBarScanned: undefined });
     selectedDataProcessor.current = undefined;
+    setParams({ onBarScanned: undefined });
   }, [
-    handlePsbtSign,
     importQrTransactionOnBarScanned,
     onBarScanned,
     routeParams.onBarScanned,
     setParams,
     processAddressData,
     _importTransactionMultisig,
+    handlePsbtSign,
   ]);
 
   const handleAddRecipient = useCallback(() => {
@@ -1005,11 +1011,13 @@ const SendDetails = () => {
     } else if (id === CommonToolTipActions.AllowRBF.id) {
       onReplaceableFeeSwitchValueChanged(!isTransactionReplaceable);
     } else if (id === CommonToolTipActions.ImportTransaction.id) {
+      selectedDataProcessor.current = CommonToolTipActions.ImportTransaction;
       importTransaction();
     } else if (id === CommonToolTipActions.ImportTransactionQR.id) {
       selectedDataProcessor.current = CommonToolTipActions.ImportTransactionQR;
       importQrTransaction();
     } else if (id === CommonToolTipActions.ImportTransactionMultsig.id) {
+      selectedDataProcessor.current = CommonToolTipActions.ImportTransactionMultsig;
       importTransactionMultisig();
     } else if (id === CommonToolTipActions.CoSignTransaction.id) {
       selectedDataProcessor.current = CommonToolTipActions.CoSignTransaction;

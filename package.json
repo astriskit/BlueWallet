@@ -1,7 +1,6 @@
 {
   "name": "bluewallet",
-  "main": "expo-router/entry",
-  "version": "7.0.7",
+  "version": "7.1.1",
   "license": "MIT",
   "repository": {
     "type": "git",

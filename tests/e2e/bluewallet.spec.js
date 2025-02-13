@@ -611,6 +611,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
 
     await element(by.id('ProvideSignature')).tap();
     await sleep(3000);
+    await element(by.id('PsbtMultisigQRCodeScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('CosignedScanOrImportFile')).tap();
 
     const ursSignedByPassport = [
@@ -636,6 +637,7 @@ describe('BlueWallet UI Tests - no wallets', () => {
     await sleep(3000);
     await element(by.id('ProvideSignature')).tap();
     await sleep(3000);
+    await element(by.id('PsbtMultisigQRCodeScrollView')).swipe('up', 'fast', 1); // in case emu screen is small and it doesnt fit
     await element(by.id('CosignedScanOrImportFile')).tap();
 
     const urSignedByPassportAndKeystone = [

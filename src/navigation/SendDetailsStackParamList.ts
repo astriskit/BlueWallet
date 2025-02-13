@@ -1,6 +1,5 @@
 import { Psbt } from 'bitcoinjs-lib';
 import { CreateTransactionTarget } from '../class/wallets/types/CreateTransactionTarget';
-import { TWallet } from '../class/wallets/types/TWallet';
 import { Chain } from '../models/bitcoinUnits';
 import { ScanQRCodeParamList } from './DetailViewStackParamList';
 import { SendDetailsParams } from './SendDetailsParams';
@@ -26,7 +25,6 @@ export type SendDetailsStackParamList = {
     txhex?: string;
   };
   CreateTransaction: {
-    wallet: TWallet;
     memo?: string;
     psbt?: Psbt;
     txhex?: string;
