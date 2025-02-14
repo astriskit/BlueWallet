@@ -1,4 +1,5 @@
-import { ExpoConfig, ConfigContext } from 'expo/config';
+import 'ts-node/register';
+
 import { ConfigPlugin, withGradleProperties, withPlugins } from 'expo/config-plugins';
 
 import { withPushNotification } from '@astriskit/rn-push-notification-config';
