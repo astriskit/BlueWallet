@@ -4,7 +4,7 @@ import { LegacyWallet, SegwitBech32Wallet, SegwitP2SHWallet } from '../../src/cl
 import { forceDisconnect } from '@/src/blue_modules/blue-electrum/forceDisconnect';
 import { connectMain } from '@/src/blue_modules/blue-electrum/connectMain';
 
-jest.setTimeout(30 * 1000);
+jest.setTimeout(60 * 1000);
 
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate

@@ -4,7 +4,7 @@ import { WatchOnlyWallet } from '../../src/class';
 import { forceDisconnect } from '../../src/blue_modules/blue-electrum/forceDisconnect';
 import { connectMain } from '../../src/blue_modules/blue-electrum/connectMain';
 
-jest.setTimeout(500 * 1000);
+jest.setTimeout(800 * 1000);
 
 afterAll(async () => {
   // after all tests we close socket so the test suite can actually terminate

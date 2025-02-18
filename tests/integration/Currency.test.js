@@ -12,7 +12,7 @@ import {
 } from '../../src/blue_modules/currency';
 import { FiatUnit } from '../../src/models/fiatUnit';
 
-jest.setTimeout(90 * 1000);
+jest.setTimeout(150 * 1000);
 
 describe('currency', () => {
   beforeAll(async () => {

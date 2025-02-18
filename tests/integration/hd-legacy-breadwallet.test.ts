@@ -22,7 +22,9 @@ beforeAll(async () => {
   await connectMain();
 });
 
-it('Legacy HD Breadwallet can fetch utxo, balance, and create transaction', async () => {
+const runItIfMnemonicSet = !process.env.HD_MNEMONIC_BREAD ? it.skip : it;
+
+runItIfMnemonicSet('Legacy HD Breadwallet can fetch utxo, balance, and create transaction', async () => {
   if (!process.env.HD_MNEMONIC_BREAD) {
     console.error('process.env.HD_MNEMONIC_BREAD not set, skipped');
     return;

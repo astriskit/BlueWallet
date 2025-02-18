@@ -2,6 +2,8 @@
 
 import mockClipboard from 'expo-clipboard/mocks/ExpoClipboard';
 
+// jest.useFakeTimers();
+
 const consoleWarnOrig = console.warn;
 console.warn = (...args) => {
   if (
