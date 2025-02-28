@@ -16,7 +16,11 @@ import {
 import A from '../../blue_modules/analytics';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
-import { BlueApp, HDSegwitBech32Wallet, HDSegwitP2SHWallet, LightningCustodianWallet, SegwitP2SHWallet } from '../../class';
+import { BlueApp } from '@/src/class/blue-app';
+import { HDSegwitBech32Wallet } from '@/src/class/wallets/hd-segwit-bech32-wallet';
+import { HDSegwitP2SHWallet } from '@/src/class/wallets/hd-segwit-p2sh-wallet';
+import { LightningCustodianWallet } from '@/src/class/wallets/lightning-custodian-wallet';
+import { SegwitP2SHWallet } from '@/src/class/wallets/segwit-p2sh-wallet';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
