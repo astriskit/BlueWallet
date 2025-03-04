@@ -56,7 +56,7 @@ export default class AztecoRedeem extends Component {
   constructor(props, context) {
     super(props);
 
-    /** @type {AbstractWallet} */
+    /** @type {AbstractBitcoinWallet} */
     let toWallet = null;
 
     const wallets = context.wallets;

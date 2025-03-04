@@ -4,7 +4,7 @@ import * as bip39 from 'bip39';
 import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTransactionsByAddress';
 
 import * as bip39custom from '../../blue_modules/bip39';
-import { LegacyWallet } from './legacy-wallet';
+import { AbstractBitcoinWallet } from './abstract-bitcoin-wallet';
 import { Transaction } from './types/Transaction';
 
 type AbstractHDWalletStatics = {
@@ -14,7 +14,7 @@ type AbstractHDWalletStatics = {
 /**
  * @deprecated
  */
-export class AbstractHDWallet extends LegacyWallet {
+export class AbstractHDWallet extends AbstractBitcoinWallet {
   static readonly type: string = 'abstract';
   static readonly typeReadable: string = 'abstract';
   public readonly type = AbstractHDWallet.type;

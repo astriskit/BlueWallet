@@ -17,7 +17,7 @@ import { getTransactionsByAddress } from '@/src/blue_modules/blue-electrum/getTr
 
 import ecc from '../../blue_modules/noble_ecc';
 import { randomBytes } from '../rng';
-import { AbstractWallet } from './abstract-wallet';
+import { AbstractBitcoinWallet } from './abstract-bitcoin-wallet';
 import { CreateTransactionResult } from './types/CreateTransactionResult';
 import { CreateTransactionTarget } from './types/CreateTransactionTarget';
 import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
@@ -33,7 +33,7 @@ bitcoin.initEccLib(ecc);
  *  Has private key and single address like "1ABCD....."
  *  (legacy P2PKH compressed)
  */
-export class LegacyWallet extends AbstractWallet {
+export class LegacyWallet extends AbstractBitcoinWallet {
   static readonly type: string = 'legacy';
   static readonly typeReadable: string = 'Legacy (P2PKH)';
   public readonly type = LegacyWallet.type;

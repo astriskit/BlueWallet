@@ -2,7 +2,7 @@ import BIP32Factory from 'bip32';
 import * as bitcoin from 'bitcoinjs-lib';
 
 import ecc from '../../blue_modules/noble_ecc';
-import { AbstractWallet } from './abstract-wallet';
+import { AbstractBitcoinWallet } from './abstract-bitcoin-wallet';
 import { HDLegacyP2PKHWallet } from './hd-legacy-p2pkh-wallet';
 import { HDSegwitBech32Wallet } from './hd-segwit-bech32-wallet';
 import { HDSegwitP2SHWallet } from './hd-segwit-p2sh-wallet';
@@ -270,7 +270,7 @@ export class WatchOnlyWallet extends LegacyWallet {
       if (this.secret.startsWith('zpub')) {
         xpub = this._zpubToXpub(this.secret);
       } else if (this.secret.startsWith('ypub')) {
-        xpub = AbstractWallet._ypubToXpub(this.secret);
+        xpub = AbstractBitcoinWallet._ypubToXpub(this.secret);
       } else {
         xpub = this.secret;
       }
