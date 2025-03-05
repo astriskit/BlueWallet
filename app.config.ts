@@ -4,6 +4,7 @@ import { ConfigPlugin, withGradleProperties, withPlugins } from 'expo/config-plu
 
 import { withPushNotification } from '@astriskit/rn-push-notification-config';
 import { withPushNotificationIOS } from '@astriskit/rn-community-push-notification-ios-config';
+import { ConfigContext, ExpoConfig } from 'expo/config';
 
 const withJettifier: ConfigPlugin<boolean> = (_, enable = false) =>
   withGradleProperties(_, config => {
@@ -16,8 +17,18 @@ const withJettifier: ConfigPlugin<boolean> = (_, enable = false) =>
   });
 
 export default ({ config }: ConfigContext): ExpoConfig => {
+  // Add environment variables for APIs
+  const updatedConfig = {
+    ...config,
+    extra: {
+      ...config.extra,
+      // Ethereum API keys (set these in eas.json or use expo-updates for production)
+      etherscanApiKey: process.env.ETHERSCAN_API_KEY || 'YOUR_API_KEY_HERE',
+    },
+  };
+
   // @ts-ignore config!
-  return withPlugins(config, [
+  return withPlugins(updatedConfig, [
     [withJettifier, true],
     withPushNotificationIOS,
     [

@@ -136,6 +136,7 @@
     "ecurve": "1.0.6",
     "electrum-client": "github:BlueWallet/rn-electrum-client#1bfe3cc",
     "electrum-mnemonic": "2.0.0",
+    "ethers": "^6.13.5",
     "events": "3.3.0",
     "expo": "^52.0.25",
     "expo-application": "~6.0.2",
