@@ -9,7 +9,7 @@ import {
 } from 'react-native-watch-connectivity';
 import { MultisigHDWallet } from '../class';
 import loc from '../loc';
-import { Chain } from '../models/bitcoinUnits';
+import { Chain } from '../models/cryptoUnits';
 import { FiatUnit } from '../models/fiatUnit';
 import { useSettings } from '../hooks/context/useSettings';
 import { useStorage } from '../hooks/context/useStorage';

@@ -11,7 +11,7 @@ import QRCodeComponent from '../../components/QRCodeComponent';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import { SuccessView } from '../send/success';
 import LNDCreateInvoice from './lndCreateInvoice';
 import { useStorage } from '../../hooks/context/useStorage';
@@ -225,7 +225,7 @@ const LNDViewInvoice = () => {
           <View style={styles.root}>
             <SuccessView
               amount={amount}
-              amountUnit={BitcoinUnit.SATS}
+              amountUnit={CryptoUnit.SATS}
               invoiceDescription={description}
               fee={invoice.fee ? new BigNumber(invoice.fee).multipliedBy(-1).dividedBy(1e8).toNumber() : undefined}
               shouldAnimate={false}

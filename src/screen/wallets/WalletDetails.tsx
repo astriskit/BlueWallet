@@ -15,15 +15,7 @@ import {
 import { writeFileAndExport } from '../../blue_modules/fs';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueLoading, BlueSpacing10, BlueSpacing20, BlueText } from '../../BlueComponents';
-import {
-  HDAezeedWallet,
-  HDSegwitBech32Wallet,
-  LegacyWallet,
-  MultisigHDWallet,
-  SegwitBech32Wallet,
-  SegwitP2SHWallet,
-  WatchOnlyWallet,
-} from '../../class';
+import { HDAezeedWallet } from '@/src/class/wallets/hd-aezeed-wallet';
 import { AbstractHDElectrumWallet } from '../../class/wallets/abstract-hd-electrum-wallet';
 import { LightningCustodianWallet } from '../../class/wallets/lightning-custodian-wallet';
 import presentAlert from '../../components/Alert';
@@ -35,7 +27,7 @@ import prompt from '../../helpers/prompt';
 import { useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalanceWithoutSuffix } from '../../loc';
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useFocusEffect, useRoute, RouteProp } from '@react-navigation/native';
 import { LightningTransaction } from '../../class/wallets/types/LightningTransaction';
@@ -47,6 +39,13 @@ import { Action } from '../../components/types';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import { unlockWithBiometrics } from '@/src/hooks/utils/biometrics';
 import { popToTop } from '../../NavigationService';
+import { HDSegwitBech32Wallet } from '@/src/class/wallets/hd-segwit-bech32-wallet';
+import { LegacyWallet } from '@/src/class/wallets/legacy-wallet';
+import { SegwitBech32Wallet } from '@/src/class/wallets/segwit-bech32-wallet';
+import { SegwitP2SHWallet } from '@/src/class/wallets/segwit-p2sh-wallet';
+import { WatchOnlyWallet } from '@/src/class/wallets/watch-only-wallet';
+import { MultisigHDWallet } from '@/src/class/wallets/multisig-hd-wallet';
+import { EthereumWallet } from '@/src/class/wallets/ethereum-wallet';
 
 type RouteProps = RouteProp<DetailViewStackParamList, 'WalletDetails'>;
 const WalletDetails: React.FC = () => {
@@ -99,7 +98,7 @@ const WalletDetails: React.FC = () => {
   const presentWalletHasBalanceAlert = useCallback(async () => {
     triggerHapticFeedback(HapticFeedbackTypes.NotificationWarning);
     try {
-      const balance = formatBalanceWithoutSuffix(wallet.getBalance(), BitcoinUnit.SATS, true);
+      const balance = formatBalanceWithoutSuffix(wallet.getBalance(), CryptoUnit.SATS, true);
       const walletBalanceConfirmation = await prompt(
         loc.wallets.details_delete_wallet,
         loc.formatString(loc.wallets.details_del_wb_q, { balance }),
@@ -153,7 +152,7 @@ const WalletDetails: React.FC = () => {
   }, [isBiometricUseCapableAndEnabled, navigateToOverviewAndDeleteWallet, presentWalletHasBalanceAlert, wallet]);
 
   const exportHistoryContent = useCallback(() => {
-    const headers = [loc.transactions.date, loc.transactions.txid, `${loc.send.create_amount} (${BitcoinUnit.BTC})`, loc.send.create_memo];
+    const headers = [loc.transactions.date, loc.transactions.txid, `${loc.send.create_amount} (${CryptoUnit.BTC})`, loc.send.create_memo];
     if (wallet.chain === Chain.OFFCHAIN) {
       headers.push(loc.lnd.payment);
     }
@@ -162,7 +161,7 @@ const WalletDetails: React.FC = () => {
     const transactions = wallet.getTransactions();
 
     transactions.forEach((transaction: Transaction & LightningTransaction) => {
-      const value = formatBalanceWithoutSuffix(transaction.value || 0, BitcoinUnit.BTC, true);
+      const value = formatBalanceWithoutSuffix(transaction.value || 0, CryptoUnit.BTC, true);
       let hash: string = transaction.hash || '';
       let memo = (transaction.hash && txMetadata[transaction.hash]?.memo?.trim()) || '';
       let status = '';
@@ -213,14 +212,14 @@ const WalletDetails: React.FC = () => {
         id: loc.wallets.details_export_history,
         text: loc.wallets.details_export_history,
         displayInline: true,
-        hidden: walletTransactionsLength === 0,
+        hidden: walletTransactionsLength === 0 || wallet.type === EthereumWallet.type /** TODO: support ethereum */,
         subactions: [CommonToolTipActions.Share, CommonToolTipActions.SaveFile],
       },
       CommonToolTipActions.Delete,
     ];
 
     return actions;
-  }, [walletTransactionsLength]);
+  }, [walletTransactionsLength, wallet]);
 
   const HeaderRight = useMemo(
     () => <HeaderMenuButton disabled={isLoading} onPressMenuItem={toolTipOnPressMenuItem} actions={toolTipActions} />,
@@ -242,7 +241,7 @@ const WalletDetails: React.FC = () => {
     useCallback(() => {
       const task = InteractionManager.runAfterInteractions(() => {
         if (isMasterFingerPrintVisible && wallet.allowMasterFingerprint && wallet.allowMasterFingerprint()) {
-          // @ts-expect-error: Need to fix later
+          // @ts-expect-error: Need to fix laterallowSignVerifyMessage
           if (wallet.getMasterFingerprintHex) {
             // @ts-expect-error: Need to fix later
             setMasterFingerprint(wallet.getMasterFingerprintHex());
@@ -428,7 +427,7 @@ const WalletDetails: React.FC = () => {
           <BlueCard style={styles.address}>
             {(() => {
               if (
-                [LegacyWallet.type, SegwitBech32Wallet.type, SegwitP2SHWallet.type].includes(wallet.type) ||
+                [LegacyWallet.type, SegwitBech32Wallet.type, SegwitP2SHWallet.type, EthereumWallet.type].includes(wallet.type) ||
                 (wallet.type === WatchOnlyWallet.type && !wallet.isHd())
               ) {
                 return (

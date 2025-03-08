@@ -10,10 +10,12 @@ const EXCHANGE_RATES_STORAGE_KEY = 'exchangeRates';
 const LAST_UPDATED = 'LAST_UPDATED';
 export const GROUP_IO_BLUEWALLET = 'group.io.bluewallet.bluewallet';
 const BTC_PREFIX = 'BTC_';
+const ETH_PREFIX = 'ETH_';
 
 export interface CurrencyRate {
   LastUpdated: Date | null;
   Rate: number | string | null;
+  EthRate: number | string | null;
 }
 
 interface ExchangeRates {
@@ -80,7 +82,9 @@ async function updateExchangeRate(): Promise<void> {
   try {
     const rate = await getFiatRate(preferredFiatCurrency.endPointKey);
     exchangeRates[LAST_UPDATED] = Date.now();
+    const ethRate = await getFiatRate(preferredFiatCurrency.endPointKey, 'ETH');
     exchangeRates[BTC_PREFIX + preferredFiatCurrency.endPointKey] = rate;
+    exchangeRates[ETH_PREFIX + preferredFiatCurrency.endPointKey] = ethRate;
     exchangeRates.LAST_UPDATED_ERROR = false;
 
     try {
@@ -302,6 +306,42 @@ function BTCToLocalCurrency(bitcoin: BigNumber.Value): string {
   return satoshiToLocalCurrency(sat);
 }
 
+function weiToLocalCurrency(wei: number, format: boolean = true): string {
+  const exchangeRateKey = ETH_PREFIX + preferredFiatCurrency.endPointKey;
+  const exchangeRate = exchangeRates[exchangeRateKey];
+
+  if (typeof exchangeRate !== 'number') {
+    updateExchangeRate();
+    return '...';
+  }
+
+  const ethAmount = new BigNumber(wei).dividedBy(1e18);
+  const convertedAmount = ethAmount.multipliedBy(exchangeRate);
+  let formattedAmount: string;
+
+  if (convertedAmount.isGreaterThanOrEqualTo(0.005) || convertedAmount.isLessThanOrEqualTo(-0.005)) {
+    formattedAmount = convertedAmount.toFixed(2);
+  } else {
+    formattedAmount = convertedAmount.toPrecision(2);
+  }
+
+  console.log('weiToLocalCurrency', wei, formattedAmount, exchangeRate);
+
+  if (format === false) return formattedAmount;
+
+  try {
+    return getCurrencyFormatter().format(Number(formattedAmount));
+  } catch (error) {
+    console.error(error);
+    return formattedAmount;
+  }
+}
+
+function ETHToLocalCurrency(ether: BigNumber.Value): string {
+  const sat = new BigNumber(ether).multipliedBy(1e18).toNumber();
+  return weiToLocalCurrency(sat);
+}
+
 async function mostRecentFetchedRate(): Promise<CurrencyRate> {
   try {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
@@ -326,14 +366,17 @@ async function mostRecentFetchedRate(): Promise<CurrencyRate> {
     }
 
     const rate = currencyInformation[BTC_PREFIX + preferredFiatCurrency.endPointKey];
+    const ethRate = currencyInformation[ETH_PREFIX + preferredFiatCurrency.endPointKey];
     return {
       LastUpdated: currencyInformation[LAST_UPDATED] ? new Date(currencyInformation[LAST_UPDATED]) : null,
       Rate: rate ? getCurrencyFormatter().format(rate) : '...',
+      EthRate: ethRate ? getCurrencyFormatter().format(rate) : '...',
     };
   } catch {
     return {
       LastUpdated: null,
       Rate: null,
+      EthRate: null,
     };
   }
 }
@@ -342,8 +385,16 @@ function satoshiToBTC(satoshi: number): string {
   return new BigNumber(satoshi).dividedBy(100000000).toString(10);
 }
 
+function weiToETH(wei: number): string {
+  return new BigNumber(wei).dividedBy(1e18).toString(10);
+}
+
 function btcToSatoshi(btc: BigNumber.Value): number {
   return new BigNumber(btc).multipliedBy(100000000).toNumber();
+}
+
+function ethToWei(eth: BigNumber.Value): number {
+  return new BigNumber(eth).multipliedBy(1e18).toNumber();
 }
 
 function fiatToBTC(fiatFloat: number): string {
@@ -358,11 +409,27 @@ function fiatToBTC(fiatFloat: number): string {
   return btcAmount.toFixed(8);
 }
 
+function fiatToETH(fiatFloat: number): string {
+  const exchangeRateKey = ETH_PREFIX + preferredFiatCurrency.endPointKey;
+  const exchangeRate = exchangeRates[exchangeRateKey];
+
+  if (typeof exchangeRate !== 'number') {
+    throw new Error('Exchange rate not available');
+  }
+
+  const ethAmount = new BigNumber(fiatFloat).dividedBy(exchangeRate);
+  return ethAmount.toFixed(8);
+}
+
 function getCurrencySymbol(): string {
   return preferredFiatCurrency.symbol;
 }
 
 function formatBTC(btc: BigNumber.Value): string {
+  return new BigNumber(btc).toFormat(8);
+}
+
+function formatETH(btc: BigNumber.Value): string {
   return new BigNumber(btc).toFormat(8);
 }
 
@@ -383,9 +450,12 @@ export {
   _setPreferredFiatCurrency,
   _setSkipUpdateExchangeRate,
   BTCToLocalCurrency,
+  ETHToLocalCurrency,
   btcToSatoshi,
+  ethToWei,
   EXCHANGE_RATES_STORAGE_KEY,
   fiatToBTC,
+  fiatToETH,
   getCurrencySymbol,
   getPreferredCurrency,
   initCurrencyDaemon,
@@ -395,8 +465,12 @@ export {
   PREFERRED_CURRENCY_STORAGE_KEY,
   restoreSavedPreferredFiatCurrencyAndExchangeFromStorage,
   satoshiToBTC,
+  weiToETH,
   satoshiToLocalCurrency,
+  weiToLocalCurrency,
   setPreferredCurrency,
   updateExchangeRate,
   formatBTC,
+  formatETH,
+  getCurrencyFormatter,
 };

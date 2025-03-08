@@ -44,34 +44,6 @@ export class LegacyWallet extends AbstractBitcoinWallet {
 
   _getTransactionTrait = new GetTransactions();
 
-  /**
-   * Simple function which says that we havent tried to fetch balance
-   * for a long time
-   *
-   * @return {boolean}
-   */
-  timeToRefreshBalance(): boolean {
-    if (+new Date() - this._lastBalanceFetch >= 5 * 60 * 1000) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Simple function which says if we hve some low-confirmed transactions
-   * and we better fetch them
-   *
-   * @return {boolean}
-   */
-  timeToRefreshTransaction(): boolean {
-    for (const tx of this.getTransactions()) {
-      if ((tx.confirmations ?? 0) < 7 && this._lastTxFetch < +new Date() - 5 * 60 * 1000) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   async generate(): Promise<void> {
     const buf = await randomBytes(32);
     this.secret = ECPair.makeRandom({ rng: () => buf }).toWIF();

@@ -1,6 +1,6 @@
 import createHash from 'create-hash';
 
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import { Transaction } from './types/Transaction';
 
 type WalletWithPassphrase = AbstractWallet & { getPassphrase: () => string };
@@ -31,7 +31,7 @@ export class AbstractWallet {
   _address: string | false;
   _lastTxFetch: number;
   _lastBalanceFetch: number;
-  preferredBalanceUnit: BitcoinUnit;
+  preferredBalanceUnit: CryptoUnit;
   chain: Chain;
   hideBalance: boolean;
   userHasSavedExport: boolean;
@@ -46,7 +46,7 @@ export class AbstractWallet {
     this._address = false; // cache
     this._lastTxFetch = 0;
     this._lastBalanceFetch = 0;
-    this.preferredBalanceUnit = BitcoinUnit.BTC;
+    this.preferredBalanceUnit = CryptoUnit.BTC;
     this.chain = Chain.ONCHAIN;
     this.hideBalance = false;
     this.userHasSavedExport = false;
@@ -89,6 +89,34 @@ export class AbstractWallet {
   }
 
   /**
+   * Simple function which says that we havent tried to fetch balance
+   * for a long time
+   *
+   * @return {boolean}
+   */
+  timeToRefreshBalance(): boolean {
+    if (+new Date() - this._lastBalanceFetch >= 5 * 60 * 1000) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Simple function which says if we hve some low-confirmed transactions
+   * and we better fetch them
+   *
+   * @return {boolean}
+   */
+  timeToRefreshTransaction(): boolean {
+    for (const tx of this.getTransactions()) {
+      if ((tx.confirmations ?? 0) < 7 && this._lastTxFetch < +new Date() - 5 * 60 * 1000) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    *
    * @returns {string}
    */
@@ -111,13 +139,13 @@ export class AbstractWallet {
     return this.balance + (this.getUnconfirmedBalance() < 0 ? this.getUnconfirmedBalance() : 0);
   }
 
-  getPreferredBalanceUnit(): BitcoinUnit {
-    for (const value of Object.values(BitcoinUnit)) {
+  getPreferredBalanceUnit(): CryptoUnit {
+    for (const value of Object.values(CryptoUnit)) {
       if (value === this.preferredBalanceUnit) {
         return this.preferredBalanceUnit;
       }
     }
-    return BitcoinUnit.BTC;
+    return CryptoUnit.BTC;
   }
 
   async allowOnchainAddress(): Promise<boolean> {

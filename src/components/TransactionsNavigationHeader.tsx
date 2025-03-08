@@ -5,7 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { LightningCustodianWallet, MultisigHDWallet } from '../class';
 import WalletGradient from '../class/wallet-gradient';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../loc';
-import { BitcoinUnit } from '../models/bitcoinUnits';
+import { CryptoUnit } from '../models/cryptoUnits';
 import { FiatUnit } from '../models/fiatUnit';
 import { BlurredBalanceView } from './BlurredBalanceView';
 import { useSettings } from '../hooks/context/useSettings';
@@ -15,8 +15,8 @@ import { TWallet } from '../class/wallets/types/TWallet';
 
 interface TransactionsNavigationHeaderProps {
   wallet: TWallet;
-  unit: BitcoinUnit;
-  onWalletUnitChange: (unit: BitcoinUnit) => void;
+  unit: CryptoUnit;
+  onWalletUnitChange: (unit: CryptoUnit) => void;
   onManageFundsPressed?: (id?: string) => void;
   onWalletBalanceVisibilityChange?: (isShouldBeVisible: boolean) => void;
 }
@@ -26,7 +26,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   onWalletUnitChange,
   onManageFundsPressed,
   onWalletBalanceVisibilityChange,
-  unit = BitcoinUnit.BTC,
+  unit = CryptoUnit.BTC,
 }) => {
   const { hideBalance } = wallet;
   const [allowOnchainAddress, setAllowOnchainAddress] = useState(false);
@@ -62,12 +62,25 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
   const changeWalletBalanceUnit = () => {
     let newWalletPreferredUnit = wallet.getPreferredBalanceUnit();
 
-    if (newWalletPreferredUnit === BitcoinUnit.BTC) {
-      newWalletPreferredUnit = BitcoinUnit.SATS;
-    } else if (newWalletPreferredUnit === BitcoinUnit.SATS) {
-      newWalletPreferredUnit = BitcoinUnit.LOCAL_CURRENCY;
-    } else {
-      newWalletPreferredUnit = BitcoinUnit.BTC;
+    // For Ethereum wallets
+    if (wallet.type === 'ethereum') {
+      if (newWalletPreferredUnit === CryptoUnit.ETH) {
+        newWalletPreferredUnit = CryptoUnit.LOCAL_CURRENCY;
+      } else if (newWalletPreferredUnit === CryptoUnit.LOCAL_CURRENCY) {
+        newWalletPreferredUnit = CryptoUnit.GWEI;
+      } else {
+        newWalletPreferredUnit = CryptoUnit.ETH;
+      }
+    }
+    // For Bitcoin wallets
+    else {
+      if (newWalletPreferredUnit === CryptoUnit.BTC) {
+        newWalletPreferredUnit = CryptoUnit.SATS;
+      } else if (newWalletPreferredUnit === CryptoUnit.SATS) {
+        newWalletPreferredUnit = CryptoUnit.LOCAL_CURRENCY;
+      } else {
+        newWalletPreferredUnit = CryptoUnit.BTC;
+      }
     }
 
     onWalletUnitChange(newWalletPreferredUnit);
@@ -110,10 +123,11 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
 
   const currentBalance = wallet ? wallet.getBalance() : 0;
   const formattedBalance = useMemo(() => {
-    return unit === BitcoinUnit.LOCAL_CURRENCY
-      ? formatBalance(currentBalance, unit, true)
+    const localUnitFrom = wallet.type === 'ethereum' ? 'wei' : 'sats';
+    return unit === CryptoUnit.LOCAL_CURRENCY
+      ? formatBalance(currentBalance, unit, true, localUnitFrom)
       : formatBalanceWithoutSuffix(currentBalance, unit, true);
-  }, [unit, currentBalance]);
+  }, [unit, currentBalance, wallet]);
 
   const balance = !wallet.hideBalance && formattedBalance;
 
@@ -152,6 +166,8 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
         return I18nManager.isRTL ? require('../img/lnd-shape-rtl.png') : require('../img/lnd-shape.png');
       case MultisigHDWallet.type:
         return I18nManager.isRTL ? require('../img/vault-shape-rtl.png') : require('../img/vault-shape.png');
+      case 'ethereum':
+        return require('../img/eth.png'); // Use Ethereum logo
       default:
         return I18nManager.isRTL ? require('../img/btc-shape-rtl.png') : require('../img/btc-shape.png');
     }
@@ -204,7 +220,7 @@ const TransactionsNavigationHeader: React.FC<TransactionsNavigationHeaderProps> 
         </ToolTipMenu>
         <TouchableOpacity style={styles.walletPreferredUnitView} onPress={changeWalletBalanceUnit}>
           <Text style={styles.walletPreferredUnitText}>
-            {unit === BitcoinUnit.LOCAL_CURRENCY ? (preferredFiatCurrency?.endPointKey ?? FiatUnit.USD) : unit}
+            {unit === CryptoUnit.LOCAL_CURRENCY ? (preferredFiatCurrency?.endPointKey ?? FiatUnit.USD) : unit}
           </Text>
         </TouchableOpacity>
       </View>
@@ -240,6 +256,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
+    resizeMode: 'contain', // Ensure icons are properly sized
   },
   walletLabel: {
     backgroundColor: 'transparent',
@@ -298,6 +315,7 @@ export const actionKeys = {
   WalletBalanceVisibility: 'walletBalanceVisibility',
   Refill: 'refill',
   RefillWithExternalWallet: 'refillWithExternalWallet',
+  EthereumGas: 'ethereumGas', // New action for Ethereum gas settings
 };
 
 export const actionIcons = {
@@ -315,6 +333,9 @@ export const actionIcons = {
   },
   RefillWithExternalWallet: {
     iconValue: 'qrcode',
+  },
+  EthereumGas: {
+    iconValue: 'speedometer',
   },
 };
 

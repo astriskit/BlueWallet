@@ -26,7 +26,7 @@ import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
 import WalletButton from '../../components/WalletButton';
 import loc from '../../loc';
-import { Chain } from '../../models/bitcoinUnits';
+import { Chain } from '../../models/cryptoUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import { Action } from '../../components/types';
@@ -36,6 +36,7 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AddWalletStackParamList } from '../../navigation/AddWalletStack';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { EthereumWallet } from '@/src/class/wallets/ethereum-wallet';
 
 enum ButtonSelected {
   // @ts-ignore: Return later to update
@@ -43,6 +44,7 @@ enum ButtonSelected {
   // @ts-ignore: Return later to update
   OFFCHAIN = Chain.OFFCHAIN,
   VAULT = 'VAULT',
+  ETHEREUM = 'ETHEREUM',
 }
 
 interface State {
@@ -199,6 +201,12 @@ const WalletsAdd: React.FC = () => {
         subtitle: LightningCustodianWallet.subtitleReadable,
         menuState: selectedWalletType === ButtonSelected.OFFCHAIN,
       },
+      {
+        id: EthereumWallet.type,
+        text: EthereumWallet.typeReadable,
+        subtitle: 'Ethereum',
+        menuState: selectedWalletType === ButtonSelected.ETHEREUM,
+      },
     ];
 
     const walletAction: Action = {
@@ -237,6 +245,11 @@ const WalletsAdd: React.FC = () => {
     confirmResetEntropy(ButtonSelected.OFFCHAIN);
   }, [confirmResetEntropy]);
 
+  const handleOnEthereumButtonPressed = useCallback(() => {
+    Keyboard.dismiss();
+    confirmResetEntropy(ButtonSelected.ETHEREUM);
+  }, [confirmResetEntropy]);
+
   const HeaderRight = useMemo(
     () => (
       <HeaderMenuButton
@@ -250,6 +263,8 @@ const WalletsAdd: React.FC = () => {
             setSelectedIndex(2);
           } else if (id === LightningCustodianWallet.type) {
             handleOnLightningButtonPressed();
+          } else if (id === EthereumWallet.type) {
+            handleOnEthereumButtonPressed();
           } else if (id === '12_words') {
             navigate('ProvideEntropy', { words: 12, entropy: entropy?.toString('hex') });
           } else if (id === '24_words') {
@@ -261,7 +276,7 @@ const WalletsAdd: React.FC = () => {
         actions={toolTipActions}
       />
     ),
-    [handleOnLightningButtonPressed, toolTipActions, entropy, confirmResetEntropy, navigate],
+    [toolTipActions, handleOnLightningButtonPressed, handleOnEthereumButtonPressed, navigate, entropy, confirmResetEntropy],
   );
 
   useEffect(() => {
@@ -300,11 +315,13 @@ const WalletsAdd: React.FC = () => {
 
   const createWallet = async () => {
     setIsLoading(true);
-
+    let w: HDSegwitBech32Wallet | SegwitP2SHWallet | HDSegwitP2SHWallet | EthereumWallet | null = null;
     if (selectedWalletType === ButtonSelected.OFFCHAIN) {
       createLightningWallet();
+    } else if (selectedWalletType === ButtonSelected.ETHEREUM) {
+      w = new EthereumWallet();
+      w.setLabel(label || loc.wallets.details_title);
     } else if (selectedWalletType === ButtonSelected.ONCHAIN) {
-      let w: HDSegwitBech32Wallet | SegwitP2SHWallet | HDSegwitP2SHWallet;
       if (selectedIndex === 2) {
         // zero index radio - HD segwit
         w = new HDSegwitP2SHWallet();
@@ -320,33 +337,35 @@ const WalletsAdd: React.FC = () => {
         w = new HDSegwitBech32Wallet();
         w.setLabel(label || loc.wallets.details_title);
       }
-      if (selectedWalletType === ButtonSelected.ONCHAIN) {
-        if (entropy) {
-          try {
-            await w.generateFromEntropy(entropy);
-          } catch (e: any) {
-            console.log(e.toString());
-            presentAlert({ message: e.toString() });
-            return;
-          }
-        } else {
-          await w.generate();
-        }
-        addWallet(w);
-        await saveToDisk();
-        A(A.ENUM.CREATED_WALLET);
-        triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
-        if (w.type === HDSegwitP2SHWallet.type || w.type === HDSegwitBech32Wallet.type) {
-          navigate('PleaseBackup', {
-            walletID: w.getID(),
-          });
-        } else {
-          goBack();
-        }
-      }
     } else if (selectedWalletType === ButtonSelected.VAULT) {
       setIsLoading(false);
       navigate('WalletsAddMultisig', { walletLabel: label.trim().length > 0 ? label : loc.multisig.default_label });
+      return;
+    }
+    if ((!!w && selectedWalletType === ButtonSelected.ONCHAIN) || selectedWalletType === ButtonSelected.ETHEREUM) {
+      if (entropy && selectedWalletType === ButtonSelected.ONCHAIN) {
+        try {
+          // @ts-ignore not supported in ethereum
+          await w.generateFromEntropy(entropy);
+        } catch (e: any) {
+          console.log(e.toString());
+          presentAlert({ message: e.toString() });
+          return;
+        }
+      } else {
+        await w.generate();
+      }
+      addWallet(w);
+      await saveToDisk();
+      A(A.ENUM.CREATED_WALLET);
+      triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
+      if (w.type === HDSegwitP2SHWallet.type || w.type === HDSegwitBech32Wallet.type || w.type === EthereumWallet.type) {
+        navigate('PleaseBackup', {
+          walletID: w.getID(),
+        });
+      } else {
+        goBack();
+      }
     }
   };
 
@@ -451,6 +470,13 @@ const WalletsAdd: React.FC = () => {
           testID="ActivateVaultButton"
           active={selectedWalletType === ButtonSelected.VAULT}
           onPress={handleOnVaultButtonPressed}
+          size={styles.button}
+        />
+        <WalletButton
+          buttonType="Ethereum"
+          testID="ActivateEthereumButton"
+          active={selectedWalletType === ButtonSelected.ETHEREUM}
+          onPress={handleOnEthereumButtonPressed}
           size={styles.button}
         />
         {selectedWalletType === ButtonSelected.OFFCHAIN && LightningButtonMemo}

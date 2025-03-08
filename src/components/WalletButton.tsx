@@ -33,6 +33,14 @@ interface WalletButtonProps {
 }
 
 const buttonDetails: Record<string, ButtonDetails> = {
+  Ethereum: {
+    image: require('../img/addWallet/ethereum-eth-logo.png'), // TODO: get image
+    // title: loc.wallets.add_bitcoin, // TODO
+    // explain: loc.wallets.add_bitcoin_explain, // TODO
+    title: 'Ethereum',
+    explain: 'Simple and powerful Ethereum wallet',
+    borderColorActive: 'newBlue',
+  },
   Bitcoin: {
     image: require('../img/addWallet/bitcoin.png'),
     title: loc.wallets.add_bitcoin,

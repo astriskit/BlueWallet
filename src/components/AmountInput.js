@@ -17,7 +17,7 @@ import {
 import { BlueText } from '../BlueComponents';
 import confirm from '../helpers/confirm';
 import loc, { formatBalancePlain, formatBalanceWithoutSuffix, removeTrailingZeros } from '../loc';
-import { BitcoinUnit } from '../models/bitcoinUnits';
+import { CryptoUnit } from '../models/cryptoUnits';
 import { useTheme } from './themes';
 
 dayjs.extend(localizedFormat);
@@ -35,7 +35,7 @@ class AmountInput extends Component {
      */
     onChangeText: PropTypes.func.isRequired,
     /**
-     * callback thats fired to notify of currently selected denomination, returns <BitcoinUnit.*>
+     * callback thats fired to notify of currently selected denomination, returns <CryptoUnit.*>
      */
     onAmountUnitChange: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
@@ -53,11 +53,11 @@ class AmountInput extends Component {
   static conversionCache = {};
 
   static getCachedSatoshis = amount => {
-    return AmountInput.conversionCache[amount + BitcoinUnit.LOCAL_CURRENCY] || false;
+    return AmountInput.conversionCache[amount + CryptoUnit.LOCAL_CURRENCY] || false;
   };
 
   static setCachedSatoshis = (amount, sats) => {
-    AmountInput.conversionCache[amount + BitcoinUnit.LOCAL_CURRENCY] = sats;
+    AmountInput.conversionCache[amount + CryptoUnit.LOCAL_CURRENCY] = sats;
   };
 
   constructor() {
@@ -79,25 +79,25 @@ class AmountInput extends Component {
    * here we must recalculate old amont value (which was denominated in `previousUnit`) to new denomination `newUnit`
    * and fill this value in input box, so user can switch between, for example, 0.001 BTC <=> 100000 sats
    *
-   * @param previousUnit {string} one of {BitcoinUnit.*}
-   * @param newUnit {string} one of {BitcoinUnit.*}
+   * @param previousUnit {string} one of {CryptoUnit.*}
+   * @param newUnit {string} one of {CryptoUnit.*}
    */
   onAmountUnitChange(previousUnit, newUnit) {
     const amount = this.props.amount || 0;
     const log = `${amount}(${previousUnit}) ->`;
     let sats = 0;
     switch (previousUnit) {
-      case BitcoinUnit.BTC:
+      case CryptoUnit.BTC:
         sats = new BigNumber(amount).multipliedBy(100000000).toString();
         break;
-      case BitcoinUnit.SATS:
+      case CryptoUnit.SATS:
         sats = amount;
         break;
-      case BitcoinUnit.LOCAL_CURRENCY:
+      case CryptoUnit.LOCAL_CURRENCY:
         sats = new BigNumber(fiatToBTC(amount)).multipliedBy(100000000).toString();
         break;
     }
-    if (previousUnit === BitcoinUnit.LOCAL_CURRENCY && AmountInput.conversionCache[amount + previousUnit]) {
+    if (previousUnit === CryptoUnit.LOCAL_CURRENCY && AmountInput.conversionCache[amount + previousUnit]) {
       // cache hit! we reuse old value that supposedly doesnt have rounding errors
       sats = AmountInput.conversionCache[amount + previousUnit];
     }
@@ -105,7 +105,7 @@ class AmountInput extends Component {
     const newInputValue = formatBalancePlain(sats, newUnit, false);
     console.log(`${log} ${sats}(sats) -> ${newInputValue}(${newUnit})`);
 
-    if (newUnit === BitcoinUnit.LOCAL_CURRENCY && previousUnit === BitcoinUnit.SATS) {
+    if (newUnit === CryptoUnit.LOCAL_CURRENCY && previousUnit === CryptoUnit.SATS) {
       // we cache conversion, so when we will need reverse conversion there wont be a rounding error
       AmountInput.conversionCache[newInputValue + newUnit] = amount;
     }
@@ -119,24 +119,24 @@ class AmountInput extends Component {
   changeAmountUnit = () => {
     let previousUnit = this.props.unit;
     let newUnit;
-    if (previousUnit === BitcoinUnit.BTC) {
-      newUnit = BitcoinUnit.SATS;
-    } else if (previousUnit === BitcoinUnit.SATS) {
-      newUnit = BitcoinUnit.LOCAL_CURRENCY;
-    } else if (previousUnit === BitcoinUnit.LOCAL_CURRENCY) {
-      newUnit = BitcoinUnit.BTC;
+    if (previousUnit === CryptoUnit.BTC) {
+      newUnit = CryptoUnit.SATS;
+    } else if (previousUnit === CryptoUnit.SATS) {
+      newUnit = CryptoUnit.LOCAL_CURRENCY;
+    } else if (previousUnit === CryptoUnit.LOCAL_CURRENCY) {
+      newUnit = CryptoUnit.BTC;
     } else {
-      newUnit = BitcoinUnit.BTC;
-      previousUnit = BitcoinUnit.SATS;
+      newUnit = CryptoUnit.BTC;
+      previousUnit = CryptoUnit.SATS;
     }
     this.onAmountUnitChange(previousUnit, newUnit);
   };
 
   maxLength = () => {
     switch (this.props.unit) {
-      case BitcoinUnit.BTC:
+      case CryptoUnit.BTC:
         return 11;
-      case BitcoinUnit.SATS:
+      case CryptoUnit.SATS:
         return 15;
       default:
         return 15;
@@ -153,7 +153,7 @@ class AmountInput extends Component {
 
   handleChangeText = text => {
     text = text.trim();
-    if (this.props.unit !== BitcoinUnit.LOCAL_CURRENCY) {
+    if (this.props.unit !== CryptoUnit.LOCAL_CURRENCY) {
       text = text.replace(',', '.');
       const split = text.split('.');
       if (split.length >= 2) {
@@ -162,12 +162,12 @@ class AmountInput extends Component {
         text = `${parseInt(split[0], 10)}`;
       }
 
-      text = this.props.unit === BitcoinUnit.BTC ? text.replace(/[^0-9.]/g, '') : text.replace(/[^0-9]/g, '');
+      text = this.props.unit === CryptoUnit.BTC ? text.replace(/[^0-9.]/g, '') : text.replace(/[^0-9]/g, '');
 
       if (text.startsWith('.')) {
         text = '0.';
       }
-    } else if (this.props.unit === BitcoinUnit.LOCAL_CURRENCY) {
+    } else if (this.props.unit === CryptoUnit.LOCAL_CURRENCY) {
       text = text.replace(/,/gi, '.');
       if (text.split('.').length > 2) {
         // too many dots. stupid code to remove all but first dot:
@@ -223,33 +223,33 @@ class AmountInput extends Component {
   render() {
     const { colors, disabled, unit } = this.props;
     const amount = this.props.amount || 0;
-    let secondaryDisplayCurrency = formatBalanceWithoutSuffix(amount, BitcoinUnit.LOCAL_CURRENCY, false);
+    let secondaryDisplayCurrency = formatBalanceWithoutSuffix(amount, CryptoUnit.LOCAL_CURRENCY, false);
 
     // if main display is sat or btc - secondary display is fiat
     // if main display is fiat - secondary dislay is btc
     let sat;
     switch (unit) {
-      case BitcoinUnit.BTC:
+      case CryptoUnit.BTC:
         sat = new BigNumber(amount).multipliedBy(100000000).toString();
-        secondaryDisplayCurrency = formatBalanceWithoutSuffix(sat, BitcoinUnit.LOCAL_CURRENCY, false);
+        secondaryDisplayCurrency = formatBalanceWithoutSuffix(sat, CryptoUnit.LOCAL_CURRENCY, false);
         break;
-      case BitcoinUnit.SATS:
-        secondaryDisplayCurrency = formatBalanceWithoutSuffix((isNaN(amount) ? 0 : amount).toString(), BitcoinUnit.LOCAL_CURRENCY, false);
+      case CryptoUnit.SATS:
+        secondaryDisplayCurrency = formatBalanceWithoutSuffix((isNaN(amount) ? 0 : amount).toString(), CryptoUnit.LOCAL_CURRENCY, false);
         break;
-      case BitcoinUnit.LOCAL_CURRENCY:
+      case CryptoUnit.LOCAL_CURRENCY:
         secondaryDisplayCurrency = fiatToBTC(parseFloat(isNaN(amount) ? 0 : amount));
-        if (AmountInput.conversionCache[isNaN(amount) ? 0 : amount + BitcoinUnit.LOCAL_CURRENCY]) {
+        if (AmountInput.conversionCache[isNaN(amount) ? 0 : amount + CryptoUnit.LOCAL_CURRENCY]) {
           // cache hit! we reuse old value that supposedly doesn't have rounding errors
-          const sats = AmountInput.conversionCache[isNaN(amount) ? 0 : amount + BitcoinUnit.LOCAL_CURRENCY];
+          const sats = AmountInput.conversionCache[isNaN(amount) ? 0 : amount + CryptoUnit.LOCAL_CURRENCY];
           secondaryDisplayCurrency = satoshiToBTC(sats);
         }
         break;
     }
 
-    if (amount === BitcoinUnit.MAX) secondaryDisplayCurrency = ''; // we don't want to display NaN
+    if (amount === CryptoUnit.MAX) secondaryDisplayCurrency = ''; // we don't want to display NaN
 
     const stylesHook = StyleSheet.create({
-      center: { padding: amount === BitcoinUnit.MAX ? 0 : 15 },
+      center: { padding: amount === CryptoUnit.MAX ? 0 : 15 },
       localCurrency: { color: disabled ? colors.buttonDisabledTextColor : colors.alternativeTextColor2 },
       input: { color: disabled ? colors.buttonDisabledTextColor : colors.alternativeTextColor2, fontSize: amount.length > 10 ? 20 : 36 },
       cryptoCurrency: { color: disabled ? colors.buttonDisabledTextColor : colors.alternativeTextColor2 },
@@ -271,10 +271,10 @@ class AmountInput extends Component {
             {!disabled && <View style={[styles.center, stylesHook.center]} />}
             <View style={styles.flex}>
               <View style={styles.container}>
-                {unit === BitcoinUnit.LOCAL_CURRENCY && amount !== BitcoinUnit.MAX && (
+                {unit === CryptoUnit.LOCAL_CURRENCY && amount !== CryptoUnit.MAX && (
                   <Text style={[styles.localCurrency, stylesHook.localCurrency]}>{getCurrencySymbol() + ' '}</Text>
                 )}
-                {amount !== BitcoinUnit.MAX ? (
+                {amount !== CryptoUnit.MAX ? (
                   <TextInput
                     {...this.props}
                     onSelectionChange={this.handleSelectionChange}
@@ -292,29 +292,29 @@ class AmountInput extends Component {
                     maxLength={this.maxLength()}
                     ref={textInput => (this.textInput = textInput)}
                     editable={!this.props.isLoading && !disabled}
-                    value={amount === BitcoinUnit.MAX ? loc.units.MAX : parseFloat(amount) >= 0 ? String(amount) : undefined}
+                    value={amount === CryptoUnit.MAX ? loc.units.MAX : parseFloat(amount) >= 0 ? String(amount) : undefined}
                     placeholderTextColor={disabled ? colors.buttonDisabledTextColor : colors.alternativeTextColor2}
                     style={[styles.input, stylesHook.input]}
                   />
                 ) : (
                   <Pressable onPress={this.resetAmount}>
-                    <Text style={[styles.input, stylesHook.input]}>{BitcoinUnit.MAX}</Text>
+                    <Text style={[styles.input, stylesHook.input]}>{CryptoUnit.MAX}</Text>
                   </Pressable>
                 )}
-                {unit !== BitcoinUnit.LOCAL_CURRENCY && amount !== BitcoinUnit.MAX && (
+                {unit !== CryptoUnit.LOCAL_CURRENCY && amount !== CryptoUnit.MAX && (
                   <Text style={[styles.cryptoCurrency, stylesHook.cryptoCurrency]}>{' ' + loc.units[unit]}</Text>
                 )}
               </View>
               <View style={styles.secondaryRoot}>
                 <Text style={styles.secondaryText}>
-                  {unit === BitcoinUnit.LOCAL_CURRENCY && amount !== BitcoinUnit.MAX
+                  {unit === CryptoUnit.LOCAL_CURRENCY && amount !== CryptoUnit.MAX
                     ? removeTrailingZeros(secondaryDisplayCurrency)
                     : secondaryDisplayCurrency}
-                  {unit === BitcoinUnit.LOCAL_CURRENCY && amount !== BitcoinUnit.MAX ? ` ${loc.units[BitcoinUnit.BTC]}` : null}
+                  {unit === CryptoUnit.LOCAL_CURRENCY && amount !== CryptoUnit.MAX ? ` ${loc.units[CryptoUnit.BTC]}` : null}
                 </Text>
               </View>
             </View>
-            {!disabled && amount !== BitcoinUnit.MAX && (
+            {!disabled && amount !== CryptoUnit.MAX && (
               <TouchableOpacity
                 accessibilityRole="button"
                 accessibilityLabel={loc._.change_input_currency}

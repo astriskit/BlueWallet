@@ -28,6 +28,7 @@ import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
 import { Transaction } from './types/Transaction';
 import { Utxo } from './types/Utxo';
 import { SilentPayment, UTXOType as SPUTXOType, UTXO as SPUTXO } from 'silent-payments';
+import { GetTransactions } from './utils/GetTransactions';
 
 const ECPair = ECPairFactory(ecc);
 const bip32 = BIP32Factory(ecc);
@@ -492,7 +493,13 @@ export class AbstractHDElectrumWallet extends AbstractHDWallet {
   }
 
   getTransactions(): Transaction[] {
-    // console.log('abstract-hd-electrum', this._getTransactionTrait.getTransactions, 'deal');
+    this._txs_by_external_index = this._txs_by_external_index || [];
+    this._txs_by_internal_index = [];
+
+    if (!this._getTransactionTrait.getTransactions) {
+      this._getTransactionTrait = new GetTransactions();
+    }
+
     return this._getTransactionTrait.getTransactions.apply(this);
   }
 

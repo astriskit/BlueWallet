@@ -159,7 +159,11 @@ const TransactionDetails = () => {
   }, [saveTransactionDetails]);
 
   const handleOnOpenTransactionOnBlockExplorerTapped = () => {
-    const url = `${selectedBlockExplorer.url}/tx/${tx?.hash}`;
+    // Use different explorers for different chains
+    const url = tx?.isEthereum
+      ? `https://etherscan.io/tx/${tx?.hash}` // Use Etherscan for Ethereum transactions
+      : `${selectedBlockExplorer.url}/tx/${tx?.hash}`;
+
     Linking.canOpenURL(url)
       .then(supported => {
         if (supported) {
@@ -184,7 +188,13 @@ const TransactionDetails = () => {
   };
 
   const handleCopyPress = (stringToCopy: string) => {
-    Clipboard.setStringAsync(stringToCopy !== actionKeys.CopyToClipboard ? stringToCopy : `${selectedBlockExplorer.url}/tx/${tx?.hash}`);
+    // If copying the transaction URL, use the appropriate block explorer
+    if (stringToCopy === actionKeys.CopyToClipboard) {
+      const url = tx?.isEthereum ? `https://etherscan.io/tx/${tx?.hash}` : `${selectedBlockExplorer.url}/tx/${tx?.hash}`;
+      Clipboard.setStringAsync(url);
+    } else {
+      Clipboard.setStringAsync(stringToCopy);
+    }
   };
 
   if (isLoading || !tx) {
@@ -255,7 +265,7 @@ const TransactionDetails = () => {
       <HandOffComponent
         title={loc.transactions.details_title}
         type={HandOffActivityType.ViewInBlockExplorer}
-        url={`${selectedBlockExplorer.url}/tx/${tx.hash}`}
+        url={tx.isEthereum ? `https://etherscan.io/tx/${tx.hash}` : `${selectedBlockExplorer.url}/tx/${tx.hash}`}
       />
       <BlueCard>
         <View>
@@ -285,25 +295,55 @@ const TransactionDetails = () => {
           ) : null}
         </View>
 
-        {from && (
+        {/* For Ethereum transactions, display simplified from/to */}
+        {tx.isEthereum ? (
           <>
-            <View style={styles.rowHeader}>
-              <BlueText style={styles.rowCaption}>{loc.transactions.details_from}</BlueText>
-              <CopyToClipboardButton stringToCopy={from.filter(onlyUnique).join(', ')} />
-            </View>
-            {renderSection(from.filter(onlyUnique))}
-            <View style={styles.marginBottom18} />
-          </>
-        )}
+            {tx.from && (
+              <>
+                <View style={styles.rowHeader}>
+                  <BlueText style={styles.rowCaption}>{loc.transactions.details_from}</BlueText>
+                  <CopyToClipboardButton stringToCopy={tx.from} />
+                </View>
+                <BlueText style={styles.rowValue}>{tx.from}</BlueText>
+                <View style={styles.marginBottom18} />
+              </>
+            )}
 
-        {to && (
+            {tx.to && (
+              <>
+                <View style={styles.rowHeader}>
+                  <BlueText style={styles.rowCaption}>{loc.transactions.details_to}</BlueText>
+                  <CopyToClipboardButton stringToCopy={tx.to} />
+                </View>
+                <BlueText style={styles.rowValue}>{tx.to}</BlueText>
+                <View style={styles.marginBottom18} />
+              </>
+            )}
+          </>
+        ) : (
           <>
-            <View style={styles.rowHeader}>
-              <BlueText style={styles.rowCaption}>{loc.transactions.details_to}</BlueText>
-              <CopyToClipboardButton stringToCopy={to.filter(onlyUnique).join(', ')} />
-            </View>
-            {renderSection(arrDiff(from, to.filter(onlyUnique)))}
-            <View style={styles.marginBottom18} />
+            {/* Bitcoin transaction layout */}
+            {from && (
+              <>
+                <View style={styles.rowHeader}>
+                  <BlueText style={styles.rowCaption}>{loc.transactions.details_from}</BlueText>
+                  <CopyToClipboardButton stringToCopy={from.filter(onlyUnique).join(', ')} />
+                </View>
+                {renderSection(from.filter(onlyUnique))}
+                <View style={styles.marginBottom18} />
+              </>
+            )}
+
+            {to && (
+              <>
+                <View style={styles.rowHeader}>
+                  <BlueText style={styles.rowCaption}>{loc.transactions.details_to}</BlueText>
+                  <CopyToClipboardButton stringToCopy={to.filter(onlyUnique).join(', ')} />
+                </View>
+                {renderSection(arrDiff(from, to.filter(onlyUnique)))}
+                <View style={styles.marginBottom18} />
+              </>
+            )}
           </>
         )}
 
@@ -326,7 +366,8 @@ const TransactionDetails = () => {
           </>
         )}
 
-        {tx.inputs && (
+        {/* Only show inputs/outputs for Bitcoin transactions */}
+        {!tx.isEthereum && tx.inputs && (
           <>
             <BlueText style={styles.rowCaption}>{loc.transactions.details_inputs}</BlueText>
             <BlueText style={styles.rowValue}>{tx.inputs.length}</BlueText>
@@ -334,10 +375,27 @@ const TransactionDetails = () => {
           </>
         )}
 
-        {tx.outputs?.length > 0 && (
+        {!tx.isEthereum && tx.outputs?.length > 0 && (
           <>
             <BlueText style={styles.rowCaption}>{loc.transactions.details_outputs}</BlueText>
             <BlueText style={styles.rowValue}>{tx.outputs.length}</BlueText>
+            <View style={styles.marginBottom18} />
+          </>
+        )}
+
+        {/* For Ethereum transactions, show gas info if available */}
+        {tx.isEthereum && tx.gasUsed && (
+          <>
+            <BlueText style={styles.rowCaption}>{loc.transactions.details_gas_used}</BlueText>
+            <BlueText style={styles.rowValue}>{tx.gasUsed}</BlueText>
+            <View style={styles.marginBottom18} />
+          </>
+        )}
+
+        {tx.isEthereum && tx.gasPrice && (
+          <>
+            <BlueText style={styles.rowCaption}>{loc.transactions.details_gas_price}</BlueText>
+            <BlueText style={styles.rowValue}>{tx.gasPrice} Gwei</BlueText>
             <View style={styles.marginBottom18} />
           </>
         )}

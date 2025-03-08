@@ -10,7 +10,7 @@ import Button from '../../components/Button';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import HandOffComponent from '../../components/HandOffComponent';
 import { HandOffActivityType } from '../../components/types';
 import { useSettings } from '../../hooks/context/useSettings';
@@ -22,7 +22,7 @@ const Success = () => {
   const { colors } = useTheme();
   const { selectedBlockExplorer } = useSettings();
   const { getParent } = useNavigation();
-  const { amount, fee, amountUnit = BitcoinUnit.BTC, invoiceDescription = '', onDonePressed = pop, txid } = useRoute().params;
+  const { amount, fee, amountUnit = CryptoUnit.BTC, invoiceDescription = '', onDonePressed = pop, txid } = useRoute().params;
   const stylesHook = StyleSheet.create({
     root: {
       backgroundColor: colors.elevated,
@@ -103,7 +103,7 @@ export const SuccessView = ({ amount, amountUnit, fee, invoiceDescription, shoul
           </View>
           {fee > 0 && (
             <Text style={styles.feeText}>
-              {loc.send.create_fee}: {new BigNumber(fee).toFixed(8)} {loc.units[BitcoinUnit.BTC]}
+              {loc.send.create_fee}: {new BigNumber(fee).toFixed(8)} {loc.units[CryptoUnit.BTC]}
             </Text>
           )}
           <Text numberOfLines={0} style={styles.feeText}>

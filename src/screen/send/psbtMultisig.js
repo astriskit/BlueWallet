@@ -12,7 +12,7 @@ import Button from '../../components/Button';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 
@@ -259,7 +259,7 @@ const PsbtMultisig = () => {
         <View style={styles.textBtcUnit}>
           <BlueText selectable style={[styles.textBtcUnitValue, stylesHook.textBtcUnitValue]}>
             {' '}
-            {BitcoinUnit.BTC}
+            {CryptoUnit.BTC}
           </BlueText>
         </View>
       </View>

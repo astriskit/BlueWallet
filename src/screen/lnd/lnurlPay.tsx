@@ -15,7 +15,7 @@ import { useTheme } from '../../components/themes';
 import prompt from '../../helpers/prompt';
 import { useBiometrics } from '../../hooks/useBiometrics';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
@@ -37,7 +37,7 @@ const LnurlPay: React.FC = () => {
   const route = useRoute<RouteProp<Record<string, RouteParams>, string>>();
   const { walletID, lnurl } = route.params;
   const wallet = wallets.find(w => w.getID() === walletID) as LightningCustodianWallet;
-  const [unit, setUnit] = useState<BitcoinUnit>(wallet?.getPreferredBalanceUnit() ?? BitcoinUnit.BTC);
+  const [unit, setUnit] = useState<CryptoUnit>(wallet?.getPreferredBalanceUnit() ?? CryptoUnit.BTC);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [_LN, setLN] = useState<Lnurl | undefined>();
   const [payButtonDisabled, setPayButtonDisabled] = useState<boolean>(true);
@@ -87,10 +87,10 @@ const LnurlPay: React.FC = () => {
         return;
       }
       switch (unit) {
-        case BitcoinUnit.BTC:
+        case CryptoUnit.BTC:
           newAmount = satoshiToBTC(newAmount);
           break;
-        case BitcoinUnit.LOCAL_CURRENCY:
+        case CryptoUnit.LOCAL_CURRENCY:
           newAmount = satoshiToLocalCurrency(newAmount, false);
           _cacheFiatToSat[newAmount] = String(originalSatAmount);
           break;
@@ -117,13 +117,13 @@ const LnurlPay: React.FC = () => {
 
     let amountSats: number | false;
     switch (unit) {
-      case BitcoinUnit.SATS:
+      case CryptoUnit.SATS:
         amountSats = parseInt(amount, 10);
         break;
-      case BitcoinUnit.BTC:
+      case CryptoUnit.BTC:
         amountSats = btcToSatoshi(amount);
         break;
-      case BitcoinUnit.LOCAL_CURRENCY:
+      case CryptoUnit.LOCAL_CURRENCY:
         if (_cacheFiatToSat[String(amount)]) {
           amountSats = parseInt(_cacheFiatToSat[amount], 10);
         } else {
@@ -188,9 +188,9 @@ const LnurlPay: React.FC = () => {
         >
           <Text style={[styles.walletWrapLabel, stylesHook.walletWrapLabel]}>{wallet.getLabel()}</Text>
           <Text style={[styles.walletWrapBalance, stylesHook.walletWrapBalance]}>
-            {formatBalanceWithoutSuffix(wallet.getBalance(), BitcoinUnit.SATS, false)}
+            {formatBalanceWithoutSuffix(wallet.getBalance(), CryptoUnit.SATS, false)}
           </Text>
-          <Text style={[styles.walletWrapSats, stylesHook.walletWrapSats]}>{BitcoinUnit.SATS}</Text>
+          <Text style={[styles.walletWrapSats, stylesHook.walletWrapSats]}>{CryptoUnit.SATS}</Text>
         </TouchableOpacity>
       </View>
     </View>

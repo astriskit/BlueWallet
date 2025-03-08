@@ -3,6 +3,7 @@ import wif from 'wif';
 
 import loc from '../loc';
 import {
+  EthereumWallet,
   HDAezeedWallet,
   HDLegacyBreadwalletWallet,
   HDLegacyElectrumSeedP2PKHWallet,
@@ -344,6 +345,32 @@ const startImport = (
     if (legacyWallet.getAddress()) {
       await fetch(legacyWallet, true, true);
       yield { wallet: legacyWallet };
+    }
+
+    // Check if it's an Ethereum private key or mnemonic
+    yield { progress: 'ethereum' };
+
+    // Check if it's an Ethereum private key format (hex string starting with 0x or not)
+    // Standardized ETH private key is 64 hex chars, with or without 0x prefix
+    if (/^(0x)?[0-9a-fA-F]{64}$/.test(text)) {
+      const ethWallet = new EthereumWallet();
+      ethWallet.setSecret(text);
+      if (ethWallet.getAddress()) {
+        ethWallet.connectToProvider();
+        await fetch(ethWallet, true, false);
+        yield { wallet: ethWallet };
+      }
+    }
+
+    // Check if it's a valid BIP39 mnemonic that could be for Ethereum
+    const ethHdWallet = new EthereumWallet();
+    try {
+      await ethHdWallet.generate(text);
+      ethHdWallet.connectToProvider();
+      await fetch(ethHdWallet, true, false);
+      yield { wallet: ethHdWallet };
+    } catch (e) {
+      // Not a valid mnemonic for Ethereum, continue with other wallet types
     }
 
     // maybe its a watch-only address?

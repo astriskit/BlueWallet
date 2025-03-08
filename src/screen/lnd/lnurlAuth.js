@@ -10,7 +10,7 @@ import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import selectWallet from '../../helpers/select-wallet';
 import loc from '../../loc';
-import { Chain } from '../../models/bitcoinUnits';
+import { Chain } from '../../models/cryptoUnits';
 import { SuccessView } from '../send/success';
 import { useStorage } from '../../hooks/context/useStorage';
 

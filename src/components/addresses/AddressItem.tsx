@@ -8,7 +8,7 @@ import confirm from '../../helpers/confirm';
 import { useBiometrics } from '../../hooks/useBiometrics';
 import { unlockWithBiometrics } from '../../hooks/utils/biometrics';
 import loc, { formatBalance } from '../../loc';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import presentAlert from '../Alert';
 import QRCodeComponent from '../QRCodeComponent';
 import { useTheme } from '../themes';
@@ -22,7 +22,7 @@ import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 
 interface AddressItemProps {
   item: any;
-  balanceUnit: BitcoinUnit;
+  balanceUnit: CryptoUnit;
   walletID: string;
   allowSignVerifyMessage: boolean;
 }

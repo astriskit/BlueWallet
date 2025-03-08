@@ -18,7 +18,7 @@ import {
 import { LightningCustodianWallet } from '../class';
 import DeeplinkSchemaMatch, { TCompletionHandlerParams } from '../class/deeplink-schema-match';
 import loc from '../loc';
-import { Chain } from '../models/bitcoinUnits';
+import { Chain } from '../models/cryptoUnits';
 import { navigationRef, router, RouterParam } from '../NavigationService';
 import ActionSheet from '../screen/ActionSheet';
 import { useStorage } from '../hooks/context/useStorage';

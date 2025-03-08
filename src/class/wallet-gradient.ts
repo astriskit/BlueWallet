@@ -1,4 +1,5 @@
 import { useTheme } from '../components/themes';
+import { EthereumWallet } from './wallets/ethereum-wallet';
 import { HDAezeedWallet } from './wallets/hd-aezeed-wallet';
 import { HDLegacyBreadwalletWallet } from './wallets/hd-legacy-breadwallet-wallet';
 import { HDLegacyElectrumSeedP2PKHWallet } from './wallets/hd-legacy-electrum-seed-p2pkh-wallet';
@@ -25,6 +26,7 @@ export default class WalletGradient {
   static defaultGradients: string[] = ['#B770F6', '#9013FE'];
   static lightningCustodianWallet: string[] = ['#F1AA07', '#FD7E37']; // Corrected property with missing colors
   static aezeedWallet: string[] = ['#8584FF', '#5351FB'];
+  static ethereumWalet: string[] = ['#121212', '#8A2BE2'];
 
   static createWallet = () => {
     const { colors } = useTheme();
@@ -68,6 +70,9 @@ export default class WalletGradient {
         break;
       case LightningCustodianWallet.type:
         gradient = WalletGradient.lightningCustodianWallet;
+        break;
+      case EthereumWallet.type:
+        gradient = WalletGradient.ethereumWalet;
         break;
       default:
         gradient = WalletGradient.defaultGradients;
@@ -128,6 +133,9 @@ export default class WalletGradient {
         break;
       case LightningCustodianWallet.type:
         gradient = WalletGradient.lightningCustodianWallet;
+        break;
+      case EthereumWallet.type:
+        gradient = WalletGradient.ethereumWalet;
         break;
       default:
         gradient = WalletGradient.defaultGradients;

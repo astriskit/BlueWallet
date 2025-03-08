@@ -40,7 +40,7 @@ import CoinsSelected from '../../components/CoinsSelected';
 import InputAccessoryAllFunds, { InputAccessoryAllFundsAccessoryViewID } from '../../components/InputAccessoryAllFunds';
 import { useTheme } from '../../components/themes';
 import loc, { formatBalance, formatBalanceWithoutSuffix } from '../../loc';
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import NetworkTransactionFees, { NetworkTransactionFee } from '../../models/networkTransactionFees';
 import { CreateTransactionTarget } from '../../class/wallets/types/CreateTransactionTarget';
 import { CreateTransactionUtxo } from '../../class/wallets/types/CreateTransactionUtxo';
@@ -65,7 +65,7 @@ interface IPaymentDestinations {
   amountSats?: number | string;
   amount?: string | number | 'MAX';
   key: string; // random id to look up this record
-  unit: BitcoinUnit;
+  unit: CryptoUnit;
 }
 
 interface IFee {
@@ -84,8 +84,8 @@ const SendDetails = () => {
   const setParams = navigation.setParams;
   const route = useRoute<RouteProps>();
   const name = route.name;
-  const feeUnit = route.params?.feeUnit ?? BitcoinUnit.BTC;
-  const amountUnit = route.params?.amountUnit ?? BitcoinUnit.BTC;
+  const feeUnit = route.params?.feeUnit ?? CryptoUnit.BTC;
+  const amountUnit = route.params?.amountUnit ?? CryptoUnit.BTC;
   const frozenBalance = route.params?.frozenBalance ?? 0;
   const transactionMemo = route.params?.transactionMemo;
   const utxos = route.params?.utxos;
@@ -114,7 +114,7 @@ const SendDetails = () => {
   const { isEditable } = routeParams;
   // if utxo is limited we use it to calculate available balance
   const balance: number = utxos ? utxos.reduce((prev, curr) => prev + curr.value, 0) : (wallet?.getBalance() ?? 0);
-  const allBalance = formatBalanceWithoutSuffix(balance, BitcoinUnit.BTC, true);
+  const allBalance = formatBalanceWithoutSuffix(balance, CryptoUnit.BTC, true);
 
   // if cutomFee is not set, we need to choose highest possible fee for wallet balance
   // if there are no funds for even Slow option, use 1 sat/vbyte fee
@@ -148,7 +148,7 @@ const SendDetails = () => {
         const { address, amount, memo, payjoinUrl: pjUrl } = DeeplinkSchemaMatch.decodeBitcoinUri(routeParams.uri);
 
         setAddresses(addrs => {
-          addrs[scrollIndex.current].unit = BitcoinUnit.BTC;
+          addrs[scrollIndex.current].unit = CryptoUnit.BTC;
           return [...addrs];
         });
 
@@ -169,13 +169,13 @@ const SendDetails = () => {
         if (memo?.trim().length > 0) {
           setParams({ transactionMemo: memo });
         }
-        setParams({ payjoinUrl: pjUrl, amountUnit: BitcoinUnit.BTC });
+        setParams({ payjoinUrl: pjUrl, amountUnit: CryptoUnit.BTC });
       } catch (error) {
         console.log(error);
         presentAlert({ title: loc.errors.error, message: loc.send.details_error_decode });
       }
     } else if (routeParams.address) {
-      const { amount, amountSats, unit = BitcoinUnit.BTC } = routeParams;
+      const { amount, amountSats, unit = CryptoUnit.BTC } = routeParams;
       // @ts-ignore: needs fix
       setAddresses(value => {
         if (currentAddress && currentAddress.address && routeParams.address) {
@@ -301,7 +301,7 @@ const SendDetails = () => {
     for (const opt of options) {
       let targets = [];
       for (const transaction of addresses) {
-        if (transaction.amount === BitcoinUnit.MAX) {
+        if (transaction.amount === CryptoUnit.MAX) {
           // single output with MAX
           targets = [{ address: transaction.address }];
           break;
@@ -453,10 +453,10 @@ const SendDetails = () => {
           return [...addrs];
         });
         setAddresses(addrs => {
-          addrs[scrollIndex.current].unit = BitcoinUnit.BTC;
+          addrs[scrollIndex.current].unit = CryptoUnit.BTC;
           return [...addrs];
         });
-        setParams({ transactionMemo: options.label || '', amountUnit: BitcoinUnit.BTC, payjoinUrl: options.pj || '' }); // there used to be `options.message` here as well. bug?
+        setParams({ transactionMemo: options.label || '', amountUnit: CryptoUnit.BTC, payjoinUrl: options.pj || '' }); // there used to be `options.message` here as well. bug?
         // RN Bug: contentOffset gets reset to 0 when state changes. Remove code once this bug is resolved.
         setTimeout(() => scrollView.current?.scrollToIndex({ index: currentIndex, animated: false }), 50);
       }
@@ -476,7 +476,7 @@ const SendDetails = () => {
 
     const targets: CreateTransactionTarget[] = [];
     for (const transaction of addresses) {
-      if (transaction.amount === BitcoinUnit.MAX) {
+      if (transaction.amount === CryptoUnit.MAX) {
         // output with MAX
         targets.push({ address: transaction.address });
         continue;
@@ -1049,7 +1049,7 @@ const SendDetails = () => {
     ];
     walletActions.push(recipientActions);
 
-    const isSendMaxUsed = addresses.some(element => element.amount === BitcoinUnit.MAX);
+    const isSendMaxUsed = addresses.some(element => element.amount === CryptoUnit.MAX);
     const sendMaxAction: Action[] = [
       {
         ...CommonToolTipActions.SendMax,
@@ -1139,12 +1139,12 @@ const SendDetails = () => {
       if (buttonIndex === 1) {
         Keyboard.dismiss();
         setAddresses(addrs => {
-          addrs[scrollIndex.current].amount = BitcoinUnit.MAX;
-          addrs[scrollIndex.current].amountSats = BitcoinUnit.MAX;
+          addrs[scrollIndex.current].amount = CryptoUnit.MAX;
+          addrs[scrollIndex.current].amountSats = CryptoUnit.MAX;
           return [...addrs];
         });
         setAddresses(addrs => {
-          addrs[scrollIndex.current].unit = BitcoinUnit.BTC;
+          addrs[scrollIndex.current].unit = CryptoUnit.BTC;
           return [...addrs];
         });
       }
@@ -1256,18 +1256,18 @@ const SendDetails = () => {
         <AmountInput
           isLoading={isLoading}
           amount={item.amount ? item.amount.toString() : null}
-          onAmountUnitChange={(unit: BitcoinUnit) => {
+          onAmountUnitChange={(unit: CryptoUnit) => {
             setAddresses(addrs => {
               const addr = addrs[index];
 
               switch (unit) {
-                case BitcoinUnit.SATS:
+                case CryptoUnit.SATS:
                   addr.amountSats = parseInt(String(addr.amount), 10);
                   break;
-                case BitcoinUnit.BTC:
+                case CryptoUnit.BTC:
                   addr.amountSats = btcToSatoshi(String(addr.amount));
                   break;
-                case BitcoinUnit.LOCAL_CURRENCY:
+                case CryptoUnit.LOCAL_CURRENCY:
                   // also accounting for cached fiat->sat conversion to avoid rounding error
                   addr.amountSats = AmountInput.getCachedSatoshis(addr.amount) || btcToSatoshi(fiatToBTC(Number(addr.amount)));
                   break;
@@ -1285,13 +1285,13 @@ const SendDetails = () => {
             setAddresses(addrs => {
               item.amount = text;
               switch (item.unit || amountUnit) {
-                case BitcoinUnit.BTC:
+                case CryptoUnit.BTC:
                   item.amountSats = btcToSatoshi(item.amount);
                   break;
-                case BitcoinUnit.LOCAL_CURRENCY:
+                case CryptoUnit.LOCAL_CURRENCY:
                   item.amountSats = btcToSatoshi(fiatToBTC(Number(item.amount)));
                   break;
-                case BitcoinUnit.SATS:
+                case CryptoUnit.SATS:
                 default:
                   item.amountSats = parseInt(text, 10);
                   break;
@@ -1309,7 +1309,7 @@ const SendDetails = () => {
         {frozenBalance > 0 && (
           <TouchableOpacity accessibilityRole="button" style={styles.frozenContainer} onPress={handleCoinControl}>
             <BlueText>
-              {loc.formatString(loc.send.details_frozen, { amount: formatBalanceWithoutSuffix(frozenBalance, BitcoinUnit.BTC, true) })}
+              {loc.formatString(loc.send.details_frozen, { amount: formatBalanceWithoutSuffix(frozenBalance, CryptoUnit.BTC, true) })}
             </BlueText>
           </TouchableOpacity>
         )}
@@ -1411,7 +1411,7 @@ const SendDetails = () => {
           feeRate={feeRate}
           setCustomFee={setCustomFee}
           setFeePrecalc={setFeePrecalc}
-          feeUnit={addresses[scrollIndex.current]?.unit ?? BitcoinUnit.BTC}
+          feeUnit={addresses[scrollIndex.current]?.unit ?? CryptoUnit.BTC}
         />
       </View>
       <DismissKeyboardInputAccessory />

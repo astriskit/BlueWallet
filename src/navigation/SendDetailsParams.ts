@@ -1,18 +1,18 @@
 import { CreateTransactionUtxo } from '../class/wallets/types/CreateTransactionUtxo';
-import { BitcoinUnit } from '../models/bitcoinUnits';
+import { CryptoUnit } from '../models/cryptoUnits';
 
 export type SendDetailsParams = {
   transactionMemo?: string;
   isTransactionReplaceable?: boolean;
   payjoinUrl?: string;
-  feeUnit?: BitcoinUnit;
+  feeUnit?: CryptoUnit;
   frozenBalance?: number;
-  amountUnit?: BitcoinUnit;
+  amountUnit?: CryptoUnit;
   address?: string;
   amount?: number;
   amountSats?: number;
   onBarScanned?: string;
-  unit?: BitcoinUnit;
+  unit?: CryptoUnit;
   noRbf?: boolean;
   walletID: string;
   launchedBy?: string;

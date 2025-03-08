@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import A from '../../blue_modules/analytics';
-import { BlueApp as BlueAppClass, LegacyWallet, TCounterpartyMetadata, TTXMetadata, WatchOnlyWallet } from '../../class';
+import { BlueApp as BlueAppClass, EthereumWallet, LegacyWallet, TCounterpartyMetadata, TTXMetadata, WatchOnlyWallet } from '../../class';
 import presentAlert from '../../components/Alert';
 import loc from '../../loc';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
@@ -109,7 +109,9 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
         return false;
       }
 
-      if (forceDelete) {
+      const isEthereumWallet = wallet.type === EthereumWallet.type;
+
+      if (forceDelete || isEthereumWallet) {
         deleteWallet(wallet);
         saveToDisk(true);
         triggerHapticFeedback(HapticFeedbackTypes.NotificationSuccess);
@@ -252,41 +254,44 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
           console.debug('[refreshAllWalletTransactions] Setting wallet transaction status to ALL');
           setWalletTransactionUpdateStatus(WalletTransactionsStatus.ALL);
         }
-        console.debug('[refreshAllWalletTransactions] Waiting for connectivity...');
-        await waitTillConnected();
-        console.debug('[refreshAllWalletTransactions] Connected to Electrum');
+        const bitcoinWallets = wallets.filter(w => w.type !== EthereumWallet.type);
+        if (bitcoinWallets.length !== 0) {
+          console.debug('[refreshAllWalletTransactions] Waiting for connectivity...');
+          await waitTillConnected();
+          console.debug('[refreshAllWalletTransactions] Connected to Electrum');
 
-        // Restore fetch payment codes timing measurement
-        if (typeof BlueApp.fetchSenderPaymentCodes === 'function') {
-          const codesStart = Date.now();
-          console.debug('[refreshAllWalletTransactions] Fetching sender payment codes');
-          await BlueApp.fetchSenderPaymentCodes(lastSnappedTo);
-          const codesEnd = Date.now();
-          console.debug('[refreshAllWalletTransactions] fetch payment codes took', (codesEnd - codesStart) / 1000, 'sec');
-        } else {
-          console.warn('[refreshAllWalletTransactions] fetchSenderPaymentCodes is not available');
+          // Restore fetch payment codes timing measurement
+          if (typeof BlueApp.fetchSenderPaymentCodes === 'function') {
+            const codesStart = Date.now();
+            console.debug('[refreshAllWalletTransactions] Fetching sender payment codes');
+            await BlueApp.fetchSenderPaymentCodes(lastSnappedTo);
+            const codesEnd = Date.now();
+            console.debug('[refreshAllWalletTransactions] fetch payment codes took', (codesEnd - codesStart) / 1000, 'sec');
+          } else {
+            console.warn('[refreshAllWalletTransactions] fetchSenderPaymentCodes is not available');
+          }
+
+          console.debug('[refreshAllWalletTransactions] Fetching wallet balances and transactions');
+          await Promise.race([
+            (async () => {
+              const balanceStart = Date.now();
+              await BlueApp.fetchWalletBalances(lastSnappedTo);
+              const balanceEnd = Date.now();
+              console.debug('[refreshAllWalletTransactions] fetch balance took', (balanceEnd - balanceStart) / 1000, 'sec');
+
+              const txStart = Date.now();
+              await BlueApp.fetchWalletTransactions(lastSnappedTo);
+              const txEnd = Date.now();
+              console.debug('[refreshAllWalletTransactions] fetch tx took', (txEnd - txStart) / 1000, 'sec');
+
+              console.debug('[refreshAllWalletTransactions] Saving data to disk');
+              await saveToDisk();
+            })(),
+
+            timeoutPromise,
+          ]);
+          console.debug('[refreshAllWalletTransactions] Refresh completed successfully');
         }
-
-        console.debug('[refreshAllWalletTransactions] Fetching wallet balances and transactions');
-        await Promise.race([
-          (async () => {
-            const balanceStart = Date.now();
-            await BlueApp.fetchWalletBalances(lastSnappedTo);
-            const balanceEnd = Date.now();
-            console.debug('[refreshAllWalletTransactions] fetch balance took', (balanceEnd - balanceStart) / 1000, 'sec');
-
-            const txStart = Date.now();
-            await BlueApp.fetchWalletTransactions(lastSnappedTo);
-            const txEnd = Date.now();
-            console.debug('[refreshAllWalletTransactions] fetch tx took', (txEnd - txStart) / 1000, 'sec');
-
-            console.debug('[refreshAllWalletTransactions] Saving data to disk');
-            await saveToDisk();
-          })(),
-
-          timeoutPromise,
-        ]);
-        console.debug('[refreshAllWalletTransactions] Refresh completed successfully');
       } catch (error) {
         console.error('[refreshAllWalletTransactions] Error in refreshAllWalletTransactions:', error);
       } finally {
@@ -295,12 +300,13 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
         refreshingRef.current = false;
       }
     },
-    [saveToDisk],
+    [saveToDisk, wallets],
   );
 
   const fetchAndSaveWalletTransactions = useCallback(
     async (walletID: string) => {
       await InteractionManager.runAfterInteractions(async () => {
+        const wallet = wallets.find(w => w.getID() === walletID);
         const index = wallets.findIndex(wallet => wallet.getID() === walletID);
         let noErr = true;
         try {
@@ -310,7 +316,13 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
           }
           _lastTimeTriedToRefetchWallet[walletID] = Date.now();
 
-          await waitTillConnected();
+          // Only wait for Electrum connection for Bitcoin wallets
+          if (!(wallet instanceof EthereumWallet)) {
+            await waitTillConnected();
+          } else if (!wallet._provider) {
+            // Reconnect Ethereum wallet to provider if needed
+            wallet.connectToProvider();
+          }
           setWalletTransactionUpdateStatus(walletID);
 
           const balanceStart = Date.now();
@@ -355,6 +367,9 @@ export const StorageProvider = ({ children }: { children: React.ReactNode }) => 
 
       await w.fetchBalance();
       try {
+        if (w.type === EthereumWallet.type) {
+          throw new Error('Notifications not supported for Ethereum');
+        }
         await majorTomToGroundControl(w.getAllExternalAddresses(), [], []);
       } catch (error) {
         console.warn('Failed to setup notifications:', error);

@@ -12,6 +12,7 @@ import { WatchOnlyWallet } from '../watch-only-wallet';
 import { HDLegacyP2PKHWallet } from '../hd-legacy-p2pkh-wallet';
 import { HDSegwitBech32Wallet } from '../hd-segwit-bech32-wallet';
 import { HDSegwitP2SHWallet } from '../hd-segwit-p2sh-wallet';
+import { EthereumWallet } from '../ethereum-wallet';
 
 export type TWallet =
   | HDAezeedWallet
@@ -29,4 +30,5 @@ export type TWallet =
   | SLIP39SegwitP2SHWallet
   | SegwitBech32Wallet
   | SegwitP2SHWallet
-  | WatchOnlyWallet;
+  | WatchOnlyWallet
+  | EthereumWallet;

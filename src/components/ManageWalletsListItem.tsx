@@ -4,7 +4,7 @@ import { Icon, ListItem } from '@rneui/base';
 import { WalletCarouselItem } from './WalletsCarousel';
 import { TransactionListItem } from './TransactionListItem';
 import { useTheme } from './themes';
-import { BitcoinUnit } from '../models/bitcoinUnits';
+import { CryptoUnit } from '../models/cryptoUnits';
 import loc from '../loc';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../blue_modules/hapticFeedback';
 import { TWallet } from '../class/wallets/types/TWallet';
@@ -194,7 +194,7 @@ const ManageWalletsListItem: React.FC<ManageWalletsListItemProps> = ({
     return (
       <TransactionListItem
         item={item.data}
-        itemPriceUnit={item.data.walletPreferredBalanceUnit || BitcoinUnit.BTC}
+        itemPriceUnit={item.data.walletPreferredBalanceUnit || CryptoUnit.BTC}
         walletID={walletID}
         searchQuery={state.searchQuery}
         renderHighlightedText={renderHighlightedText}

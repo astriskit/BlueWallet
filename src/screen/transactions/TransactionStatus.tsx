@@ -5,7 +5,9 @@ import { ActivityIndicator, BackHandler, StyleSheet, Text, TouchableOpacity, Vie
 import { Icon } from '@rneui/themed';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueCard, BlueLoading, BlueSpacing10, BlueSpacing20, BlueText } from '../../BlueComponents';
-import { HDSegwitBech32Transaction, HDSegwitBech32Wallet } from '../../class';
+import { EthereumWallet } from '../../class/wallets/ethereum-wallet';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
+import { HDSegwitBech32Transaction } from '@/src/class/hd-segwit-bech32-transaction';
 import { Transaction } from '../../class/wallets/types/Transaction';
 import { TWallet } from '../../class/wallets/types/TWallet';
 import Button from '../../components/Button';
@@ -13,10 +15,11 @@ import HandOffComponent from '../../components/HandOffComponent';
 import TransactionIncomingIcon from '../../components/icons/TransactionIncomingIcon';
 import TransactionOutgoingIcon from '../../components/icons/TransactionOutgoingIcon';
 import TransactionPendingIcon from '../../components/icons/TransactionPendingIcon';
+import TransactionEthereumIcon from '../../components/icons/TransactionEthereumIcon';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import loc, { formatBalanceWithoutSuffix } from '../../loc';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
 import HeaderRightButton from '../../components/HeaderRightButton';
@@ -142,9 +145,12 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     dispatch({ type: ActionType.SetEta, payload: value });
   };
 
-  const setAllButtonStatus = (status: ButtonStatus) => {
-    dispatch({ type: ActionType.SetAllButtonStatus, payload: status });
-  };
+  const setAllButtonStatus = useCallback(
+    (status: ButtonStatus) => {
+      dispatch({ type: ActionType.SetAllButtonStatus, payload: status });
+    },
+    [dispatch],
+  );
 
   const setIsLoading = (value: boolean) => {
     dispatch({ type: ActionType.SetLoading, payload: value });
@@ -207,21 +213,37 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
   useEffect(() => {
     console.debug('transactionStatus - useEffect');
 
+    // Return early if transaction has confirmations or no transaction hash
     if (!tx || tx?.confirmations) return;
     if (!hash) return;
 
+    // Clean up existing interval
     if (fetchTxInterval.current) {
-      // interval already exists, lets cleanup it and recreate, so theres no duplicate intervals
       clearInterval(fetchTxInterval.current);
       fetchTxInterval.current = undefined;
     }
 
-    console.debug('setting up interval to check tx...');
+    console.debug('setting up interval to check tx:', hash);
     fetchTxInterval.current = setInterval(async () => {
       try {
-        setIntervalMs(31000); // upon first execution we increase poll interval;
+        setIntervalMs(31000); // increase poll interval after first execution
 
-        console.debug('checking tx', hash, 'for confirmations...');
+        // Skip Electrum checks for Ethereum transactions
+        if (tx?.isEthereum) {
+          // For Ethereum transactions, we'd need to query the node or an external service
+          // This would be implemented depending on the provider being used (Etherscan, Infura, etc.)
+          console.debug('Checking Ethereum transaction status:', hash);
+
+          // Here we would query the Ethereum node or API
+          // For now, we'll rely on the wallet refreshing transactions independently
+          if (wallet?.getID()) {
+            fetchAndSaveWalletTransactions(wallet.getID());
+          }
+          return;
+        }
+
+        // For Bitcoin transactions, check via Electrum
+        console.debug('Checking BTC tx', hash, 'for confirmations...');
         const transactions = await multiGetTransactionByTxid([hash], true, 10);
         const txFromElectrum = transactions[hash];
         if (!txFromElectrum) {
@@ -312,40 +334,14 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const initialButtonsState = async () => {
-    try {
-      await checkPossibilityOfCPFP();
-      await checkPossibilityOfRBFBumpFee();
-      await checkPossibilityOfRBFCancel();
-    } catch (e) {
-      console.error('Error in initialButtonsState:', e);
-      setAllButtonStatus(ButtonStatus.NotPossible);
+  const checkPossibilityOfCPFP = useCallback(async () => {
+    // Check if it's an Ethereum transaction
+    if (tx?.isEthereum) {
+      return setIsCPFPPossible(ButtonStatus.NotPossible);
     }
-    setIsLoading(false);
-  };
 
-  useEffect(() => {
-    initialButtonsState().catch(error => console.error('Unhandled error in initialButtonsState:', error));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tx, wallets]);
-
-  useEffect(() => {}, [tx, wallets]);
-
-  useEffect(() => {
-    const wID = wallet?.getID();
-    if (wID) {
-      setSelectedWalletID(wallet?.getID());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet]);
-
-  useEffect(() => {
-    console.debug('transactionStatus - useEffect');
-  }, []);
-
-  const checkPossibilityOfCPFP = async () => {
-    if (!wallet?.allowRBF()) {
+    // Check if wallet allows RBF (not all wallets support this)
+    if (!wallet || typeof wallet.allowRBF !== 'function' || !wallet.allowRBF()) {
       return setIsCPFPPossible(ButtonStatus.NotPossible);
     }
 
@@ -358,10 +354,16 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
       }
     }
     return setIsCPFPPossible(ButtonStatus.NotPossible);
-  };
+  }, [tx, wallet]);
 
-  const checkPossibilityOfRBFBumpFee = async () => {
-    if (!wallet?.allowRBF()) {
+  const checkPossibilityOfRBFBumpFee = useCallback(async () => {
+    // Check if it's an Ethereum transaction
+    if (tx?.isEthereum) {
+      return setIsRBFBumpFeePossible(ButtonStatus.NotPossible);
+    }
+
+    // Check if wallet allows RBF (not all wallets support this)
+    if (!wallet || typeof wallet.allowRBF !== 'function' || !wallet.allowRBF()) {
       return setIsRBFBumpFeePossible(ButtonStatus.NotPossible);
     }
 
@@ -376,10 +378,16 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     } else {
       return setIsRBFBumpFeePossible(ButtonStatus.NotPossible);
     }
-  };
+  }, [tx, wallet]);
 
-  const checkPossibilityOfRBFCancel = async () => {
-    if (!wallet?.allowRBF()) {
+  const checkPossibilityOfRBFCancel = useCallback(async () => {
+    // Check if it's an Ethereum transaction
+    if (tx?.isEthereum) {
+      return setIsRBFCancelPossible(ButtonStatus.NotPossible);
+    }
+
+    // Check if wallet allows RBF (not all wallets support this)
+    if (!wallet || typeof wallet.allowRBF !== 'function' || !wallet.allowRBF()) {
       return setIsRBFCancelPossible(ButtonStatus.NotPossible);
     }
 
@@ -394,7 +402,41 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     } else {
       return setIsRBFCancelPossible(ButtonStatus.NotPossible);
     }
-  };
+  }, [tx, wallet]);
+
+  const initialButtonsState = useCallback(async () => {
+    if (!tx) return;
+    try {
+      // Skip RBF/CPFP checks for Ethereum transactions
+      if (tx?.isEthereum) {
+        setAllButtonStatus(ButtonStatus.NotPossible);
+      } else {
+        await checkPossibilityOfCPFP();
+        await checkPossibilityOfRBFBumpFee();
+        await checkPossibilityOfRBFCancel();
+      }
+    } catch (e) {
+      console.error('Error in initialButtonsState:', e);
+      setAllButtonStatus(ButtonStatus.NotPossible);
+    }
+    setIsLoading(false);
+  }, [tx, checkPossibilityOfCPFP, checkPossibilityOfRBFBumpFee, checkPossibilityOfRBFCancel, setAllButtonStatus]);
+
+  useEffect(() => {
+    initialButtonsState().catch(error => console.error('Unhandled error in initialButtonsState:', error));
+  }, [initialButtonsState, tx, wallets]);
+
+  useEffect(() => {
+    const wID = wallet?.getID();
+    if (wID) {
+      setSelectedWalletID(wallet?.getID());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallet]);
+
+  useEffect(() => {
+    console.debug('transactionStatus - useEffect');
+  }, []);
 
   const navigateToRBFBumpFee = () => {
     navigate('RBFBumpFee', {
@@ -432,7 +474,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
           <BlueSpacing10 />
         </>
       );
-    }
+    } else return null;
   };
 
   const renderRBFCancel = () => {
@@ -453,7 +495,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
           <BlueSpacing10 />
         </>
       );
-    }
+    } else return null;
   };
 
   const renderRBFBumpFee = () => {
@@ -471,7 +513,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
           <BlueSpacing10 />
         </>
       );
-    }
+    } else return null;
   };
 
   const shortenCounterpartyName = (addr: string): string => {
@@ -491,6 +533,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
         );
       }
     }
+    return null;
   };
 
   const renderTXCounterparty = () => {
@@ -558,6 +601,8 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
     }
   }, [isLoading]);
 
+  const preferredBalanceUnit = wallet?.getPreferredBalanceUnit?.() ?? CryptoUnit.BTC;
+
   return (
     <SafeArea>
       {loadingError ? (
@@ -573,17 +618,23 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
           <HandOffComponent
             title={loc.transactions.details_title}
             type={HandOffActivityType.ViewInBlockExplorer}
-            url={`${selectedBlockExplorer.url}/tx/${tx.hash}`}
+            url={
+              tx.isEthereum
+                ? `https://etherscan.io/tx/${tx.hash}` // Use Etherscan for Ethereum transactions
+                : `${selectedBlockExplorer.url}/tx/${tx.hash}`
+            }
           />
 
           <View style={styles.container}>
             <BlueCard>
               <View style={styles.center}>
                 <Text style={[styles.value, stylesHook.value]} selectable>
-                  {wallet && formatBalanceWithoutSuffix(tx.value, wallet.preferredBalanceUnit, true)}
+                  {wallet &&
+                    tx.value !== undefined &&
+                    formatBalanceWithoutSuffix(tx.value, preferredBalanceUnit, true, wallet?.type === EthereumWallet.type ? 'wei' : 'sats')}
                   {` `}
-                  {wallet?.preferredBalanceUnit !== BitcoinUnit.LOCAL_CURRENCY && wallet && (
-                    <Text style={[styles.valueUnit, stylesHook.valueUnit]}>{wallet.preferredBalanceUnit}</Text>
+                  {wallet?.preferredBalanceUnit !== CryptoUnit.LOCAL_CURRENCY && wallet && (
+                    <Text style={[styles.valueUnit, stylesHook.valueUnit]}>{preferredBalanceUnit}</Text>
                   )}
                 </Text>
               </View>
@@ -597,7 +648,30 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                 </View>
                 <View style={[styles.iconWrap, styles.margin]}>
                   {(() => {
-                    if (!tx.confirmations) {
+                    // For Ethereum transactions
+                    if (tx.isEthereum) {
+                      if (tx.status === 'pending' || !tx.confirmations) {
+                        return (
+                          <View style={styles.icon}>
+                            <TransactionPendingIcon />
+                          </View>
+                        );
+                      } else if (tx.isError || tx.status === 'failed') {
+                        return (
+                          <View style={styles.icon}>
+                            <TransactionPendingIcon />
+                          </View>
+                        );
+                      } else {
+                        return (
+                          <View style={styles.icon}>
+                            <TransactionEthereumIcon />
+                          </View>
+                        );
+                      }
+                    }
+                    // For Bitcoin transactions
+                    else if (!tx.confirmations) {
                       return (
                         <View style={styles.icon}>
                           <TransactionPendingIcon />
@@ -620,12 +694,12 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
                 </View>
               </View>
 
-              {tx.fee && (
+              {tx.fee !== undefined && (
                 <View style={styles.fee}>
                   <BlueText style={styles.feeText}>
                     {`${loc.send.create_fee.toLowerCase()} `}
-                    {formatBalanceWithoutSuffix(tx.fee, wallet?.preferredBalanceUnit ?? BitcoinUnit.BTC, true)}
-                    {wallet?.preferredBalanceUnit !== BitcoinUnit.LOCAL_CURRENCY && wallet?.preferredBalanceUnit}
+                    {formatBalanceWithoutSuffix(tx.fee || 0, preferredBalanceUnit, true, tx?.isEthereum ? 'wei' : 'sats')}{' '}
+                    {preferredBalanceUnit !== CryptoUnit.LOCAL_CURRENCY && preferredBalanceUnit ? preferredBalanceUnit : null}
                   </BlueText>
                 </View>
               )}
@@ -633,7 +707,7 @@ const TransactionStatus: React.FC<TransactionStatusProps> = ({ transaction, txid
               <View style={styles.confirmations}>
                 <Text style={styles.confirmationsText}>
                   {loc.formatString(loc.transactions.confirmations_lowercase, {
-                    confirmations: tx.confirmations > 6 ? '6+' : tx.confirmations,
+                    confirmations: tx.confirmations > 6 ? '6+' : tx.confirmations || 0,
                   })}
                 </Text>
               </View>

@@ -1,4 +1,4 @@
-import { BitcoinUnit } from '../../../models/bitcoinUnits';
+import { CryptoUnit } from '../../../models/cryptoUnits';
 
 import { Transaction } from './Transaction';
 
@@ -8,5 +8,5 @@ import { Transaction } from './Transaction';
  */
 export type ExtendedTransaction = Transaction & {
   walletID: string;
-  walletPreferredBalanceUnit: BitcoinUnit;
+  walletPreferredBalanceUnit: CryptoUnit;
 };

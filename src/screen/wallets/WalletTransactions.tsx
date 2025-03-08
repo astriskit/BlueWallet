@@ -21,7 +21,9 @@ import { useLocalSearchParams } from 'expo-router';
 import { isDesktop } from '../../blue_modules/environment';
 import * as fs from '../../blue_modules/fs';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
-import { LightningCustodianWallet, MultisigHDWallet, WatchOnlyWallet } from '../../class';
+import { LightningCustodianWallet } from '../../class/wallets/lightning-custodian-wallet';
+import { MultisigHDWallet } from '../../class/wallets/multisig-hd-wallet';
+import { WatchOnlyWallet } from '../../class/wallets/watch-only-wallet';
 import presentAlert, { AlertType } from '../../components/Alert';
 import { FButton, FContainer } from '../../components/FloatButtons';
 import { useTheme } from '../../components/themes';
@@ -30,7 +32,7 @@ import TransactionsNavigationHeader, { actionKeys } from '../../components/Trans
 import { useBiometrics } from '../../hooks/useBiometrics';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
-import { Chain } from '../../models/bitcoinUnits';
+import { Chain } from '../../models/cryptoUnits';
 import ActionSheet from '../ActionSheet';
 import { useStorage } from '../../hooks/context/useStorage';
 import WatchOnlyWarning from '../../components/WatchOnlyWarning';
@@ -98,15 +100,22 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
           walletID,
           uri: ret?.data ? ret.data : ret,
         };
-        if (wallet?.chain === Chain.ONCHAIN) {
+
+        // Handle QR code differently based on wallet type
+        if (wallet?.type === 'ethereum') {
+          // For Ethereum wallets, always go to SendDetails
+          navigate('SendDetailsRoot', { screen: 'SendDetails', params: parameters });
+        } else if (wallet?.chain === Chain.ONCHAIN) {
+          // For Bitcoin onchain wallets
           navigate('SendDetailsRoot', { screen: 'SendDetails', params: parameters });
         } else {
+          // For Lightning wallets
           navigate('ScanLndInvoiceRoot', { screen: 'ScanLndInvoice', params: parameters });
         }
         setIsLoading(false);
       }
     },
-    [isLoading, walletID, wallet?.chain, navigate],
+    [isLoading, walletID, wallet?.chain, wallet?.type, navigate],
   );
 
   useEffect(() => {
@@ -132,27 +141,49 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     }
   }, [getTransactions, limit, pageSize]);
 
+  /**
+   * Refreshes wallet transactions and balance
+   * Handles both Bitcoin and Ethereum wallets
+   */
   const refreshTransactions = useCallback(async () => {
     console.debug('refreshTransactions, ', wallet?.getLabel());
-    if (!wallet || isElectrumDisabled || isLoading) return;
+    if (!wallet || isLoading) return;
+
+    // Skip refresh for Bitcoin wallets when Electrum is disabled
+    if (wallet.type !== 'ethereum' && isElectrumDisabled) return;
+
     setIsLoading(true);
     let smthChanged = false;
     try {
-      await waitTillConnected();
-      if (wallet.allowBIP47() && wallet.isBIP47Enabled() && 'fetchBIP47SenderPaymentCodes' in wallet) {
+      // For Ethereum wallets, we can proceed directly without waiting for Electrum
+      if (wallet.type !== 'ethereum') {
+        await waitTillConnected();
+      }
+
+      // BIP47 payment code operations (Bitcoin only)
+      if (wallet.allowBIP47?.() && wallet.isBIP47Enabled?.() && 'fetchBIP47SenderPaymentCodes' in wallet) {
         await wallet.fetchBIP47SenderPaymentCodes();
       }
+
+      // Fetch balance for any wallet type
       const oldBalance = wallet.getBalance();
       await wallet.fetchBalance();
       if (oldBalance !== wallet.getBalance()) smthChanged = true;
+
+      // Fetch transactions for any wallet type
       const oldTxLen = wallet.getTransactions().length;
       await wallet.fetchTransactions();
-      if ('fetchPendingTransactions' in wallet) {
-        await wallet.fetchPendingTransactions();
+
+      // Bitcoin-specific operations
+      if (wallet.type !== 'ethereum') {
+        if ('fetchPendingTransactions' in wallet) {
+          await wallet.fetchPendingTransactions();
+        }
+        if ('fetchUserInvoices' in wallet) {
+          await wallet.fetchUserInvoices();
+        }
       }
-      if ('fetchUserInvoices' in wallet) {
-        await wallet.fetchUserInvoices();
-      }
+
       if (oldTxLen !== wallet.getTransactions().length) smthChanged = true;
     } catch (err) {
       presentAlert({ message: (err as Error).message, type: AlertType.Toast });
@@ -183,7 +214,15 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
     }
   }, [wallet, setSelectedWalletID, walletID]);
 
+  /**
+   * Checks if the wallet is a Lightning wallet
+   */
   const isLightning = useCallback((): boolean => wallet?.chain === Chain.OFFCHAIN || false, [wallet]);
+
+  /**
+   * Checks if the wallet is an Ethereum wallet
+   */
+  const isEthereum = useCallback((): boolean => wallet?.type === 'ethereum' || false, [wallet]);
   const renderListFooterComponent = () => {
     // if not all txs rendered - display indicator
     return wallet && wallet.getTransactions().length > limit ? <ActivityIndicator style={styles.activityIndicator} /> : <View />;
@@ -422,7 +461,7 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
               wallet.preferredBalanceUnit = selectedUnit;
               await saveToDisk();
             }}
-            unit={wallet.preferredBalanceUnit}
+            unit={wallet.getPreferredBalanceUnit()}
             onWalletBalanceVisibilityChange={async isShouldBeVisible => {
               const isBiometricsEnabled = await isBiometricUseCapableAndEnabled();
               if (wallet.hideBalance && isBiometricsEnabled) {
@@ -524,9 +563,16 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
         ListEmptyComponent={
           <ScrollView style={[styles.flex, { backgroundColor: colors.background }]} contentContainerStyle={styles.scrollViewContent}>
             <Text numberOfLines={0} style={styles.emptyTxs}>
-              {(isLightning() && loc.wallets.list_empty_txs1_lightning) || loc.wallets.list_empty_txs1}
+              {isLightning()
+                ? loc.wallets.list_empty_txs1_lightning
+                : isEthereum()
+                  ? loc.wallets.list_empty_txs1_ethereum || 'No transactions yet'
+                  : loc.wallets.list_empty_txs1}
             </Text>
             {isLightning() && <Text style={styles.emptyTxsLightning}>{loc.wallets.list_empty_txs2_lightning}</Text>}
+            {isEthereum() && (
+              <Text style={styles.emptyTxsLightning}>{loc.wallets.list_empty_txs2_ethereum || 'Send or receive ETH to get started'}</Text>
+            )}
           </ScrollView>
         }
         refreshControl={
@@ -541,9 +587,14 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
             testID="ReceiveButton"
             text={loc.receive.header}
             onPress={() => {
-              if (wallet.chain === Chain.OFFCHAIN) {
+              if (isEthereum()) {
+                // Ethereum wallets use the standard receive screen
+                navigate('ReceiveDetailsRoot', { screen: 'ReceiveDetails', params: { walletID } });
+              } else if (wallet?.chain === Chain.OFFCHAIN) {
+                // Lightning wallets use LND invoice screen
                 navigate('LNDCreateInvoiceRoot', { screen: 'LNDCreateInvoice', params: { walletID } });
               } else {
+                // Bitcoin wallets use standard receive screen
                 navigate('ReceiveDetailsRoot', { screen: 'ReceiveDetails', params: { walletID } });
               }
             }}
@@ -568,11 +619,24 @@ const WalletTransactions: React.FC<WalletTransactionsProps> = ({ route }) => {
           />
         )}
       </FContainer>
-      {wallet?.chain === Chain.ONCHAIN && wallet.type !== MultisigHDWallet.type && wallet.getXpub && wallet.getXpub() ? (
+      {/* Handoff for blockchain explorers - specific to wallet type */}
+      {wallet?.chain === Chain.ONCHAIN &&
+      wallet.type !== MultisigHDWallet.type &&
+      wallet.type !== 'ethereum' &&
+      wallet.getXpub &&
+      wallet.getXpub() ? (
         <HandOffComponent
           title={wallet.getLabel()}
           type={HandOffActivityType.Xpub}
           url={`https://www.blockonomics.co/#/search?q=${wallet.getXpub()}`}
+        />
+      ) : null}
+      {/* Handoff for Ethereum wallets - show address on Etherscan */}
+      {wallet?.type === 'ethereum' && wallet.getAddress ? (
+        <HandOffComponent
+          title={wallet.getLabel()}
+          type={HandOffActivityType.ViewInBlockExplorer}
+          url={`https://etherscan.io/address/${wallet.getAddress()}`}
         />
       ) : null}
     </View>

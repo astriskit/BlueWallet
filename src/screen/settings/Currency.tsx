@@ -30,7 +30,7 @@ const Currency: React.FC = () => {
   const { setPreferredFiatCurrencyStorage } = useSettings();
   const [isSavingNewPreferredCurrency, setIsSavingNewPreferredCurrency] = useState<FiatUnitType | undefined>();
   const [selectedCurrency, setSelectedCurrency] = useState<FiatUnitType>(FiatUnit.USD);
-  const [currencyRate, setCurrencyRate] = useState<CurrencyRate>({ LastUpdated: null, Rate: null });
+  const [currencyRate, setCurrencyRate] = useState<CurrencyRate>({ LastUpdated: null, Rate: null, EthRate: null });
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { colors } = useTheme();
   const { setOptions } = useExtendedNavigation();
@@ -90,7 +90,8 @@ const Currency: React.FC = () => {
         Keyboard.dismiss();
         setIsSavingNewPreferredCurrency(item);
         try {
-          await getFiatRate(item.endPointKey);
+          await getFiatRate(item.endPointKey, 'BTC');
+          await getFiatRate(item.endPointKey, 'ETH');
           await setPreferredCurrency(item);
           await initCurrencyDaemon(true);
           await fetchCurrency();

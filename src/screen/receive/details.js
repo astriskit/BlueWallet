@@ -33,7 +33,7 @@ import { useTheme } from '../../components/themes';
 import { TransactionPendingIconBig } from '../../components/TransactionPendingIconBig';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import { SuccessView } from '../send/success';
 import { useStorage } from '../../hooks/context/useStorage';
 import { HandOffActivityType } from '../../components/types';
@@ -53,12 +53,12 @@ const ReceiveDetails = () => {
   const wallet = wallets.find(w => w.getID() === walletID);
   const [customLabel, setCustomLabel] = useState('');
   const [customAmount, setCustomAmount] = useState('');
-  const [customUnit, setCustomUnit] = useState(BitcoinUnit.BTC);
+  const [customUnit, setCustomUnit] = useState(CryptoUnit.BTC);
   const [bip21encoded, setBip21encoded] = useState('');
   const [isCustom, setIsCustom] = useState(false);
   const [tempCustomLabel, setTempCustomLabel] = useState('');
   const [tempCustomAmount, setTempCustomAmount] = useState('');
-  const [tempCustomUnit, setTempCustomUnit] = useState(BitcoinUnit.BTC);
+  const [tempCustomUnit, setTempCustomUnit] = useState(CryptoUnit.BTC);
   const [showPendingBalance, setShowPendingBalance] = useState(false);
   const [showConfirmedBalance, setShowConfirmedBalance] = useState(false);
   const [showAddress, setShowAddress] = useState(false);
@@ -254,8 +254,8 @@ const ReceiveDetails = () => {
 
           setDisplayBalance(
             loc.formatString(loc.transactions.pending_with_amount, {
-              amt1: formatBalance(balance.unconfirmed, BitcoinUnit.LOCAL_CURRENCY, true).toString(),
-              amt2: formatBalance(balance.unconfirmed, BitcoinUnit.BTC, true).toString(),
+              amt1: formatBalance(balance.unconfirmed, CryptoUnit.LOCAL_CURRENCY, true).toString(),
+              amt2: formatBalance(balance.unconfirmed, CryptoUnit.BTC, true).toString(),
             }),
           );
           setShowPendingBalance(true);
@@ -272,8 +272,8 @@ const ReceiveDetails = () => {
             setShowAddress(false);
             setDisplayBalance(
               loc.formatString(loc.transactions.received_with_amount, {
-                amt1: formatBalance(balanceToShow, BitcoinUnit.LOCAL_CURRENCY, true).toString(),
-                amt2: formatBalance(balanceToShow, BitcoinUnit.BTC, true).toString(),
+                amt1: formatBalance(balanceToShow, CryptoUnit.LOCAL_CURRENCY, true).toString(),
+                amt2: formatBalance(balanceToShow, CryptoUnit.BTC, true).toString(),
               }),
             );
             fetchAndSaveWalletTransactions(walletID);
@@ -405,16 +405,16 @@ const ReceiveDetails = () => {
     setIsCustom(true);
     let amount = tempCustomAmount;
     switch (tempCustomUnit) {
-      case BitcoinUnit.BTC:
+      case CryptoUnit.BTC:
         // nop
         break;
-      case BitcoinUnit.SATS:
+      case CryptoUnit.SATS:
         amount = satoshiToBTC(tempCustomAmount);
         break;
-      case BitcoinUnit.LOCAL_CURRENCY:
-        if (AmountInput.conversionCache[amount + BitcoinUnit.LOCAL_CURRENCY]) {
+      case CryptoUnit.LOCAL_CURRENCY:
+        if (AmountInput.conversionCache[amount + CryptoUnit.LOCAL_CURRENCY]) {
           // cache hit! we reuse old value that supposedly doesnt have rounding errors
-          amount = satoshiToBTC(AmountInput.conversionCache[amount + BitcoinUnit.LOCAL_CURRENCY]);
+          amount = satoshiToBTC(AmountInput.conversionCache[amount + CryptoUnit.LOCAL_CURRENCY]);
         } else {
           amount = fiatToBTC(tempCustomAmount);
         }
@@ -451,11 +451,11 @@ const ReceiveDetails = () => {
   const getDisplayAmount = () => {
     if (Number(customAmount) > 0) {
       switch (customUnit) {
-        case BitcoinUnit.BTC:
+        case CryptoUnit.BTC:
           return customAmount + ' BTC';
-        case BitcoinUnit.SATS:
+        case CryptoUnit.SATS:
           return satoshiToBTC(customAmount) + ' BTC';
-        case BitcoinUnit.LOCAL_CURRENCY:
+        case CryptoUnit.LOCAL_CURRENCY:
           return fiatToBTC(customAmount) + ' BTC';
       }
       return customAmount + ' ' + customUnit;

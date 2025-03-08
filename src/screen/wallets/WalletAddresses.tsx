@@ -11,7 +11,7 @@ import { DetailViewStackParamList } from '../../navigation/DetailViewStackParamL
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import SegmentedControl from '../../components/SegmentControl';
 import loc from '../../loc';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import { isDesktop } from '../../blue_modules/environment';
 
 export const TABS = {
@@ -125,7 +125,7 @@ const WalletAddresses: React.FC = () => {
   const addressList = useRef<FlatList<Address>>(null);
   const wallet = wallets.find((w: any) => w.getID() === walletID);
 
-  const balanceUnit = wallet?.getPreferredBalanceUnit() ?? BitcoinUnit.BTC;
+  const balanceUnit = wallet?.getPreferredBalanceUnit() ?? CryptoUnit.BTC;
   const isWatchOnly = wallet?.type === WatchOnlyWallet.type;
   const walletInstance = isWatchOnly ? wallet._hdWalletInstance : wallet;
   const allowSignVerifyMessage = (wallet && 'allowSignVerifyMessage' in wallet && wallet.allowSignVerifyMessage()) ?? false;

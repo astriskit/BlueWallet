@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { FlatList, StyleSheet, TextInput, View } from 'react-native';
 import debounce from '../../blue_modules/debounce';
 import { BlueFormLabel, BlueSpacing20, BlueTextCentered } from '../../BlueComponents';
-import { HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet } from '../../class';
+import { EthereumWallet, HDLegacyP2PKHWallet, HDSegwitBech32Wallet, HDSegwitP2SHWallet } from '../../class';
 import { validateBip32 } from '../../class/wallet-import';
 import { TWallet } from '../../class/wallets/types/TWallet';
 import Button from '../../components/Button';
@@ -41,6 +41,15 @@ const ImportCustomDerivationPath: React.FC = () => {
   const { importText, password } = useRoute<RouteProps>().params;
   const { addAndSaveWallet } = useStorage();
   const [path, setPath] = useState<string>("m/84'/0'/0'");
+  const predefinedPaths = useMemo(
+    () => [
+      { path: "m/84'/0'/0'", label: 'BIP84 (BTC Native Segwit)' },
+      { path: "m/49'/0'/0'", label: 'BIP49 (BTC Segwit)' },
+      { path: "m/44'/0'/0'", label: 'BIP44 (BTC Legacy)' },
+      { path: "m/44'/60'/0'/0", label: 'Ethereum' },
+    ],
+    [],
+  );
   const [wallets, setWallets] = useState<TWalletsByPath>({});
   const [used, setUsed] = useState<TUsedByPath>({});
   const [selected, setSelected] = useState<string>('');
@@ -56,6 +65,8 @@ const ImportCustomDerivationPath: React.FC = () => {
 
       // create wallets
       const newWallets: { [type: string]: TWallet } = {};
+
+      // Bitcoin wallets
       for (const Wallet of [HDLegacyP2PKHWallet, HDSegwitP2SHWallet, HDSegwitBech32Wallet]) {
         const wallet = new Wallet();
         wallet.setSecret(importText);
@@ -64,6 +75,19 @@ const ImportCustomDerivationPath: React.FC = () => {
         }
         wallet.setDerivationPath(newPath);
         newWallets[Wallet.type] = wallet;
+      }
+
+      // Ethereum wallet - only add if it's a valid Ethereum path
+      try {
+        if (newPath.startsWith("m/44'/60'/")) {
+          const ethWallet = EthereumWallet.fromMnemonic(importText, newPath);
+          if (ethWallet) {
+            ethWallet.connectToProvider();
+            newWallets[EthereumWallet.type] = ethWallet;
+          }
+        }
+      } catch (e) {
+        // Not a valid Ethereum path or mnemonic
       }
       setWallets(ws => ({ ...ws, [newPath]: newWallets }));
 
@@ -99,11 +123,19 @@ const ImportCustomDerivationPath: React.FC = () => {
 
   const items: TItem[] = useMemo(() => {
     if (wallets[path] === WRONG_PATH) return [];
-    return [
+
+    const walletTypes = [
       [HDLegacyP2PKHWallet.type, HDLegacyP2PKHWallet.typeReadable, used[path]?.[HDLegacyP2PKHWallet.type]],
       [HDSegwitP2SHWallet.type, HDSegwitP2SHWallet.typeReadable, used[path]?.[HDSegwitP2SHWallet.type]],
       [HDSegwitBech32Wallet.type, HDSegwitBech32Wallet.typeReadable, used[path]?.[HDSegwitBech32Wallet.type]],
     ];
+
+    // Add Ethereum wallet type if it's available
+    if (wallets[path]?.[EthereumWallet.type]) {
+      walletTypes.push([EthereumWallet.type, EthereumWallet.typeReadable, used[path]?.[EthereumWallet.type]]);
+    }
+
+    return walletTypes;
   }, [path, used, wallets]);
 
   const stylesHook = StyleSheet.create({
@@ -164,6 +196,22 @@ const ImportCustomDerivationPath: React.FC = () => {
         style={[styles.pathInput, stylesHook.pathInput]}
         onChangeText={setPath}
       />
+      <View style={styles.predefinedPathsContainer}>
+        {predefinedPaths.map((item, index) => (
+          <Button
+            key={index}
+            title={item.label}
+            onPress={() => setPath(item.path)}
+            small
+            style={[
+              styles.predefinedPathButton,
+              path === item.path && styles.predefinedPathButtonActive,
+              path === item.path && { backgroundColor: colors.buttonBackgroundColor },
+            ]}
+            textStyle={[styles.predefinedPathButtonText, path === item.path && { color: colors.inverseForegroundColor }]}
+          />
+        ))}
+      </View>
       <FlatList
         data={items}
         keyExtractor={w => path + w[0]}
@@ -208,6 +256,25 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 8,
     color: '#81868e',
+  },
+  predefinedPathsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    gap: 8,
+  },
+  predefinedPathButton: {
+    height: 32,
+    marginBottom: 8,
+    borderRadius: 16,
+    minHeight: 32,
+  },
+  predefinedPathButtonActive: {
+    borderWidth: 0,
+  },
+  predefinedPathButtonText: {
+    fontSize: 12,
   },
 });
 

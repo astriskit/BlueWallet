@@ -16,7 +16,9 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlueSpacing10 } from '../BlueComponents';
-import { LightningCustodianWallet, MultisigHDWallet } from '../class';
+import { EthereumWallet } from '../class/wallets/ethereum-wallet';
+import { MultisigHDWallet } from '../class/wallets/multisig-hd-wallet';
+import { LightningCustodianWallet } from '../class/wallets/lightning-custodian-wallet';
 import WalletGradient from '../class/wallet-gradient';
 import { useIsLargeScreen } from '../hooks/useIsLargeScreen';
 import loc, { formatBalance, transactionTimeToReadable } from '../loc';
@@ -146,6 +148,9 @@ const iStyles = StyleSheet.create({
     writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
     fontSize: 16,
   },
+  flipImage: {
+    transform: 'scaleX(-1)',
+  },
   shadowContainer: {
     ...Platform.select({
       ios: {
@@ -231,6 +236,9 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
     const opacity = isSelectedWallet === false ? 0.5 : 1.0;
     let image;
     switch (item.type) {
+      case EthereumWallet.type:
+        image = require('../img/eth.png');
+        break;
       case LightningCustodianWallet.type:
         image = I18nManager.isRTL ? require('../img/lnd-shape-rtl.png') : require('../img/lnd-shape.png');
         break;
@@ -250,7 +258,10 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
             ? loc.transactions.pending
             : transactionTimeToReadable(item.getLatestTransactionTime());
 
-    const balance = !item.hideBalance && formatBalance(Number(item.getBalance()), item.getPreferredBalanceUnit(), true);
+    const balance =
+      !item.hideBalance &&
+      formatBalance(Number(item.getBalance()), item.getPreferredBalanceUnit(), true, item.type === EthereumWallet.type ? 'wei' : 'sats');
+    const ethImageNeedFlip = (type: string) => type === EthereumWallet.type && !!I18nManager.isRTL;
 
     return (
       <Animated.View
@@ -271,7 +282,7 @@ export const WalletCarouselItem: React.FC<WalletCarouselItemProps> = React.memo(
         >
           <View style={[iStyles.shadowContainer, { backgroundColor: colors.background, shadowColor: colors.shadowColor }]}>
             <LinearGradient colors={WalletGradient.gradientsFor(item.type)} style={iStyles.grad}>
-              <Image source={image} style={iStyles.image} />
+              <Image source={image} style={[iStyles.image, ethImageNeedFlip(item.type) && iStyles.flipImage]} />
               <Text style={iStyles.br} />
               {!isPlaceHolder && (
                 <>

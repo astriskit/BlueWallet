@@ -7,8 +7,8 @@ import Localization, { LocalizedStrings } from 'react-localization';
 import { I18nManager } from 'react-native';
 import * as RNLocalize from 'react-native-localize';
 
-import { satoshiToLocalCurrency } from '../blue_modules/currency';
-import { BitcoinUnit } from '../models/bitcoinUnits';
+import { satoshiToLocalCurrency, weiToLocalCurrency } from '../blue_modules/currency';
+import { CryptoUnit } from '../models/cryptoUnits';
 import { AvailableLanguages } from './languages';
 import enJson from './en.json';
 
@@ -307,44 +307,142 @@ export const removeTrailingZeros = (value: number | string): string => {
 };
 
 /**
+ * Converts a value between different Ethereum units
+ * @param value {number|string} The value to convert
+ * @param fromUnit {string} The unit to convert from (ETH, GWEI, WEI)
+ * @param toUnit {string} The unit to convert to (ETH, GWEI, WEI)
+ * @returns {string} The converted value as a string
+ */
+export function convertEthereumUnits(value: number | string, fromUnit: string, toUnit: string): string {
+  const valueNum = typeof value === 'string' ? parseFloat(value) : value;
+
+  // Convert to WEI (smallest unit) first
+  let valueInWei: BigNumber;
+
+  if (fromUnit === CryptoUnit.ETH) {
+    valueInWei = new BigNumber(valueNum).multipliedBy(1e18);
+  } else if (fromUnit === CryptoUnit.GWEI) {
+    valueInWei = new BigNumber(valueNum).multipliedBy(1e9);
+  } else {
+    // WEI
+    valueInWei = new BigNumber(valueNum);
+  }
+
+  // Convert from WEI to target unit
+  if (toUnit === CryptoUnit.ETH) {
+    return removeTrailingZeros(valueInWei.dividedBy(1e18).toFixed(18));
+  } else if (toUnit === CryptoUnit.GWEI) {
+    return removeTrailingZeros(valueInWei.dividedBy(1e9).toFixed(9));
+  } else {
+    // WEI
+    return valueInWei.toFixed(0);
+  }
+}
+
+/**
+ * Detects if the given unit is an Ethereum unit
+ * @param unit {string} The unit to check
+ * @returns {boolean} True if it's an Ethereum unit
+ */
+function isEthereumUnit(unit: CryptoUnit): boolean {
+  return ([CryptoUnit.ETH, CryptoUnit.GWEI, CryptoUnit.WEI] as CryptoUnit[]).includes(unit);
+}
+
+/**
  *
- * @param balance {number} Satoshis
- * @param toUnit {string} Value from models/bitcoinUnits.js
- * @param withFormatting {boolean} Works only with `BitcoinUnit.SATS`, makes spaces wetween groups of 000
+ * @param balance {number} Value in the wallet's native unit (satoshis for Bitcoin, wei-equivalent for Ethereum)
+ * @param toUnit {string} Value from models/CryptoUnits.js
+ * @param withFormatting {boolean} Makes spaces between groups of 000
  * @returns {string}
  */
-export function formatBalance(balance: number, toUnit: string, withFormatting = false): string {
+export function formatBalance(balance: number, toUnit: string, withFormatting = false, localFromUnit: CryptoUnit = 'sats'): string {
   if (toUnit === undefined) {
-    return balance + ' ' + loc.units[BitcoinUnit.BTC];
+    return balance + ' ' + loc.units[CryptoUnit.BTC];
   }
-  if (toUnit === BitcoinUnit.BTC) {
+
+  // Bitcoin units
+  if (toUnit === CryptoUnit.BTC) {
     const value = new BigNumber(balance).dividedBy(100000000).toFixed(8);
-    return removeTrailingZeros(+value) + ' ' + loc.units[BitcoinUnit.BTC];
-  } else if (toUnit === BitcoinUnit.SATS) {
-    return (withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance)) + ' ' + loc.units[BitcoinUnit.SATS];
-  } else {
-    return satoshiToLocalCurrency(balance);
+    return removeTrailingZeros(+value) + ' ' + loc.units[CryptoUnit.BTC];
+  } else if (toUnit === CryptoUnit.SATS) {
+    return (withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance)) + ' ' + loc.units[CryptoUnit.SATS];
+  }
+  // Ethereum units
+  else if (isEthereumUnit(toUnit)) {
+    // For Ethereum, the balance is stored in wei-equivalent
+    const weiValue = new BigNumber(balance);
+
+    if (toUnit === CryptoUnit.ETH) {
+      const ethValue = weiValue.dividedBy(1e18).toFixed(8);
+      return removeTrailingZeros(ethValue) + ' ' + CryptoUnit.ETH;
+    } else if (toUnit === CryptoUnit.GWEI) {
+      const gweiValue = weiValue.dividedBy(1e9).toFixed(2);
+      return removeTrailingZeros(gweiValue) + ' ' + CryptoUnit.GWEI;
+    } else {
+      // WEI
+      return weiValue.toFixed(0) + ' ' + CryptoUnit.WEI;
+    }
+  }
+  // Local currency
+  else {
+    if (localFromUnit === 'sats') {
+      return satoshiToLocalCurrency(balance);
+    } else if (localFromUnit === 'wei') {
+      return weiToLocalCurrency(balance);
+    }
+    // noop
+    throw new Error('no-op');
   }
 }
 
 /**
  *
- * @param balance {number} Satoshis
- * @param toUnit {string} Value from models/bitcoinUnits.js, for example `BitcoinUnit.SATS`
- * @param withFormatting {boolean} Works only with `BitcoinUnit.SATS`, makes spaces wetween groups of 000
+ * @param balance {number} Value in the wallet's native unit (satoshis for Bitcoin, wei-equivalent for Ethereum)
+ * @param toUnit {string} Value from models/CryptoUnits.js, for example `CryptoUnit.SATS`
+ * @param withFormatting {boolean} Makes spaces between groups of 000
  * @returns {string}
  */
-export function formatBalanceWithoutSuffix(balance = 0, toUnit: string, withFormatting = false): string | number {
+export function formatBalanceWithoutSuffix(
+  balance = 0,
+  toUnit: string,
+  withFormatting = false,
+  localFromUnit: CryptoUnit = 'sats',
+): string | number {
   if (toUnit === undefined) {
     return balance;
   }
-  if (toUnit === BitcoinUnit.BTC) {
+
+  // Bitcoin units
+  if (toUnit === CryptoUnit.BTC) {
     const value = new BigNumber(balance).dividedBy(100000000).toFixed(8);
     return removeTrailingZeros(value);
-  } else if (toUnit === BitcoinUnit.SATS) {
+  } else if (toUnit === CryptoUnit.SATS) {
     return withFormatting ? new Intl.NumberFormat().format(balance).toString() : String(balance);
-  } else {
-    return satoshiToLocalCurrency(balance);
+  }
+  // Ethereum units
+  else if (isEthereumUnit(toUnit)) {
+    // For Ethereum, the balance is stored in wei-equivalent
+    const weiValue = new BigNumber(balance);
+
+    if (toUnit === CryptoUnit.ETH) {
+      const ethValue = weiValue.dividedBy(1e18).toFixed(8);
+      return removeTrailingZeros(ethValue);
+    } else if (toUnit === CryptoUnit.GWEI) {
+      const gweiValue = weiValue.dividedBy(1e9).toFixed(2);
+      return removeTrailingZeros(gweiValue);
+    } else {
+      // WEI
+      return weiValue.toFixed(0);
+    }
+  }
+  // Local currency
+  else {
+    if (localFromUnit === 'sats') {
+      return satoshiToLocalCurrency(balance);
+    } else if (localFromUnit === 'wei') {
+      return weiToLocalCurrency(balance);
+    }
+    throw new Error('no-op');
   }
 }
 
@@ -352,12 +450,12 @@ export function formatBalanceWithoutSuffix(balance = 0, toUnit: string, withForm
  * Should be used when we need a simple string to be put in text input, for example
  *
  * @param  balance {number} Satoshis
- * @param toUnit {string} Value from models/bitcoinUnits.js, for example `BitcoinUnit.SATS`
- * @param withFormatting {boolean} Works only with `BitcoinUnit.SATS`, makes spaces wetween groups of 000
+ * @param toUnit {string} Value from models/CryptoUnits.js, for example `CryptoUnit.SATS`
+ * @param withFormatting {boolean} Works only with `CryptoUnit.SATS`, makes spaces wetween groups of 000
  * @returns {string}
  */
-export function formatBalancePlain(balance = 0, toUnit: string, withFormatting = false) {
-  const newInputValue = formatBalanceWithoutSuffix(balance, toUnit, withFormatting);
+export function formatBalancePlain(balance = 0, toUnit: string, withFormatting = false, localFromUnit: CryptoUnit = 'BTC') {
+  const newInputValue = formatBalanceWithoutSuffix(balance, toUnit, withFormatting, localFromUnit);
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   return _leaveNumbersAndDots(newInputValue.toString());
 }

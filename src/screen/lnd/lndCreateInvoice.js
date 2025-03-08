@@ -25,7 +25,7 @@ import Button from '../../components/Button';
 import { useTheme } from '../../components/themes';
 import { presentWalletExportReminder } from '../../helpers/presentWalletExportReminder';
 import loc, { formatBalance, formatBalancePlain, formatBalanceWithoutSuffix } from '../../loc';
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import { router } from '../../NavigationService';
 import { useStorage } from '../../hooks/context/useStorage';
 import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
@@ -38,7 +38,7 @@ const LNDCreateInvoice = () => {
   const { params } = useRoute();
   const { colors } = useTheme();
   const { navigate, getParent, goBack, pop, setParams } = useNavigation();
-  const [unit, setUnit] = useState(wallet.current?.getPreferredBalanceUnit() || BitcoinUnit.BTC);
+  const [unit, setUnit] = useState(wallet.current?.getPreferredBalanceUnit() || CryptoUnit.BTC);
   const [amount, setAmount] = useState();
   const [renderWalletSelectionButtonHidden, setRenderWalletSelectionButtonHidden] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -127,14 +127,14 @@ const LNDCreateInvoice = () => {
         let newAmount = (reply.maxWithdrawable / 1000).toString();
         const sats = newAmount;
         switch (unit) {
-          case BitcoinUnit.SATS:
+          case CryptoUnit.SATS:
             // nop
             break;
-          case BitcoinUnit.BTC:
+          case CryptoUnit.BTC:
             newAmount = satoshiToBTC(newAmount);
             break;
-          case BitcoinUnit.LOCAL_CURRENCY:
-            newAmount = formatBalancePlain(newAmount, BitcoinUnit.LOCAL_CURRENCY);
+          case CryptoUnit.LOCAL_CURRENCY:
+            newAmount = formatBalancePlain(newAmount, CryptoUnit.LOCAL_CURRENCY);
             AmountInput.setCachedSatoshis(newAmount, sats);
             break;
         }
@@ -244,13 +244,13 @@ const LNDCreateInvoice = () => {
     try {
       let invoiceAmount = amount;
       switch (unit) {
-        case BitcoinUnit.SATS:
+        case CryptoUnit.SATS:
           invoiceAmount = parseInt(invoiceAmount, 10); // basically nop
           break;
-        case BitcoinUnit.BTC:
+        case CryptoUnit.BTC:
           invoiceAmount = btcToSatoshi(invoiceAmount);
           break;
-        case BitcoinUnit.LOCAL_CURRENCY:
+        case CryptoUnit.LOCAL_CURRENCY:
           // trying to fetch cached sat equivalent for this fiat amount
           invoiceAmount = AmountInput.getCachedSatoshis(invoiceAmount) || btcToSatoshi(fiatToBTC(invoiceAmount));
           break;
@@ -262,12 +262,12 @@ const LNDCreateInvoice = () => {
           let text;
           if (invoiceAmount < min) {
             text =
-              unit === BitcoinUnit.SATS
+              unit === CryptoUnit.SATS
                 ? loc.formatString(loc.receive.minSats, { min })
                 : loc.formatString(loc.receive.minSatsFull, { min, currency: formatBalance(min, unit) });
           } else {
             text =
-              unit === BitcoinUnit.SATS
+              unit === CryptoUnit.SATS
                 ? loc.formatString(loc.receive.maxSats, { max })
                 : loc.formatString(loc.receive.maxSatsFull, { max, currency: formatBalance(max, unit) });
           }
@@ -370,9 +370,9 @@ const LNDCreateInvoice = () => {
           <TouchableOpacity accessibilityRole="button" style={styles.walletNameTouch} onPress={navigateToSelectWallet}>
             <Text style={[styles.walletNameText, styleHooks.walletNameText]}>{wallet.current.getLabel()}</Text>
             <Text style={[styles.walletNameBalance, styleHooks.walletNameBalance]}>
-              {formatBalanceWithoutSuffix(wallet.current.getBalance(), BitcoinUnit.SATS, false)}
+              {formatBalanceWithoutSuffix(wallet.current.getBalance(), CryptoUnit.SATS, false)}
             </Text>
-            <Text style={[styles.walletNameSats, styleHooks.walletNameSats]}>{BitcoinUnit.SATS}</Text>
+            <Text style={[styles.walletNameSats, styleHooks.walletNameSats]}>{CryptoUnit.SATS}</Text>
           </TouchableOpacity>
         </View>
       </View>

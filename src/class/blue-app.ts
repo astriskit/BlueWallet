@@ -27,6 +27,7 @@ import { getLNDHub } from '../helpers/lndHub';
 import { TWallet } from './wallets/types/TWallet';
 import { Transaction } from './wallets/types/Transaction';
 import { ExtendedTransaction } from './wallets/types/ExtendedTransaction';
+import { EthereumWallet } from './wallets/ethereum-wallet';
 
 let usedBucketNum: boolean | number = false;
 let savingInProgress = 0; // its both a flag and a counter of attempts to write to disk
@@ -464,6 +465,10 @@ export class BlueApp {
             unserializedWallet = new HDSegwitBech32Wallet();
             unserializedWallet.setSecret(tempObj.secret.replace('ldk://', ''));
             break;
+          case EthereumWallet.type:
+            unserializedWallet = EthereumWallet.fromJson(key) as unknown as EthereumWallet;
+            unserializedWallet.connectToProvider(tempObj?.providerUrl);
+            break;
           case LegacyWallet.type:
           default:
             unserializedWallet = LegacyWallet.fromJson(key) as unknown as LegacyWallet;
@@ -741,17 +746,20 @@ export class BlueApp {
    */
   fetchWalletBalances = async (index?: number): Promise<void> => {
     console.log('fetchWalletBalances for wallet#', typeof index === 'undefined' ? '(all)' : index);
+    const fetchBalance = async (w: TWallet) => {
+      await w.fetchBalance();
+    };
     if (index || index === 0) {
       let c = 0;
       for (const wallet of this.wallets) {
         if (c++ === index) {
-          await wallet.fetchBalance();
+          await fetchBalance(wallet);
         }
       }
     } else {
       for (const wallet of this.wallets) {
         console.log('fetching balance for', wallet.getLabel());
-        await wallet.fetchBalance();
+        await fetchBalance(wallet);
       }
     }
   };
@@ -768,25 +776,24 @@ export class BlueApp {
    */
   fetchWalletTransactions = async (index?: number) => {
     console.log('fetchWalletTransactions for wallet#', typeof index === 'undefined' ? '(all)' : index);
+    const fetchTransactions = async (w: TWallet) => {
+      await w.fetchTransactions();
+
+      if ('fetchPendingTransactions' in w) {
+        await w.fetchPendingTransactions();
+        await w.fetchUserInvoices();
+      }
+    };
     if (index || index === 0) {
       let c = 0;
       for (const wallet of this.wallets) {
         if (c++ === index) {
-          await wallet.fetchTransactions();
-
-          if ('fetchPendingTransactions' in wallet) {
-            await wallet.fetchPendingTransactions();
-            await wallet.fetchUserInvoices();
-          }
+          await fetchTransactions(wallet);
         }
       }
     } else {
       for (const wallet of this.wallets) {
-        await wallet.fetchTransactions();
-        if ('fetchPendingTransactions' in wallet) {
-          await wallet.fetchPendingTransactions();
-          await wallet.fetchUserInvoices();
-        }
+        await fetchTransactions(wallet);
       }
     }
   };

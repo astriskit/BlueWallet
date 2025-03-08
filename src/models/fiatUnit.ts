@@ -81,7 +81,7 @@ interface CoinpaprikaResponse {
   };
 }
 
-const RateExtractors = {
+const RateExtractorsBTC = {
   Coinbase: async (ticker: string): Promise<number> => {
     try {
       const json = (await fetchRate(`https://api.coinbase.com/v2/prices/BTC-${ticker.toUpperCase()}/buy`)) as CoinbaseResponse;
@@ -212,6 +212,22 @@ const RateExtractors = {
   },
 } as const;
 
+const RateExtractorETH = {
+  CoinGecko: async (ticker: string): Promise<number> => {
+    try {
+      const json = (await fetchRate(
+        `https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=${ticker.toLowerCase()}`,
+      )) as CoinGeckoResponse;
+      const rate = Number(json?.bitcoin?.[ticker.toLowerCase()]);
+      if (!(rate >= 0)) throw new Error('Invalid data received');
+      return rate;
+    } catch (error: any) {
+      handleError('CoinGecko', ticker, error);
+      return undefined as never;
+    }
+  },
+} as const;
+
 export type TFiatUnit = {
   endPointKey: string;
   symbol: string;
@@ -234,6 +250,7 @@ export type FiatUnitType = {
   source: keyof typeof FiatUnitSource;
 };
 
-export async function getFiatRate(ticker: string): Promise<number> {
-  return await RateExtractors[FiatUnit[ticker].source](ticker);
+export async function getFiatRate(ticker: string, from: 'BTC' | 'ETH' = 'BTC'): Promise<number> {
+  if (from === 'ETH') return await RateExtractorETH.CoinGecko(ticker);
+  return await RateExtractorsBTC[FiatUnit[ticker].source](ticker);
 }

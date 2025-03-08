@@ -4,7 +4,7 @@ import BottomModal, { BottomModalHandle } from './BottomModal';
 import { useTheme } from './themes';
 import loc, { formatBalance } from '../loc';
 import { SecondButton } from './SecondButton';
-import { BitcoinUnit } from '../models/bitcoinUnits';
+import { CryptoUnit } from '../models/cryptoUnits';
 
 interface NetworkTransactionFees {
   fastestFee: number;
@@ -34,11 +34,11 @@ interface SelectFeeModalProps {
   feeRate: number | string;
   setCustomFee: (fee: string) => void;
   setFeePrecalc: (fn: (fp: FeePrecalc) => FeePrecalc) => void;
-  feeUnit: BitcoinUnit;
+  feeUnit: CryptoUnit;
 }
 
 const SelectFeeModal = forwardRef<BottomModalHandle, SelectFeeModalProps>(
-  ({ networkTransactionFees, feePrecalc, feeRate, setCustomFee, setFeePrecalc, feeUnit = BitcoinUnit.BTC }, ref) => {
+  ({ networkTransactionFees, feePrecalc, feeRate, setCustomFee, setFeePrecalc, feeUnit = CryptoUnit.BTC }, ref) => {
     const [customFee, setCustomFeeState] = useState('');
     const feeModalRef = useRef<BottomModalHandle>(null);
     const customModalRef = useRef<BottomModalHandle>(null);

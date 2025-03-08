@@ -3,7 +3,7 @@ import createHash from 'create-hash';
 import wif from 'wif';
 
 import { AbstractWallet } from './abstract-wallet';
-import { Chain } from '../../models/bitcoinUnits';
+import { Chain } from '../../models/cryptoUnits';
 import { CreateTransactionResult } from './types/CreateTransactionResult';
 import { CreateTransactionUtxo } from './types/CreateTransactionUtxo';
 import { Utxo } from './types/Utxo';

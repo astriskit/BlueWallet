@@ -17,7 +17,7 @@ import {
 } from '../../hooks/utils/device-quick-actions';
 import { getIsHandOffUseEnabled, setIsHandOffUseEnabled } from '../utils/hands-off';
 import { useStorage } from '../../hooks/context/useStorage';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import { TotalWalletsBalanceKey, TotalWalletsBalancePreferredUnit } from '../utils/constants';
 import { BLOCK_EXPLORERS, getBlockExplorerUrl, saveBlockExplorer, BlockExplorer, normalizeUrl } from '../../models/blockExplorer';
 import { isDisabled } from '@/src/blue_modules/blue-electrum/isDisabled';
@@ -57,7 +57,7 @@ export const getIsTotalBalanceViewEnabled = async (): Promise<boolean> => {
   }
 };
 
-export const setTotalBalancePreferredUnitStorageFunc = async (unit: BitcoinUnit): Promise<void> => {
+export const setTotalBalancePreferredUnitStorageFunc = async (unit: CryptoUnit): Promise<void> => {
   try {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
     await DefaultPreference.set(TotalWalletsBalancePreferredUnit, unit);
@@ -66,14 +66,14 @@ export const setTotalBalancePreferredUnitStorageFunc = async (unit: BitcoinUnit)
   }
 };
 
-export const getTotalBalancePreferredUnit = async (): Promise<BitcoinUnit> => {
+export const getTotalBalancePreferredUnit = async (): Promise<CryptoUnit> => {
   try {
     await DefaultPreference.setName(GROUP_IO_BLUEWALLET);
-    const unit = (await DefaultPreference.get(TotalWalletsBalancePreferredUnit)) as BitcoinUnit | null;
-    return unit ?? BitcoinUnit.BTC;
+    const unit = (await DefaultPreference.get(TotalWalletsBalancePreferredUnit)) as CryptoUnit | null;
+    return unit ?? CryptoUnit.BTC;
   } catch (e) {
     console.error('Error getting TotalBalancePreferredUnit:', e);
-    return BitcoinUnit.BTC;
+    return CryptoUnit.BTC;
   }
 };
 
@@ -98,8 +98,8 @@ interface SettingsContextType {
   setIsQuickActionsEnabledStorage: (value: boolean) => Promise<void>;
   isTotalBalanceEnabled: boolean;
   setIsTotalBalanceEnabledStorage: (value: boolean) => Promise<void>;
-  totalBalancePreferredUnit: BitcoinUnit;
-  setTotalBalancePreferredUnitStorage: (unit: BitcoinUnit) => Promise<void>;
+  totalBalancePreferredUnit: CryptoUnit;
+  setTotalBalancePreferredUnitStorage: (unit: CryptoUnit) => Promise<void>;
   isDrawerShouldHide: boolean;
   setIsDrawerShouldHide: (value: boolean) => void;
   selectedBlockExplorer: BlockExplorer;
@@ -129,7 +129,7 @@ const defaultSettingsContext: SettingsContextType = {
   setIsQuickActionsEnabledStorage: async () => {},
   isTotalBalanceEnabled: true,
   setIsTotalBalanceEnabledStorage: async () => {},
-  totalBalancePreferredUnit: BitcoinUnit.BTC,
+  totalBalancePreferredUnit: CryptoUnit.BTC,
   setTotalBalancePreferredUnitStorage: async () => {},
   isDrawerShouldHide: false,
   setIsDrawerShouldHide: () => {},
@@ -152,7 +152,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
   const [isClipboardGetContentEnabled, setIsClipboardGetContentEnabled] = useState<boolean>(true);
   const [isQuickActionsEnabled, setIsQuickActionsEnabled] = useState<boolean>(true);
   const [isTotalBalanceEnabled, setIsTotalBalanceEnabled] = useState<boolean>(true);
-  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<BitcoinUnit>(BitcoinUnit.BTC);
+  const [totalBalancePreferredUnit, setTotalBalancePreferredUnit] = useState<CryptoUnit>(CryptoUnit.BTC);
   const [isDrawerShouldHide, setIsDrawerShouldHide] = useState<boolean>(false);
   const [selectedBlockExplorer, setSelectedBlockExplorer] = useState<BlockExplorer>(BLOCK_EXPLORERS.default);
   const [isElectrumDisabled, setIsElectrumDisabled] = useState<boolean>(true);
@@ -328,7 +328,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = React.m
     }
   }, []);
 
-  const setTotalBalancePreferredUnitStorage = useCallback(async (unit: BitcoinUnit): Promise<void> => {
+  const setTotalBalancePreferredUnitStorage = useCallback(async (unit: CryptoUnit): Promise<void> => {
     try {
       await setTotalBalancePreferredUnitStorageFunc(unit);
       setTotalBalancePreferredUnit(unit);

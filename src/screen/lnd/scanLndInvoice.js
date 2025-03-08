@@ -16,7 +16,7 @@ import { useTheme } from '../../components/themes';
 import { useBiometrics } from '../../hooks/useBiometrics';
 import { unlockWithBiometrics } from '../../hooks/utils/biometrics';
 import loc, { formatBalanceWithoutSuffix } from '../../loc';
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import { DismissKeyboardInputAccessory, DismissKeyboardInputAccessoryViewID } from '../../components/DismissKeyboardInputAccessory';
 import DeeplinkSchemaMatch from '../../class/deeplink-schema-match';
@@ -35,7 +35,7 @@ const ScanLndInvoice = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [renderWalletSelectionButtonHidden, setRenderWalletSelectionButtonHidden] = useState(false);
   const [destination, setDestination] = useState('');
-  const [unit, setUnit] = useState(BitcoinUnit.SATS);
+  const [unit, setUnit] = useState(CryptoUnit.SATS);
   const [decoded, setDecoded] = useState();
   const [amount, setAmount] = useState();
   const [isAmountInitiallyEmpty, setIsAmountInitiallyEmpty] = useState();
@@ -170,13 +170,13 @@ const ScanLndInvoice = () => {
 
     let amountSats = amount;
     switch (unit) {
-      case BitcoinUnit.SATS:
+      case CryptoUnit.SATS:
         amountSats = parseInt(amountSats, 10); // nop
         break;
-      case BitcoinUnit.BTC:
+      case CryptoUnit.BTC:
         amountSats = btcToSatoshi(amountSats);
         break;
-      case BitcoinUnit.LOCAL_CURRENCY:
+      case CryptoUnit.LOCAL_CURRENCY:
         amountSats = btcToSatoshi(fiatToBTC(amountSats));
         break;
     }
@@ -207,7 +207,7 @@ const ScanLndInvoice = () => {
 
     navigate('Success', {
       amount: amountSats,
-      amountUnit: BitcoinUnit.SATS,
+      amountUnit: CryptoUnit.SATS,
       invoiceDescription: decoded.description,
     });
     fetchAndSaveWalletTransactions(wallet.getID());
@@ -259,9 +259,9 @@ const ScanLndInvoice = () => {
           <TouchableOpacity accessibilityRole="button" disabled={isLoading} style={styles.walletWrapTouch} onPress={naviageToSelectWallet}>
             <Text style={[styles.walletWrapLabel, stylesHook.walletWrapLabel]}>{walletLabel}</Text>
             <Text style={[styles.walletWrapBalance, stylesHook.walletWrapBalance]}>
-              {formatBalanceWithoutSuffix(wallet.getBalance(), BitcoinUnit.SATS, false)}
+              {formatBalanceWithoutSuffix(wallet.getBalance(), CryptoUnit.SATS, false)}
             </Text>
-            <Text style={[styles.walletWrapSats, stylesHook.walletWrapSats]}>{BitcoinUnit.SATS}</Text>
+            <Text style={[styles.walletWrapSats, stylesHook.walletWrapSats]}>{CryptoUnit.SATS}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -271,7 +271,7 @@ const ScanLndInvoice = () => {
   const getFees = () => {
     const min = Math.floor(decoded.num_satoshis * 0.003);
     const max = Math.floor(decoded.num_satoshis * 0.01) + 1;
-    return `${min} ${BitcoinUnit.SATS} - ${max} ${BitcoinUnit.SATS}`;
+    return `${min} ${CryptoUnit.SATS} - ${max} ${CryptoUnit.SATS}`;
   };
 
   const onBlur = () => {

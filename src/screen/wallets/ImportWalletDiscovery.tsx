@@ -3,7 +3,9 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { ActivityIndicator, FlatList, LayoutAnimation, Platform, StyleSheet, UIManager, View } from 'react-native';
 import triggerHapticFeedback, { HapticFeedbackTypes } from '../../blue_modules/hapticFeedback';
 import { BlueButtonLink, BlueFormLabel, BlueSpacing10, BlueSpacing20, BlueSpacing40, BlueText } from '../../BlueComponents';
-import { HDSegwitBech32Wallet, WatchOnlyWallet } from '../../class';
+import { HDSegwitBech32Wallet } from '../../class/wallets/hd-segwit-bech32-wallet';
+import { EthereumWallet } from '../../class/wallets/ethereum-wallet';
+import { WatchOnlyWallet } from '../../class/wallets/watch-only-wallet';
 import startImport, { TImport } from '../../class/wallet-import';
 import presentAlert from '../../components/Alert';
 import Button from '../../components/Button';
@@ -49,10 +51,22 @@ const ImportWalletDiscovery: React.FC = () => {
   const [selected, setSelected] = useState<number>(0);
   const [progress, setProgress] = useState<string | undefined>();
   const importing = useRef<boolean>(false);
-  const bip39 = useMemo(() => {
+  const validMnemonic = useMemo(() => {
+    // Check if it's a valid Bitcoin mnemonic
     const hd = new HDSegwitBech32Wallet();
     hd.setSecret(importText);
-    return hd.validateMnemonic();
+    const isBitcoinMnemonic = hd.validateMnemonic();
+
+    // Check if it's a valid Ethereum mnemonic
+    let isEthereumMnemonic = false;
+    try {
+      const ethWallet = EthereumWallet.fromMnemonic(importText);
+      isEthereumMnemonic = !!ethWallet;
+    } catch (e) {
+      // Not a valid Ethereum mnemonic
+    }
+
+    return isBitcoinMnemonic || isEthereumMnemonic;
   }, [importText]);
 
   const stylesHook = StyleSheet.create({
@@ -95,6 +109,8 @@ const ImportWalletDiscovery: React.FC = () => {
           } else {
             subtitle = wallet.getAddress(); // Display address
           }
+        } else if (wallet.type === 'ethereum') {
+          subtitle = 'Ethereum wallet';
         } else {
           subtitle = (wallet as THDWalletForWatchOnly).getDerivationPath?.();
         }
@@ -224,7 +240,7 @@ const ImportWalletDiscovery: React.FC = () => {
         contentInsetAdjustmentBehavior="always"
       />
       <View style={[styles.center, stylesHook.center]}>
-        {bip39 && (
+        {validMnemonic && (
           <BlueButtonLink
             title={loc.wallets.import_discovery_derivation}
             testID="CustomDerivationPathButton"

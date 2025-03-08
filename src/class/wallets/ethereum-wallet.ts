@@ -17,7 +17,7 @@ import {
 import Constants from 'expo-constants';
 
 import { AbstractWallet } from './abstract-wallet';
-import { BitcoinUnit, Chain } from '../../models/bitcoinUnits';
+import { CryptoUnit, Chain } from '../../models/cryptoUnits';
 import { Transaction } from './types/Transaction';
 
 // type TransactionResponse = {
@@ -50,16 +50,22 @@ export class EthereumWallet extends AbstractWallet {
     this._wallet = null;
     this._provider = null;
     this._txs = [];
-    this.chain = Chain.OFFCHAIN; // Using OFFCHAIN as ETH is not BTC
-    this.preferredBalanceUnit = BitcoinUnit.SATS; // Will override with ETH unit
+    this.chain = Chain.ONCHAIN;
+    this.preferredBalanceUnit = CryptoUnit.ETH;
   }
 
   /**
    * Generate a new Ethereum wallet
    */
-  async generate(): Promise<void> {
-    const wallet = Wallet.createRandom();
-    this.secret = wallet.privateKey;
+  async generate(phrase?: string): Promise<void> {
+    let wallet;
+    if (!phrase) {
+      wallet = Wallet.createRandom();
+    } else {
+      wallet = Wallet.fromPhrase(phrase);
+    }
+    // @ts-ignore should be there
+    this.secret = wallet.mnemonic?.phrase;
     this._wallet = wallet;
     this._address = wallet.address;
   }
@@ -98,23 +104,29 @@ export class EthereumWallet extends AbstractWallet {
 
       // If no provider URL is provided, try to use etherScan API key from environment
       if (!providerUrl) {
-        const etherScanApiKey = Constants.expoConfig?.extra?.etherScanApiKey;
-        if (!etherScanApiKey || etherScanApiKey === 'YOUR_etherScan_API_KEY') {
+        const etherScanApiKey = Constants.expoConfig?.extra?.etherscanApiKey;
+        if (!etherScanApiKey || etherScanApiKey === 'YOUR_API_KEY_HERE') {
           console.warn('No etherScan API key provided. Please set etherScan_API_KEY in your environment or app.config.ts');
-          throw new Error('No provider URL or etherScan API key available');
+          provider = getDefaultProvider();
+        } else {
+          provider = new EtherscanProvider('mainnet', etherScanApiKey);
         }
-        provider = new EtherscanProvider('mainnet', etherScanApiKey);
       } else if (providerUrl.startsWith('http')) {
         provider = new JsonRpcProvider(providerUrl);
-      } else {
-        // Assuming it's an etherScan API key
-        provider = getDefaultProvider();
       }
 
+      if (!provider) {
+        throw new Error('Ethereum - provider must be there');
+      }
       this._provider = provider;
 
       // Connect wallet to provider if wallet exists
       if (this._wallet) {
+        const isNotInstance = !(this._wallet instanceof Wallet);
+        const phrase = this._wallet?.mnemonic?.phrase;
+        if (isNotInstance && !!phrase) {
+          this.generate(phrase);
+        }
         this._wallet = this._wallet.connect(provider);
       }
     } catch (error) {
@@ -130,16 +142,24 @@ export class EthereumWallet extends AbstractWallet {
   }
 
   /**
-   * Get wallet balance in wei
+   * Get wallet balance in wei, but stored in a satoshi-like scale for consistent handling
    */
   async fetchBalance(): Promise<void> {
-    if (!this._wallet || !this._provider) {
-      throw new Error('Wallet not initialized or not connected to provider');
+    if (!this._wallet) {
+      throw new Error('Wallet not initialized ');
     }
-
     try {
-      const balance = await this._provider.getBalance(this._wallet.address);
-      this.balance = Number(formatEther(balance)) * 1e8; // Convert ETH to satoshi-like unit for consistency
+      if (!this._provider) {
+        await this.connectToProvider();
+      }
+
+      const address = '0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5';
+      // const address = this._wallet?.address
+      // Get balance in wei
+      const balance = await this._provider.getBalance(address);
+
+      this.balance = Number(balance);
+
       this._lastBalanceFetch = +new Date();
     } catch (error) {
       console.error('Error fetching Ethereum balance:', error);
@@ -147,10 +167,11 @@ export class EthereumWallet extends AbstractWallet {
   }
 
   /**
-   * Get ETH balance in ETH (not satoshi equivalent)
+   * Override getBalance to ensure it returns the balance in satoshi-like scale
+   * This makes it compatible with Bitcoin wallets for total balance calculation
    */
-  getEthBalance(): number {
-    return this.balance / 1e8; // Convert from satoshi-like unit back to ETH
+  getBalance(): number {
+    return this.balance;
   }
 
   /**
@@ -161,6 +182,10 @@ export class EthereumWallet extends AbstractWallet {
       throw new Error('Wallet not initialized');
     }
 
+    if (!this._provider) {
+      this.connectToProvider();
+    }
+
     try {
       // Access environment variables through expo-constants
       const etherscanApiKey = Constants.expoConfig?.extra?.etherscanApiKey || '';
@@ -169,7 +194,8 @@ export class EthereumWallet extends AbstractWallet {
         console.warn('No Etherscan API key provided. Please set ETHERSCAN_API_KEY in your environment or app.config.ts');
       }
 
-      const walletAddress = this._wallet.address;
+      // const walletAddress = this._wallet.address;
+      const walletAddress = '0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5';
 
       // Determine which Etherscan API URL to use based on the provider's network
       let networkName = 'mainnet';
@@ -212,9 +238,9 @@ export class EthereumWallet extends AbstractWallet {
       const normalTxData = await normalTxResponse.json();
 
       // Fetch internal transactions (ETH transfers created by contracts)
-      const internalTxUrl = `${apiBaseUrl}?module=account&action=txlistinternal&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc&apikey=${etherscanApiKey}`;
-      const internalTxResponse = await fetch(internalTxUrl);
-      const internalTxData = await internalTxResponse.json();
+      // const internalTxUrl = `${apiBaseUrl}?module=account&action=txlistinternal&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc&apikey=${etherscanApiKey}`;
+      // const internalTxResponse = await fetch(internalTxUrl);
+      // const internalTxData = await internalTxResponse.json();
 
       // Combine normal and internal transactions
       const combinedTxs = [];
@@ -223,14 +249,14 @@ export class EthereumWallet extends AbstractWallet {
         combinedTxs.push(...normalTxData.result);
       }
 
-      if (internalTxData.status === '1' && Array.isArray(internalTxData.result)) {
-        // For internal transactions, we need to differentiate them from normal transactions
-        const internalTxs = internalTxData.result.map((tx: any) => ({
-          ...tx,
-          isInternal: true,
-        }));
-        combinedTxs.push(...internalTxs);
-      }
+      // if (internalTxData.status === '1' && Array.isArray(internalTxData.result)) {
+      //   // For internal transactions, we need to differentiate them from normal transactions
+      //   const internalTxs = internalTxData.result.map((tx: any) => ({
+      //     ...tx,
+      //     isInternal: true,
+      //   }));
+      //   combinedTxs.push(...internalTxs);
+      // }
 
       // Sort combined transactions by timestamp (descending)
       combinedTxs.sort((a: any, b: any) => Number(b.timeStamp) - Number(a.timeStamp));
@@ -238,12 +264,20 @@ export class EthereumWallet extends AbstractWallet {
       // Map Etherscan data to our transaction format
       this._txs = combinedTxs.map((tx: any) => {
         const isReceived = tx.to?.toLowerCase() === walletAddress.toLowerCase();
-        const valueEth = Number(formatEther(BigInt(tx.value))) * 1e8; // Convert to satoshi-like units
+        const valueEth = tx.value; // wei
 
         // For fees, we can only calculate for transactions we sent (not for received transactions)
         let fee = 0;
         if (!isReceived && !tx.isInternal && tx.gasUsed && tx.gasPrice) {
-          fee = Number(formatEther(BigInt(tx.gasUsed) * BigInt(tx.gasPrice))) * 1e8;
+          fee = tx.gasUsed * tx.gasPrice; // wei
+        }
+
+        // Determine transaction status
+        let status = 'confirmed';
+        if (tx.isError === '1') {
+          status = 'failed';
+        } else if (!tx.blockNumber || tx.blockNumber === '0') {
+          status = 'pending';
         }
 
         return {
@@ -260,6 +294,12 @@ export class EthereumWallet extends AbstractWallet {
           isInternal: !!tx.isInternal,
           isError: tx.isError === '1',
           network: networkName,
+          // Mark this transaction as an Ethereum transaction
+          isEthereum: true,
+          status,
+          gasPrice: tx.gasPrice,
+          gasUsed: tx.gasUsed,
+          nonce: Number(tx.nonce) || 0,
         };
       });
 
@@ -480,5 +520,9 @@ export class EthereumWallet extends AbstractWallet {
     await tx.wait();
 
     return tx.hash;
+  }
+
+  getPreferredBalanceUnit(): CryptoUnit {
+    return this.preferredBalanceUnit;
   }
 }

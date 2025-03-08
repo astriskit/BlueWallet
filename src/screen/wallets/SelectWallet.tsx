@@ -6,7 +6,7 @@ import { BlueSpacing20, BlueText } from '../../BlueComponents';
 import SafeArea from '../../components/SafeArea';
 import { useTheme } from '../../components/themes';
 import loc from '../../loc';
-import { Chain } from '../../models/bitcoinUnits';
+import { Chain } from '../../models/cryptoUnits';
 import { useStorage } from '../../hooks/context/useStorage';
 import WalletsCarousel from '../../components/WalletsCarousel';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';

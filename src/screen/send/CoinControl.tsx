@@ -33,7 +33,7 @@ import { Action } from '../../components/types';
 import { useStorage } from '../../hooks/context/useStorage';
 import { useExtendedNavigation } from '../../hooks/useExtendedNavigation';
 import loc, { formatBalance } from '../../loc';
-import { BitcoinUnit } from '../../models/bitcoinUnits';
+import { CryptoUnit } from '../../models/cryptoUnits';
 import { SendDetailsStackParamList } from '../../navigation/SendDetailsStackParamList';
 import { CommonToolTipActions } from '../../typings/CommonToolTipActions';
 import TipBox from '../../components/TipBox';
@@ -74,7 +74,7 @@ type TOutputListProps = {
 
 const OutputList: React.FC<TOutputListProps> = ({
   item: { address, txid, value },
-  balanceUnit = BitcoinUnit.BTC,
+  balanceUnit = CryptoUnit.BTC,
   oMemo,
   frozen,
   change,
@@ -137,7 +137,7 @@ type TOutputModalProps = {
 
 const OutputModal: React.FC<TOutputModalProps> = ({
   item: { address, txid, value, vout, confirmations = 0 },
-  balanceUnit = BitcoinUnit.BTC,
+  balanceUnit = CryptoUnit.BTC,
   oMemo,
 }) => {
   const { colors } = useTheme();

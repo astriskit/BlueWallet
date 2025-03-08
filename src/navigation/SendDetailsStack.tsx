@@ -5,7 +5,7 @@ import navigationStyle, { CloseButtonPosition } from '../components/navigationSt
 import { useTheme } from '../components/themes';
 import loc from '../loc';
 import HeaderRightButton from '../components/HeaderRightButton';
-import { BitcoinUnit } from '../models/bitcoinUnits';
+import { CryptoUnit } from '../models/cryptoUnits';
 
 const SendDetailsStack = () => {
   const theme = useTheme();
@@ -22,8 +22,8 @@ const SendDetailsStack = () => {
         })(theme)}
         initialParams={{
           isEditable: true,
-          feeUnit: BitcoinUnit.BTC,
-          amountUnit: BitcoinUnit.BTC,
+          feeUnit: CryptoUnit.BTC,
+          amountUnit: CryptoUnit.BTC,
         }} // Correctly typed now
       />
       <Stack.Screen

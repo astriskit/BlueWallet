@@ -1,6 +1,6 @@
 import { Psbt } from 'bitcoinjs-lib';
 import { CreateTransactionTarget } from '../class/wallets/types/CreateTransactionTarget';
-import { Chain } from '../models/bitcoinUnits';
+import { Chain } from '../models/cryptoUnits';
 import { ScanQRCodeParamList } from './DetailViewStackParamList';
 import { SendDetailsParams } from './SendDetailsParams';
 
